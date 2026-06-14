@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Monolith | Premium Real Estate Specimen</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/Flip.min.js"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=Plus+Jakarta+Sans:wght@300;400;600&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #F5F5F0; color: #1A1A1A; }
+        .font-serif { font-family: 'Playfair Display', serif; }
+    </style>
+</head>
+<body class="overflow-x-hidden selection:bg-[#1A1A1A] selection:text-[#F5F5F0]">
+
+    <canvas id="webgl-canvas" class="fixed inset-0 w-full h-full pointer-events-none z-10 hidden md:block"></canvas>
+
+    <nav class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-6 py-6 md:px-12 backdrop-blur-sm bg-[#F5F5F0]/40">
+        <div class="font-serif text-xl tracking-widest font-medium">M O N O L I T H</div>
+        <div class="hidden md:flex gap-12 text-xs uppercase tracking-widest text-[#1A1A1A]/70">
+            <a href="#section-philosophy" class="hover:text-black transition-colors">Philosophy</a>
+            <a href="#section-interactive" class="hover:text-black transition-colors">Specimen</a>
+            <a href="#section-selector" class="hover:text-black transition-colors">Layouts</a>
+        </div>
+        <button class="border border-[#1A1A1A] px-5 py-2 text-xs uppercase tracking-widest hover:bg-[#1A1A1A] hover:text-[#F5F5F0] transition-all duration-300">
+            Registry
+        </button>
+    </nav>
+
+    <main class="relative z-20 w-full">
+
+        <section class="h-screen w-full flex flex-col justify-between px-6 py-24 md:px-24 md:py-32">
+            <div class="w-full"></div>
+            <div class="max-w-2xl">
+                <h1 class="font-serif text-5xl md:text-8xl font-light tracking-tight leading-[1.05] mb-8">
+                    Architecture <br><span class="italic">of Omission.</span>
+                </h1>
+                <p class="text-sm md:text-base text-[#1A1A1A]/60 max-w-sm font-light leading-relaxed mb-6">
+                    A physical study in radical spatial silence, positioned above the urban canopy line.
+                </p>
+            </div>
+            <div class="text-xs uppercase tracking-widest text-[#1A1A1A]/40 flex justify-between items-center">
+                <span>Scroll to descend — Year 2026</span>
+                <span class="hidden md:block">Inertial Parallax Active</span>
+            </div>
+        </section>
+
+        <section id="section-philosophy" class="h-screen w-full flex items-center px-6 md:px-24">
+            <div class="max-w-2xl">
+                <p id="kinetic-text" class="font-serif text-3xl md:text-5xl font-light leading-snug text-[#1A1A1A]">
+                    We stripped away elements until only space, raw daylight transmission, and native stone remained.
+                </p>
+            </div>
+        </section>
+
+        <section id="section-interactive" class="h-screen w-full flex flex-col md:flex-row items-center justify-between px-6 md:px-24 relative">
+            <div class="max-w-xs z-30 pointer-events-auto bg-[#F5F5F0]/90 md:bg-transparent p-6 md:p-0 border border-neutral-200 md:border-none">
+                <h3 class="font-serif text-2xl md:text-3xl mb-4 font-light">Structural Radiography</h3>
+                <p class="text-xs md:text-sm leading-relaxed text-[#1A1A1A]/70 mb-6">
+                    Scroll down to rotate the core specimen framework. Use the spatial nodes to adjust exposure metrics.
+                </p>
+                <div class="flex flex-col gap-3 pointer-events-auto">
+                    <button id="btn-zoom-penthouse" class="border border-neutral-300 text-left px-4 py-3 text-xs uppercase tracking-widest hover:border-black transition-all bg-white flex justify-between items-center">
+                        <span>Node A // Upper Duplexes</span>
+                        <span class="w-2 h-2 rounded-full bg-neutral-400"></span>
+                    </button>
+                    <button id="btn-toggle-xray" class="border border-neutral-300 text-left px-4 py-3 text-xs uppercase tracking-widest hover:border-black transition-all bg-white flex justify-between items-center">
+                        <span>Node B // Blueprint Layer</span>
+                        <span id="xray-indicator" class="w-2 h-2 rounded-full bg-neutral-300"></span>
+                    </button>
+                </div>
+            </div>
+
+            <div id="info-popover" class="opacity-0 translate-x-12 fixed top-1/3 right-12 md:right-24 w-80 backdrop-blur-xl bg-white/80 border border-white/50 p-8 shadow-2xl z-40 transition-all duration-500 hidden md:block">
+                <h4 class="font-serif text-xl mb-2 tracking-wide">The Penthouse Skyway</h4>
+                <p class="text-xs text-[#1A1A1A]/80 leading-relaxed mb-6">
+                    Double-height structural volumes lined completely with hand-selected European ivory travertine. Uninterrupted horizons.
+                </p>
+                <button id="btn-reset-cam" class="text-xs font-semibold uppercase tracking-widest underline hover:text-neutral-500">
+                    Return to Overview
+                </button>
+            </div>
+        </section>
+
+        <div class="block md:hidden px-6 my-6">
+            <div class="w-full h-96 bg-neutral-200 bg-[url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80')] bg-cover bg-center"></div>
+        </div>
+
+        <section id="section-selector" class="min-h-screen w-full bg-[#1A1A1A] text-[#F5F5F0] py-32 px-6 md:px-24">
+            <div class="w-full max-w-5xl mx-auto">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-end border-b border-white/10 pb-6 mb-12 gap-6">
+                    <div>
+                        <span class="text-xs uppercase tracking-widest opacity-40 block mb-2">Availability Index</span>
+                        <h2 class="font-serif text-3xl md:text-5xl font-light">Spatial Variants</h2>
+                    </div>
+                    <div class="flex gap-8 text-xs tracking-widest uppercase text-white/40">
+                        <button data-filter="ALL" class="filter-btn text-white font-bold transition-colors">All Units</button>
+                        <button data-filter="Penthouse" class="filter-btn hover:text-white transition-colors">Duplexes</button>
+                        <button data-filter="Studio" class="filter-btn hover:text-white transition-colors">Courtyards</button>
+                    </div>
+                </div>
+
+                <div id="flip-container" class="grid grid-cols-1 md:grid-cols-2 gap-6 min-h-[400px]">
+                    <div data-type="Penthouse" class="floor-card group bg-neutral-900/50 border border-white/5 p-8 relative overflow-hidden transition-all duration-300 hover:border-white/20">
+                        <div class="flex justify-between items-start mb-16">
+                            <div><span class="text-xs uppercase opacity-40 tracking-wider block mb-1">Floor 12-14</span><h4 class="font-serif text-2xl">340 Sq.M Suite</h4></div>
+                            <span class="text-xs tabular-nums opacity-30">SPEC // 01A</span>
+                        </div>
+                        <p class="text-xs tracking-wide text-white/50">Exposure: North Horizon Skyway</p>
+                        <div class="absolute inset-0 bg-neutral-800 opacity-0 group-hover:opacity-10 pointer-events-none transition-opacity duration-500 bg-[url('https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=600&q=80')] bg-cover bg-center"></div>
+                    </div>
+                    <div data-type="Penthouse" class="floor-card group bg-neutral-900/50 border border-white/5 p-8 relative overflow-hidden transition-all duration-300 hover:border-white/20">
+                        <div class="flex justify-between items-start mb-16">
+                            <div><span class="text-xs uppercase opacity-40 tracking-wider block mb-1">Floor 15</span><h4 class="font-serif text-2xl">410 Sq.M Pavilion</h4></div>
+                            <span class="text-xs tabular-nums opacity-30">SPEC // 01B</span>
+                        </div>
+                        <p class="text-xs tracking-wide text-white/50">Exposure: Full East River Meridian</p>
+                        <div class="absolute inset-0 bg-neutral-800 opacity-0 group-hover:opacity-10 pointer-events-none transition-opacity duration-500 bg-[url('https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=600&q=80')] bg-cover bg-center"></div>
+                    </div>
+                    <div data-type="Studio" class="floor-card group bg-neutral-900/50 border border-white/5 p-8 relative overflow-hidden transition-all duration-300 hover:border-white/20">
+                        <div class="flex justify-between items-start mb-16">
+                            <div><span class="text-xs uppercase opacity-40 tracking-wider block mb-1">Floor 02-04</span><h4 class="font-serif text-2xl">110 Sq.M Garden</h4></div>
+                            <span class="text-xs tabular-nums opacity-30">SPEC // 04C</span>
+                        </div>
+                        <p class="text-xs tracking-wide text-white/50">Exposure: Internal Zen Stone Atrium</p>
+                        <div class="absolute inset-0 bg-neutral-800 opacity-0 group-hover:opacity-10 pointer-events-none transition-opacity duration-500 bg-[url('https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=600&q=80')] bg-cover bg-center"></div>
+                    </div>
+                    <div data-type="Studio" class="floor-card group bg-neutral-900/50 border border-white/5 p-8 relative overflow-hidden transition-all duration-300 hover:border-white/20">
+                        <div class="flex justify-between items-start mb-16">
+                            <div><span class="text-xs uppercase opacity-40 tracking-wider block mb-1">Floor 05-07</span><h4 class="font-serif text-2xl">145 Sq.M Gallery</h4></div>
+                            <span class="text-xs tabular-nums opacity-30">SPEC // 04D</span>
+                        </div>
+                        <p class="text-xs tracking-wide text-white/50">Exposure: Western Linear Sunset Park</p>
+                        <div class="absolute inset-0 bg-neutral-800 opacity-0 group-hover:opacity-10 pointer-events-none transition-opacity duration-500 bg-[url('https://images.unsplash.com/photo-1600566752355-35792bedcfea?auto=format&fit=crop&w=600&q=80')] bg-cover bg-center"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="h-screen w-full bg-[#EAEAEA] relative overflow-hidden flex items-end p-6 md:p-24">
+            <div class="absolute inset-0 bg-neutral-300 mix-blend-color filter grayscale contrast-125" style="background-image: radial-gradient(#1a1a1a 0.75px, transparent 0.75px); background-size: 24px 24px;"></div>
+            <div class="relative z-10 backdrop-blur-md bg-white/95 text-[#1A1A1A] p-8 max-w-sm border border-neutral-200 shadow-xl">
+                <span class="text-[10px] uppercase tracking-widest font-bold block mb-1 text-neutral-400">Coordinates Suite</span>
+                <h4 class="font-serif text-xl mb-3 font-light">The Meridian Intersection</h4>
+                <p class="text-xs leading-relaxed text-neutral-600">
+                    Sited at the direct center of premium private heliports, Michelin-starred provisions, and historical custom docking channels.
+                </p>
+            </div>
+        </section>
+
+        <section class="h-screen w-full flex flex-col justify-center items-center bg-[#F5F5F0] px-6">
+            <div class="text-center max-w-xl">
+                <h2 class="font-serif text-4xl md:text-6xl font-light tracking-tight mb-8">Request Entry Token</h2>
+                <form class="flex flex-col md:flex-row gap-6 w-full justify-center items-center" onsubmit="event.preventDefault();">
+                    <input 
+                        type="email" 
+                        placeholder="SECURE EMAIL AXIS" 
+                        class="bg-transparent border-b border-[#1A1A1A]/30 py-3 px-2 text-xs w-72 focus:outline-none focus:border-[#1A1A1A] tracking-widest text-center uppercase transition-colors"
+                    >
+                    <button id="magnetic-btn" class="bg-[#1A1A1A] text-[#F5F5F0] text-xs uppercase tracking-widest px-10 py-4 font-semibold hover:shadow-2xl transition-shadow duration-300">
+                        Submit Request
+                    </button>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        gsap.registerPlugin(ScrollTrigger, Flip);
+
+        // ==========================================
+        // 1. INITIALIZE THREE.JS WEBGL PIPELINE
+        // ==========================================
+        const canvas = document.querySelector('#webgl-canvas');
+        const scene = new THREE.Scene();
+        
+        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
+        camera.position.set(0, 0, 5);
+
+        const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.shadowMap.enabled = true;
+
+        // Custom Shader Material (Clay Plaster morphing into Architectural X-Ray Wireframe Grid)
+        const customMaterial = new THREE.ShaderMaterial({
+            uniforms: {
+                uWireframeProgress: { value: 0.0 },
+                uColorPlaster: { value: new THREE.Color('#E6E6DE') },
+                uColorGrid: { value: new THREE.Color('#1A1A1A') }
+            },
+            vertexShader: `
+                varying vec2 vUv;
+                varying vec3 vNormal;
+                void main() {
+                    vUv = uv;
+                    vNormal = normalize(normalMatrix * normal);
+                    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+                }
+            `,
+            fragmentShader: `
+                uniform float uWireframeProgress;
+                uniform vec3 uColorPlaster;
+                uniform vec3 uColorGrid;
+                varying vec2 vUv;
+                varying vec3 vNormal;
+                void main() {
+                    float edgeX = step(0.015, mod(vUv.x * 12.0, 1.0));
+                    float edgeY = step(0.015, mod(vUv.y * 18.0, 1.0));
+                    float gridPattern = 1.0 - (edgeX * edgeY);
+                    
+                    vec3 plaster = uColorPlaster * max(0.5, dot(vNormal, vec3(0.5, 1.0, 0.7)));
+                    vec3 wireframe = uColorGrid + vec3(gridPattern * 0.5);
+                    
+                    vec3 finalColor = mix(plaster, wireframe, uWireframeProgress);
+                    gl_FragColor = vec4(finalColor, 1.0);
+                }
+            `
+        });
+
+        // Generate Monolithic Building Asset
+        const geometry = new THREE.BoxGeometry(1.6, 3.2, 1.6);
+        const buildingMesh = new THREE.Mesh(geometry, customMaterial);
+        scene.add(buildingMesh);
+
+        // Studio Lighting Strategy
+        const ambientLight = new THREE.AmbientLight('#ffffff', 0.8);
+        scene.add(ambientLight);
+
+        const dirLight = new THREE.DirectionalLight('#ffffff', 1.5);
+        dirLight.position.set(5, 8, 5);
+        scene.add(dirLight);
+
+        // Mouse Parallax Track Variables
+        let mouseX = 0, mouseY = 0;
+        let targetX = 0, targetY = 0;
+        let isZoomed = false;
+        let targetWireframe = 0;
+
+        window.addEventListener('mousemove', (e) => {
+            mouseX = (e.clientX / window.innerWidth) - 0.5;
+            mouseY = (e.clientY / window.innerHeight) - 0.5;
+        });
+
+        // WebGL High Frequency Frame loop
+        function tick() {
+            if (!isZoomed) {
+                targetX += (mouseX * 0.4 - targetX) * 0.08;
+                targetY += (mouseY * 0.3 - targetY) * 0.08;
+                
+                buildingMesh.rotation.y = targetX;
+                buildingMesh.rotation.x = targetY;
+            }
+
+            // Smooth linear interpolation for Shader Morph Uniform Values
+            customMaterial.uniforms.uWireframeProgress.value += (targetWireframe - customMaterial.uniforms.uWireframeProgress.value) * 0.1;
+
+            renderer.render(scene, camera);
+            requestAnimationFrame(tick);
+        }
+        tick();
+
+
+        // ==========================================
+        // 2. MASTER GSAP SCROLLTRIGGER ENGINE
+        // ==========================================
+        const mm = gsap.matchMedia();
+
+        mm.add("(min-width: 768px)", () => {
+            // Master Timeline mapping 3D transformation steps to scroll position
+            const masterTimeline = gsap.timeline({
+                scrollTrigger: {
+                    trigger: "main",
+                    start: "top top",
+                    end: "bottom bottom",
+                    scrub: 1.2,
+                    invalidateOnRefresh: true
+                }
+            });
+
+            // Section 2 Transition: Offset position rightward & downscale specimen
+            masterTimeline.to(buildingMesh.position, { x: 2.2, y: -0.3, z: 0, ease: "power2.inOut" }, 0.1)
+                          .to(buildingMesh.scale, { x: 0.65, y: 0.65, z: 0.65, ease: "power2.inOut" }, 0.1);
+
+            // Section 3 Transition: Pin the view container and convert scroll inputs directly into 3D rotations
+            ScrollTrigger.create({
+                trigger: "#section-interactive",
+                start: "top top",
+                end: "+=120%",
+                pin: true,
+                scrub: true,
+                onUpdate: (self) => {
+                    if (!isZoomed) {
+                        buildingMesh.rotation.y = self.progress * Math.PI * 2;
+                    }
+                }
+            });
+
+            // Kinetic Typography Engine: Convert paragraph block text directly into sequential spans
+            const kineticText = document.getElementById('kinetic-text');
+            const characters = kineticText.textContent.trim().split("");
+            kineticText.textContent = "";
+            
+            characters.forEach(c => {
+                const span = document.createElement("span");
+                span.textContent = c;
+                span.className = "inline-block opacity-10 translate-y-2";
+                kineticText.appendChild(span);
+            });
+
+            gsap.to(kineticText.children, {
+                opacity: 1,
+                y: 0,
+                stagger: 0.015,
+                ease: "power3.out",
+                scrollTrigger: {
+                    trigger: kineticText,
+                    start: "top 75%",
+                    toggleActions: "play none none reverse"
+                }
+            });
+        });
+
+
+        // ==========================================
+        // 3. HOTSPOT & CAMERA RIG INTERACTIONS
+        // ==========================================
+        const popover = document.getElementById('info-popover');
+        const xrayIndicator = document.getElementById('xray-indicator');
+
+        document.getElementById('btn-zoom-penthouse').addEventListener('click', () => {
+            isZoomed = true;
+            popover.classList.remove('opacity-0', 'translate-x-12');
+            
+            gsap.to(camera.position, { x: 1.3, y: 1.2, z: 2.0, duration: 1.8, ease: "power4.inOut" });
+            gsap.to(buildingMesh.position, { x: 0, y: -0.8, z: 0, duration: 1.8, ease: "power4.inOut" });
+            gsap.to(buildingMesh.rotation, { x: -0.1, y: 0.4, z: 0, duration: 1.8, ease: "power4.inOut" });
+        });
+
+        document.getElementById('btn-reset-cam').addEventListener('click', () => {
+            popover.classList.add('opacity-0', 'translate-x-12');
+            
+            gsap.to(camera.position, { x: 0, y: 0, z: 5, duration: 1.4, ease: "power3.out", onComplete: () => { isZoomed = false; } });
+            gsap.to(buildingMesh.position, { x: 2.2, y: -0.3, z: 0, duration: 1.4, ease: "power3.out" });
+        });
+
+        document.getElementById('btn-toggle-xray').addEventListener('click', () => {
+            if (targetWireframe === 0) {
+                targetWireframe = 1.0;
+                xrayIndicator.classList.remove('bg-neutral-300');
+                xrayIndicator.classList.add('bg-red-500');
+            } else {
+                targetWireframe = 0.0;
+                xrayIndicator.classList.remove('bg-red-500');
+                xrayIndicator.classList.add('bg-neutral-300');
+            }
+        });
+
+
+        // ==========================================
+        // 4. GSAP FLIP PLUGIN LAYOUT FILTERS
+        // ==========================================
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        const floorCards = document.querySelectorAll('.floor-card');
+
+        filterButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Adjust Active Styling State
+                filterButtons.forEach(b => b.classList.remove('text-white', 'font-bold'));
+                btn.classList.add('text-white', 'font-bold');
+
+                const filterValue = btn.getAttribute('data-filter');
+
+                // Capture initial cached bounding boxes
+                const state = Flip.getState(floorCards);
+
+                // Modify actual layout state variables
+                floorCards.forEach(card => {
+                    if (filterValue === 'ALL' || card.getAttribute('data-type') === filterValue) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+
+                // Let Flip execute the transitional geometry interpolations natively
+                Flip.from(state, {
+                    duration: 0.7,
+                    ease: "power3.inOut",
+                    absolute: true,
+                    onEnter: elements => gsap.fromTo(elements, { opacity: 0, scale: 0.9 }, { opacity: 1, scale: 1, duration: 0.4 }),
+                    onLeave: elements => gsap.to(elements, { opacity: 0, scale: 0.8, duration: 0.3 })
+                });
+            });
+        });
+
+
+        // ==========================================
+        // 5. MAGNETIC UTILITY INTERACTION LOGIC
+        // ==========================================
+        const magneticBtn = document.getElementById('magnetic-btn');
+
+        magneticBtn.addEventListener('mousemove', (e) => {
+            const boundary = magneticBtn.getBoundingClientRect();
+            const localX = e.clientX - (boundary.left + boundary.width / 2);
+            const localY = e.clientY - (boundary.top + boundary.height / 2);
+
+            gsap.to(magneticBtn, {
+                x: localX * 0.4,
+                y: localY * 0.4,
+                duration: 0.3,
+                ease: "power2.out"
+            });
+        });
+
+        magneticBtn.addEventListener('mouseleave', () => {
+            gsap.to(magneticBtn, {
+                x: 0,
+                y: 0,
+                duration: 0.6,
+                ease: "elastic.out(1, 0.3)"
+            });
+        });
+
+
+        // ==========================================
+        // 6. GLOBAL WINDOW RE-SIZE STAGE HANDLING
+        // ==========================================
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+</html>
