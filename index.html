@@ -3,264 +3,401 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>THE MONOLITH // ABSOLUTE MOTION</title>
+    <title>VILLA MONOLITH // ARCHITECTURAL MANIFESTO</title>
     
+    <!-- Сверхнадежные CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
 
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500&family=Inter:wght@200;400;600&display=swap');
+        
         body { 
-            font-family: 'Space Grotesk', sans-serif; 
-            background-color: #0d0d0d; 
+            font-family: 'Inter', sans-serif; 
+            background-color: #0a0a0a; 
             color: #ffffff;
+            cursor: none; /* Прячем дефолтный курсор для кастомного экспириенса */
         }
-        /* Вспомогательный класс для плавной прокрутки */
-        .scroller-node { height: 100vh; width: 100%; display: flex; align-items: center; position: relative; }
+        .font-luxury { font-family: 'Cinzel', serif; }
+        .scroller-section { height: 100vh; width: 100%; display: flex; align-items: center; position: relative; }
+        
+        /* Процедурный пленочный шум на весь экран */
+        .grain-overlay {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+            opacity: 0.03; pointer-events: none; z-index: 999; mix-blend-mode: screen;
+        }
     </style>
 </head>
-<body class="overflow-x-hidden">
+<body class="overflow-x-hidden selection:bg-indigo-600 selection:text-white">
 
+    <!-- ЭФФЕКТЫ И КУРСОРЫ -->
+    <div class="grain-overlay"></div>
+    <div id="custom-cursor" class="fixed w-2 h-2 bg-white rounded-full pointer-events-none z-50 -translate-x-1/2 -translate-y-1/2 hidden md:block"></div>
+    <div id="custom-cursor-ring" class="fixed w-8 h-8 border border-white/30 rounded-full pointer-events-none z-50 -translate-x-1/2 -translate-y-1/2 transition-all duration-300 ease-out hidden md:block"></div>
+
+    <!-- ФИКСИРОВАННЫЙ КАНВАС ДЛЯ 3D ДОМА -->
     <canvas id="webgl-stage" class="fixed inset-0 w-full h-full pointer-events-none z-10"></canvas>
 
-    <nav class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-6 py-6 md:px-12 backdrop-blur-md bg-black/20">
-        <div class="text-lg tracking-widest font-bold text-white">M O N O L I T H</div>
-        <div class="text-xs uppercase tracking-widest text-neutral-400 border border-neutral-800 px-4 py-2 rounded-full">
-            Motion Engine Active
+    <!-- ПРЕМИАЛЬНЫЙ НАВИГАТОР -->
+    <header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-8 py-8 md:px-16 bg-gradient-to-b from-black/50 to-transparent">
+        <div class="font-luxury text-lg tracking-[0.3em] font-medium">MONOLITH.RESIDENCE</div>
+        <div class="hidden md:flex gap-16 text-[10px] uppercase tracking-[0.4em] font-light text-neutral-400">
+            <a href="#philosophy" class="hover:text-white transition-colors">Philosophy</a>
+            <a href="#blueprint" class="hover:text-white transition-colors">3D Inspector</a>
+            <a href="#spaces" class="hover:text-white transition-colors">Available Lots</a>
         </div>
-    </nav>
+        <div class="text-[10px] uppercase tracking-[0.3em] border-b border-white/30 pb-1 hover:border-white transition-colors cursor-pointer">Request Brochure</div>
+    </header>
 
-    <div class="fixed top-0 left-0 h-[4px] bg-indigo-500 z-50 w-0" id="progress-bar"></div>
+    <!-- ЛИНИЯ СКРОЛЛ-ПРОГРЕССА -->
+    <div class="fixed top-0 left-0 h-[3px] bg-gradient-to-r from-indigo-500 to-purple-500 z-50 w-0" id="progress-bar"></div>
 
+    <!-- КОНТЕНТНАЯ НАЧИНКА САЙТА -->
     <main class="relative z-20 w-full">
 
-        <section class="scroller-node justify-start px-6 md:px-24">
-            <div class="max-w-2xl z-30">
-                <h1 id="title-trigger" class="text-5xl md:text-8xl font-bold tracking-tight uppercase leading-none mb-6 text-transparent bg-clip-text bg-gradient-to-r from-white to-neutral-500">
-                    Hyper <br>Dynamics.
+        <!-- СЕКЦИЯ 1: ГЕРОЙ И ПЕРВОЕ ЗНАКОМСТВО -->
+        <section class="scroller-section justify-start px-8 md:px-24">
+            <div class="max-w-3xl z-30">
+                <span class="text-xs uppercase tracking-[0.5em] text-indigo-400 block mb-4">// Private Architectural Object</span>
+                <h1 id="hero-title" class="font-luxury text-5xl md:text-8xl font-light tracking-tight leading-none mb-8">
+                    Brutalist <br><span class="italic font-normal text-neutral-400">Poetry.</span>
                 </h1>
-                <p class="text-sm md:text-base text-neutral-400 max-w-sm font-light">
-                    Если ты видишь этот текст, значит скрипты загрузились. Начни скроллить вниз, чтобы согнуть пространство.
+                <p class="text-xs md:text-sm text-neutral-400 max-w-md font-light tracking-wide leading-relaxed mb-8">
+                    Концептуальная вилла, где монументальный монолитный бетон встречается с абсолютной прозрачностью панорамного стекла. Спроектировано для контекста тишины.
                 </p>
-                <div class="mt-12 text-xs uppercase tracking-widest text-indigo-400 animate-bounce">
-                    ↓ Листай активно вниз ↓
+                <div class="text-[10px] uppercase tracking-[0.3em] text-neutral-500 animate-pulse">
+                    ↓ Начните движение для инспекции формы
                 </div>
             </div>
         </section>
 
-        <section id="section-two" class="scroller-node justify-end px-6 md:px-24 bg-neutral-900/20">
-            <div class="max-w-xl text-right z-30">
-                <h2 id="text-stagger" class="text-3xl md:text-6xl font-bold uppercase mb-6 text-indigo-400">
-                    Смена орбиты камеры
+        <!-- СЕКЦИЯ 2: ФИЛОСОФИЯ (АНИМАЦИЯ ПОЯВЛЕНИЯ ТЕКСТА) -->
+        <section id="philosophy" class="scroller-section justify-end px-8 md:px-24 bg-neutral-950/40">
+            <div class="max-w-2xl text-right z-30">
+                <span class="text-xs uppercase tracking-[0.5em] text-neutral-500 block mb-6">// Spatial Concept</span>
+                <h2 id="stagger-text" class="font-luxury text-3xl md:text-5xl font-light leading-tight text-white mb-6">
+                    Мы убрали все лишние стены, чтобы позволить вечернему свету пронизывать дом насквозь.
                 </h2>
-                <p class="text-sm text-neutral-300">
-                    При входе в эту зону структура сдвигается, а свет начинает бешено вращаться вокруг главного монолита, меняя тени.
+                <p class="text-xs text-neutral-400 max-w-sm ml-auto font-light">
+                    Архитектурный сезон 2026 переосмысляет роскошь через объём, а не через декор. Чистая тектоника плит и гравитация.
                 </p>
             </div>
         </section>
 
-        <section id="section-three" class="scroller-node justify-start px-6 md:px-24">
-            <div class="max-w-md bg-black/60 p-8 border border-neutral-800 rounded-xl backdrop-blur-md z-30">
-                <h3 class="text-xl md:text-2xl font-bold uppercase mb-4">Инспекция узла</h3>
-                <p class="text-xs text-neutral-400 mb-6">
-                    Кликни по кнопкам ниже, чтобы запустить жесткую анимацию камеры через GSAP напрямую в WebGL-пространство.
+        <!-- СЕКЦИЯ 3: ИНТЕРФЕЙС УПРАВЛЕНИЯ КАМЕРОЙ ДОМА -->
+        <section id="blueprint" class="scroller-section justify-start px-8 md:px-24">
+            <div class="max-w-md bg-neutral-900/80 border border-neutral-800 p-8 rounded-2xl backdrop-blur-xl z-30 shadow-2xl">
+                <span class="text-xs uppercase tracking-[0.5em] text-indigo-400 block mb-2">03 // Interactive Model</span>
+                <h3 class="font-luxury text-2xl mb-4 font-light">Архитектурный разрез</h3>
+                <p class="text-xs leading-relaxed text-neutral-400 mb-8 tracking-wide">
+                    Управляйте фокусом камеры. Загляните внутрь мастер-спальни и гостиной зоны с консольным бассейном, изменив плотность материалов.
                 </p>
+                
                 <div class="flex flex-col gap-3">
-                    <button id="btn-snap" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs uppercase tracking-widest py-3 px-4 font-bold transition-all rounded">
-                        Ворваться в ядро (Zoom)
+                    <button id="ui-zoom-house" class="magnetic-target text-left px-5 py-4 text-[10px] uppercase tracking-[0.2em] border border-neutral-700 hover:border-indigo-500 rounded-lg transition-all flex justify-between items-center bg-black/40 group">
+                        <span class="group-hover:text-indigo-400 transition-colors">Сфокусировать гостиную</span>
+                        <span class="w-1.5 h-1.5 rounded-full bg-neutral-600 group-hover:bg-indigo-500 transition-colors"></span>
                     </button>
-                    <button id="btn-reset" class="border border-neutral-700 hover:border-white text-neutral-300 text-xs uppercase tracking-widest py-3 px-4 transition-all rounded">
-                        Отдалить камеру
+                    <button id="ui-xray-house" class="magnetic-target text-left px-5 py-4 text-[10px] uppercase tracking-[0.2em] border border-neutral-700 hover:border-purple-500 rounded-lg transition-all flex justify-between items-center bg-black/40 group">
+                        <span class="group-hover:text-purple-400 transition-colors">Включить X-Ray стен</span>
+                        <span id="xray-dot" class="w-1.5 h-1.5 rounded-full bg-neutral-600 transition-all"></span>
+                    </button>
+                    <button id="ui-reset-house" class="text-center text-[9px] uppercase tracking-[0.3em] text-neutral-500 hover:text-white mt-4 underline transition-colors">
+                        Сбросить ракурс
                     </button>
                 </div>
             </div>
         </section>
 
-        <section class="scroller-node justify-center text-center px-6">
-            <div class="z-30">
-                <h2 class="text-4xl md:text-7xl font-bold uppercase tracking-widest mb-4 text-white">Конец петли</h2>
-                <p class="text-xs text-neutral-500 uppercase tracking-widest">Цикл завершен. Прокрути обратно наверх.</p>
+        <!-- СЕКЦИЯ 4: ФИЛЬТРАЦИЯ ДОСТУПНЫХ ПРОСТРАНСТВ -->
+        <section id="spaces" class="min-h-screen w-full bg-neutral-950 py-32 px-8 md:px-24 relative z-30">
+            <div class="max-w-6xl mx-auto">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-end border-b border-neutral-800 pb-8 mb-16 gap-6">
+                    <div>
+                        <span class="text-xs uppercase tracking-[0.5em] text-indigo-400 block mb-2">04 // Spatial Matrix</span>
+                        <h2 class="font-luxury text-4xl md:text-5xl font-light">Доступные блоки виллы</h2>
+                    </div>
+                    <!-- Интерактивные Табы -->
+                    <div class="flex gap-8 text-[10px] uppercase tracking-[0.3em] text-neutral-500">
+                        <button data-filter="ALL" class="filter-btn text-white font-bold border-b border-white pb-1 transition-all">Все</button>
+                        <button data-filter="LIVING" class="filter-btn hover:text-white pb-1 transition-all">Жилые зоны</button>
+                        <button data-filter="LOUNGE" class="filter-btn hover:text-white pb-1 transition-all">Террасы</button>
+                    </div>
+                </div>
+
+                <!-- Сетка карточек -->
+                <div id="lots-grid" class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <!-- Карточка 1 -->
+                    <div data-type="LIVING" class="lot-card group border border-neutral-900 bg-neutral-900/20 p-8 rounded-xl transition-all duration-500 hover:border-neutral-700 overflow-hidden relative">
+                        <span class="text-[10px] text-indigo-400 font-mono">LOT // 01</span>
+                        <h4 class="font-luxury text-2xl mt-4 mb-2 font-light">Grand Atrium</h4>
+                        <p class="text-xs text-neutral-400 font-light mb-12">Двухуровневая гостиная с высотой потолков 6 метров и камином из дикого камня.</p>
+                        <div class="text-[10px] uppercase tracking-widest text-neutral-500 group-hover:text-white transition-colors">420 M² — Доступно</div>
+                    </div>
+                    <!-- Карточка 2 -->
+                    <div data-type="LIVING" class="lot-card group border border-neutral-900 bg-neutral-900/20 p-8 rounded-xl transition-all duration-500 hover:border-neutral-700 overflow-hidden relative">
+                        <span class="text-[10px] text-indigo-400 font-mono">LOT // 02</span>
+                        <h4 class="font-luxury text-2xl mt-4 mb-2 font-light">Master Suite</h4>
+                        <p class="text-xs text-neutral-400 font-light mb-12">Парящая консольная спальня на втором уровне с персональным выходом к бассейну.</p>
+                        <div class="text-[10px] uppercase tracking-widest text-neutral-500 group-hover:text-white transition-colors">180 M² — Забронировано</div>
+                    </div>
+                    <!-- Карточка 3 -->
+                    <div data-type="LOUNGE" class="lot-card group border border-neutral-900 bg-neutral-900/20 p-8 rounded-xl transition-all duration-500 hover:border-neutral-700 overflow-hidden relative">
+                        <span class="text-[10px] text-purple-400 font-mono">LOT // 03</span>
+                        <h4 class="font-luxury text-2xl mt-4 mb-2 font-light">Sky Terrace</h4>
+                        <p class="text-xs text-neutral-400 font-light mb-12">Эксплуатируемая кровля со встроенной лаунж-зоной, скрытой от внешних глаз.</p>
+                        <div class="text-[10px] uppercase tracking-widest text-neutral-500 group-hover:text-white transition-colors">250 M² — Доступно</div>
+                    </div>
+                </div>
             </div>
         </section>
-
     </main>
 
+    <!-- СЦЕНАРИИ ИНТЕРАКТИВА, АНИМАЦИИ И THREE.JS -->
     <script>
         gsap.registerPlugin(ScrollTrigger);
 
         // ==========================================
-        // 1. НАСТРОЙКА И АВТО-АНИМАЦИЯ THREE.JS
+        // 1. ПОСТРОЕНИЕ 3D МОДЕЛИ СОВРЕМЕННОГО ДОМА
         // ==========================================
         const canvas = document.querySelector('#webgl-stage');
         const scene = new THREE.Scene();
-        
-        // Туман для кинематографичности атмосферы
-        scene.fog = new THREE.FogExp2('#0d0d0d', 0.15);
+        scene.fog = new THREE.FogExp2('#0a0a0a', 0.12);
 
         const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
-        camera.position.set(0, 0, 6);
+        camera.position.set(0, 0.5, 7);
 
         const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-        // Создаем сложную геометрическую группу (Монолит + кольца вокруг него)
-        const masterGroup = new THREE.Group();
-        scene.add(masterGroup);
+        // Мастер-группа нашего архитектурного объекта
+        const houseGroup = new THREE.Group();
+        scene.add(houseGroup);
 
-        // Главный столб (Светящийся глянец)
-        const coreGeo = new THREE.BoxGeometry(1.2, 3.0, 1.2);
-        const coreMat = new THREE.MeshStandardMaterial({ 
-            color: '#312e81', 
-            roughness: 0.1, 
-            metalness: 0.8,
-            wireframe: false 
-        });
-        const coreMesh = new THREE.Mesh(coreGeo, coreMat);
-        masterGroup.add(coreMesh);
+        // МАТЕРИАЛЫ
+        const concreteMaterial = new THREE.MeshStandardMaterial({ color: '#555555', roughness: 0.5, metalness: 0.2 });
+        const darkPlasterMaterial = new THREE.MeshStandardMaterial({ color: '#222222', roughness: 0.7, metalness: 0.1 });
+        const glassMaterial = new THREE.MeshStandardMaterial({ color: '#a5f3fc', roughness: 0.05, metalness: 0.9, transparent: true, opacity: 0.4 });
+        const poolMaterial = new THREE.MeshStandardMaterial({ color: '#06b6d4', roughness: 0.1, metalness: 0.5 });
 
-        // Внешний каркас (Решетка для жесткого визуального объема)
-        const frameGeo = new THREE.BoxGeometry(1.25, 3.05, 1.25);
-        const frameMat = new THREE.MeshBasicMaterial({ 
-            color: '#4f46e5', 
-            wireframe: true,
-            transparent: true,
-            opacity: 0.4
-        });
-        const frameMesh = new THREE.Mesh(frameGeo, frameMat);
-        masterGroup.add(frameMesh);
-
-        // Парящие вокруг спутники (кубы)
-        const satGroup = new THREE.Group();
-        masterGroup.add(satGroup);
+        // СБОРКА ДОМА ИЗ АРХИТЕКТУРНЫХ ПЛИТ
         
-        const satGeo = new THREE.BoxGeometry(0.3, 0.3, 0.3);
-        const satMat = new THREE.MeshStandardMaterial({ color: '#ffffff', roughness: 0.2 });
-        
-        for(let i = 0; i < 8; i++) {
-            const sat = new THREE.Mesh(satGeo, satMat);
-            sat.position.set(
-                Math.sin(i * Math.PI / 4) * 1.8,
-                (Math.random() - 0.5) * 2,
-                Math.cos(i * Math.PI / 4) * 1.8
-            );
-            satGroup.add(sat);
-        }
+        // 1. СТИЛОБАТ (Главная бетонная плита-основание)
+        const baseGeo = new THREE.BoxGeometry(3.5, 0.1, 3.5);
+        const baseMesh = new THREE.Mesh(baseGeo, concreteMaterial);
+        baseMesh.position.y = -0.8;
+        houseGroup.add(baseMesh);
 
-        // Свет
-        const ambientLight = new THREE.AmbientLight('#ffffff', 0.3);
+        // 2. БАССЕЙН (Встроенный в стилобат)
+        const poolGeo = new THREE.BoxGeometry(1.2, 0.02, 1.8);
+        const poolMesh = new THREE.Mesh(poolGeo, poolMaterial);
+        poolMesh.position.set(1.0, -0.74, 0.6);
+        houseGroup.add(poolMesh);
+
+        // 3. ПЕРВЫЙ ЭТАЖ (Бруталистский блок слева)
+        const firstFloorGeo = new THREE.BoxGeometry(1.6, 0.8, 2.0);
+        const firstFloor = new THREE.Mesh(firstFloorGeo, concreteMaterial);
+        firstFloor.position.set(-0.6, -0.4, 0);
+        houseGroup.add(firstFloor);
+
+        // 4. ВТОРОЙ ЭТАЖ (Консольно парящий сдвинутый объем)
+        const secondFloorGeo = new THREE.BoxGeometry(2.2, 0.7, 1.6);
+        const secondFloor = new THREE.Mesh(secondFloorGeo, darkPlasterMaterial);
+        secondFloor.position.set(0.2, 0.35, -0.2);
+        houseGroup.add(secondFloor);
+
+        // 5. ПАНОРАМНОЕ ОСТЕКЛЕНИЕ (Фасад гостиной первого этажа)
+        const glassGeo = new THREE.BoxGeometry(1.4, 0.76, 0.05);
+        const glassFacade = new THREE.Mesh(glassGeo, glassMaterial);
+        glassFacade.position.set(0.5, -0.42, 0.8);
+        houseGroup.add(glassFacade);
+        
+        // Остекление второго этажа
+        const glassGeo2 = new THREE.BoxGeometry(1.5, 0.66, 0.05);
+        const glassFacade2 = new THREE.Mesh(glassGeo2, glassMaterial);
+        glassFacade2.position.set(0.2, 0.35, 0.6);
+        houseGroup.add(glassFacade2);
+
+        // 6. ПЛОСКАЯ КРОВЕЛЬНАЯ ПЛИТА (Навес)
+        const roofGeo = new THREE.BoxGeometry(2.4, 0.06, 1.8);
+        const roof = new THREE.Mesh(roofGeo, concreteMaterial);
+        roof.position.set(0.2, 0.73, -0.2);
+        houseGroup.add(roof);
+
+        // СВЕТОВОЙ СЦЕНАРИЙ (Создает глубокие тектоничные тени)
+        const ambientLight = new THREE.AmbientLight('#ffffff', 0.4);
         scene.add(ambientLight);
 
-        const pointLight = new THREE.PointLight('#4f46e5', 3, 15);
-        pointLight.position.set(3, 4, 3);
-        scene.add(pointLight);
+        const sunLight = new THREE.DirectionalLight('#ffffff', 1.8);
+        sunLight.position.set(5, 8, 3);
+        scene.add(sunLight);
 
-        const flashLight = new THREE.DirectionalLight('#ffffff', 1.5);
-        flashLight.position.set(-3, 3, 2);
-        scene.add(flashLight);
+        const interiorLight = new THREE.PointLight('#f59e0b', 2, 5); // Теплый свет из окон гостиной
+        interiorLight.position.set(0.5, -0.4, 0.5);
+        scene.add(interiorLight);
 
-        // Флаг блокировки мыши при активном клик-зуме
-        let isZoomed = false;
-
-        // ПОСТОЯННАЯ НЕПРЕРЫВНАЯ АНИМАЦИЯ (РАБОТАЕТ ВСЕГДА)
+        // ==========================================
+        // 2. НЕПРЕРЫВНЫЙ КАДРОВЫЙ ДВИЖОК (TICK RENDERING)
+        // ==========================================
         const clock = new THREE.Clock();
-        
-        function tick() {
-            const elapsedTime = clock.getElapsedTime();
+        let isUserInspecting = false;
+        let mouseX = 0, mouseY = 0, targetX = 0, targetY = 0;
 
-            // 1. Базовое непрерывное вращение и левитация (breathtaking эффект)
-            if (!isZoomed) {
-                masterGroup.rotation.y = elapsedTime * 0.3;
-                masterGroup.position.y = Math.sin(elapsedTime * 1.5) * 0.15; // Качается вверх-вниз
+        window.addEventListener('mousemove', (e) => {
+            mouseX = (e.clientX / window.innerWidth) - 0.5;
+            mouseY = (e.clientY / window.innerHeight) - 0.5;
+        });
+
+        function animateFrame() {
+            const time = clock.getElapsedTime();
+
+            if (!isUserInspecting) {
+                // Плавное парение дома в невесомости (Эффект дорогой живой презентации)
+                houseGroup.position.y = Math.sin(time * 1.2) * 0.08;
+                
+                // Инерционный наклон за курсором мыши
+                targetX += (mouseX * 0.4 - targetX) * 0.05;
+                targetY += (mouseY * 0.3 - targetY) * 0.05;
+                houseGroup.rotation.y = time * 0.15 + targetX;
+                houseGroup.rotation.x = targetY;
             }
 
-            // 2. Вращение спутников в противоположную сторону
-            satGroup.rotation.y = -elapsedTime * 0.5;
-
-            // 3. Динамический пульсирующий свет
-            pointLight.position.x = Math.sin(elapsedTime * 2) * 4;
-            pointLight.position.z = Math.cos(elapsedTime * 2) * 4;
+            // Легкая пульсация интерьерного света виллы
+            interiorLight.intensity = 1.5 + Math.sin(time * 3.0) * 0.5;
 
             renderer.render(scene, camera);
-            requestAnimationFrame(tick);
+            requestAnimationFrame(animateFrame);
         }
-        tick();
+        requestAnimationFrame(animateFrame);
 
 
         // ==========================================
-        // 2. СВЯЗКА С СКРОЛЛОМ ЧЕРЕЗ GSAP С КРУТЫМИ ЭФФЕКТАМИ
+        // 3. GSAP СКРОЛЛ-ДИРЕКЦИЯ ДЛЯ 3D СЦЕНЫ
         // ==========================================
         
-        // Прогресс-бар сверху страницы
+        // Индикатор чтения сверху
         gsap.to("#progress-bar", {
-            width: "100%",
-            ease: "none",
-            scrollTrigger: { scrub: 0.3, trigger: "main", start: "top top", end: "bottom bottom" }
+            width: "100%", ease: "none",
+            scrollTrigger: { trigger: "main", start: "top top", end: "bottom bottom", scrub: 0.2 }
         });
 
-        // Анимация 1: При скролле первого экрана Монолит улетает в угол и уменьшается
-        gsap.to(masterGroup.position, {
-            x: 1.8,
-            z: -1,
+        // Полёт дома к правой части экрана при переходе ко второй секции
+        gsap.to(houseGroup.position, {
+            x: 1.6, z: -0.5,
             scrollTrigger: {
-                trigger: "#section-two",
-                start: "top bottom",
-                end: "top top",
-                scrub: 1
+                trigger: "#philosophy", start: "top bottom", end: "top top", scrub: 1
             }
         });
 
-        // Анимация 2: Появление текста во второй секции со сдвигом
-        gsap.from("#text-stagger", {
-            x: 150,
-            opacity: 0,
-            scale: 0.8,
-            duration: 1,
-            scrollTrigger: {
-                trigger: "#section-two",
-                start: "top 70%",
-                toggleActions: "play none none reverse"
-            }
+        // Посимвольное проявление манифеста (Section 2)
+        const txt = document.getElementById('stagger-text');
+        const splitLetters = txt.textContent.trim().split("");
+        txt.textContent = "";
+        splitLetters.forEach(l => {
+            const span = document.createElement("span");
+            span.textContent = l;
+            span.className = "inline-block opacity-10 translate-y-2 transition-all";
+            txt.appendChild(span);
         });
 
-        // Анимация 3: Принудительное жесткое вращение Монолита на 360 градусов во время прохождения 3 секции
-        gsap.to(masterGroup.rotation, {
-            z: Math.PI * 2,
-            scrollTrigger: {
-                trigger: "#section-three",
-                start: "top bottom",
-                end: "bottom top",
-                scrub: 1
-            }
+        gsap.to(txt.children, {
+            opacity: 1, y: 0, stagger: 0.01, ease: "power2.out",
+            scrollTrigger: { trigger: "#philosophy", start: "top 65%", toggleActions: "play none none reverse" }
         });
 
 
         // ==========================================
-        // 3. ИНТЕРАКТИВНЫЕ ОН-КЛИК АНИМАЦИИ (ТРИГГЕРЫ)
+        // 4. ТРИГГЕРЫ ИНСПЕКТОРА (КНОПКИ КЛИКА)
         // ==========================================
-        document.getElementById('btn-snap').addEventListener('click', () => {
-            isZoomed = true;
-            
-            // Жесткий налет камеры прямо в лицо объекту с упругим затуханием (Ease)
-            gsap.to(camera.position, { x: 0, y: 0, z: 2.2, duration: 1.5, ease: "power4.inOut" });
-            gsap.to(masterGroup.position, { x: 0, y: 0, z: 0, duration: 1.5, ease: "power4.inOut" });
-            gsap.to(masterGroup.rotation, { x: 0.5, y: 0.5, z: 0, duration: 1.5, ease: "power4.inOut" });
-            
-            // Красим материал в агрессивный красный цвет на лету
-            gsap.to(coreMat.color, { r: 1, g: 0, b: 0, duration: 0.5 });
+        let isXrayActive = false;
+
+        document.getElementById('ui-zoom-house').addEventListener('click', () => {
+            isUserInspecting = true;
+            // Кинематографичный фокус через панорамное стекло в интерьер
+            gsap.to(camera.position, { x: 0.5, y: -0.2, z: 2.2, duration: 2.0, ease: "power4.inOut" });
+            gsap.to(houseGroup.rotation, { x: 0.1, y: 0.4, z: 0, duration: 2.0, ease: "power4.inOut" });
+            gsap.to(houseGroup.position, { x: 0, y: 0, z: 0, duration: 2.0, ease: "power4.inOut" });
         });
 
-        document.getElementById('btn-reset').addEventListener('click', () => {
-            // Возвращаем все параметры камеры и цвета в исходное состояние
-            gsap.to(camera.position, { x: 0, y: 0, z: 6, duration: 1.2, ease: "power3.out", onComplete: () => { isZoomed = false; } });
-            gsap.to(masterGroup.position, { x: 1.8, y: 0, z: -1, duration: 1.2, ease: "power3.out" });
-            gsap.to(coreMat.color, { r: 0.19, g: 0.18, b: 0.5, duration: 1.2 });
+        document.getElementById('ui-xray-house').addEventListener('click', () => {
+            const dot = document.getElementById('xray-dot');
+            if(!isXrayActive) {
+                isXrayActive = true;
+                dot.className = "w-1.5 h-1.5 rounded-full bg-purple-500 shadow-[0_0_8px_#a855f7]";
+                // Делаем бетонные блоки прозрачными, обнажая структуру
+                gsap.to([concreteMaterial, darkPlasterMaterial], { opacity: 0.25, transparent: true, duration: 0.6 });
+            } else {
+                isXrayActive = false;
+                dot.className = "w-1.5 h-1.5 rounded-full bg-neutral-600";
+                gsap.to([concreteMaterial, darkPlasterMaterial], { opacity: 1, transparent: false, duration: 0.6 });
+            }
+        });
+
+        document.getElementById('ui-reset-house').addEventListener('click', () => {
+            gsap.to(camera.position, { x: 0, y: 0.5, z: 7, duration: 1.5, ease: "power3.out", onComplete: () => { isUserInspecting = false; } });
+            gsap.to(houseGroup.position, { x: 1.6, y: 0, z: -0.5, duration: 1.5, ease: "power3.out" });
         });
 
 
-        // Поддержка адаптивности окон
+        // ==========================================
+        // 5. ИНТЕЛЛЕКТУАЛЬНЫЙ ФИЛЬТР ЛОТОВ (ЛОГИКА САЙТА)
+        // ==========================================
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        const lotCards = document.querySelectorAll('.lot-card');
+
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                filterBtns.forEach(b => b.className = "filter-btn hover:text-white pb-1 transition-all");
+                btn.className = "filter-btn text-white font-bold border-b border-white pb-1 transition-all";
+
+                const targetType = btn.getAttribute('data-filter');
+
+                lotCards.forEach(card => {
+                    const cardType = card.getAttribute('data-type');
+                    if (targetType === 'ALL' || cardType === targetType) {
+                        gsap.to(card, { opacity: 1, scale: 1, y: 0, duration: 0.4, display: 'block' });
+                    } else {
+                        gsap.to(card, { opacity: 0, scale: 0.9, y: 20, duration: 0.3, display: 'none' });
+                    }
+                });
+            });
+        });
+
+
+        // ==========================================
+        // 6. ИНЕРЦИОННЫЙ СЛЕД КУРСОРОВ И МАГНИТЫ
+        // ==========================================
+        const cDot = document.getElementById('custom-cursor');
+        const cRing = document.getElementById('custom-cursor-ring');
+        const magnets = document.querySelectorAll('.magnetic-target');
+
+        window.addEventListener('mousemove', (e) => {
+            gsap.to(cDot, { x: e.clientX, y: e.clientY, duration: 0.05 });
+            gsap.to(cRing, { x: e.clientX, y: e.clientY, duration: 0.25 }); // Эффект приятного лага кольца
+        });
+
+        magnets.forEach(m => {
+            m.addEventListener('mousemove', (e) => {
+                const rect = m.getBoundingClientRect();
+                const x = e.clientX - (rect.left + rect.width / 2);
+                const y = e.clientY - (rect.top + rect.height / 2);
+
+                gsap.to(m, { x: x * 0.3, y: y * 0.3, duration: 0.3 });
+                cRing.style.transform = 'translate(-50%, -50%) scale(1.5)';
+                cRing.style.borderColor = '#818cf8';
+            });
+            m.addEventListener('mouseleave', () => {
+                gsap.to(m, { x: 0, y: 0, duration: 0.6, ease: "elastic.out(1, 0.4)" });
+                cRing.style.transform = 'translate(-50%, -50%) scale(1)';
+                cRing.style.borderColor = 'rgba(255,255,255,0.3)';
+            });
+        });
+
+        // Адаптивность дисплея
         window.addEventListener('resize', () => {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
