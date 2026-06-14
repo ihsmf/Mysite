@@ -3,413 +3,360 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VILLA MONOLITH // PRIVATE RESIDENCE EXHIBIT</title>
-    
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
-
+    <title>LUXURY ESTATE | Горная Резиденция</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Inter:wght@200;300;400;500;600&display=swap');
-        
-        body { 
-            font-family: 'Inter', sans-serif; 
-            background-color: #08080a;
-            color: #ffffff;
-            cursor: none;
-        }
-        .font-luxury { font-family: 'Cinzel', serif; }
-        .scroller-section { height: 100vh; width: 100%; display: flex; align-items: center; position: relative; }
-        
-        .grain-overlay {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
-            opacity: 0.02; pointer-events: none; z-index: 999; mix-blend-mode: screen;
+        :root {
+            --glass: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.15);
+            --accent: #d4af37; /* Gold */
+            --text: #ffffff;
         }
 
-        .contour-text {
-            stroke-dasharray: 900;
-            stroke-dashoffset: 900;
-            animation: laserRun 6s linear infinite;
-        }
-        @keyframes laserRun {
-            to { stroke-dashoffset: 0; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
-        #aura-wrapper {
+        body {
+            background: #000;
+            color: var(--text);
+            font-family: 'Montserrat', sans-serif;
+            overflow-x: hidden;
+            height: 500vh; /* Управляет "длиной" скролла видео */
+        }
+
+        /* Видео бэкграунд */
+        #video-container {
             position: fixed;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            width: 100vw;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            z-index: -1;
+        }
+
+        #bg-video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.7));
+            z-index: 0;
+        }
+
+        /* Навигация */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 30px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 24px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        /* Секции контента */
+        section {
+            position: relative;
             height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            pointer-events: none;
-            z-index: 5;
+            padding: 0 10%;
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 0.8s ease-out;
         }
 
-        #premium-aura {
-            width: 50vw;
-            height: 50vw;
-            max-width: 700px;
-            max-height: 700px;
-            background: radial-gradient(circle, 
-                rgba(99, 102, 241, 0.9) 0%, 
-                rgba(168, 85, 247, 0.6) 40%, 
-                rgba(236, 72, 153, 0.2) 70%, 
-                transparent 85%);
-            filter: blur(60px);
-            border-radius: 50%;
-            opacity: 0.85;
-            animation: auraMorph 8s infinite alternate ease-in-out;
+        section.active {
+            opacity: 1;
+            transform: translateY(0);
         }
 
-        @keyframes auraMorph {
-            0% { filter: blur(50px) hue-rotate(0deg); border-radius: 50% 45% 55% 40%; transform: scale(0.95); }
-            50% { filter: blur(80px) hue-rotate(180deg); border-radius: 40% 55% 45% 50%; transform: scale(1.05); }
-            100% { filter: blur(50px) hue-rotate(360deg); border-radius: 50% 45% 55% 40%; transform: scale(0.95); }
-        }
-
-        /* АНИМИРОВАННЫЕ БЕГАЮЩИЕ ПОЛОСКИ (СТРУКТУРНАЯ СЕТКА) */
-        .background-lines {
-            position: fixed;
-            top: 0; left: 0; width: 100vw; height: 100vh;
-            z-index: 2; /* За 3D моделью и аурой */
-            pointer-events: none;
-            display: flex;
-            justify-content: space-evenly;
-        }
-        .background-lines .line {
-            width: 1px;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.03); /* Тусклая база линии */
+        /* Стеклянные карточки */
+        .glass-card {
+            background: var(--glass);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
             position: relative;
             overflow: hidden;
         }
-        .background-lines .line::after {
+
+        .glass-card::before {
             content: '';
-            display: block;
             position: absolute;
-            top: -50%; left: 0;
-            width: 100%; height: 25vh; /* Длина бегающего "отрывка" */
-            background: linear-gradient(to bottom, transparent, rgba(99, 102, 241, 0.8), transparent);
-            animation: runDown 5s infinite linear;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(212,175,55,0.1) 0%, transparent 70%);
+            z-index: -1;
         }
-        @keyframes runDown {
-            0% { top: -30%; }
-            100% { top: 120%; }
+
+        h1, h2 {
+            font-family: 'Playfair Display', serif;
+            margin-bottom: 20px;
+            font-size: 3rem;
         }
-        /* Разная скорость и задержка для каждой линии, чтобы выглядело органично */
-        .background-lines .line:nth-child(1)::after { animation-delay: 0s; animation-duration: 6s; }
-        .background-lines .line:nth-child(2)::after { animation-delay: 2s; animation-duration: 4s; }
-        .background-lines .line:nth-child(3)::after { animation-delay: 4s; animation-duration: 7s; }
-        .background-lines .line:nth-child(4)::after { animation-delay: 1s; animation-duration: 5s; }
-        .background-lines .line:nth-child(5)::after { animation-delay: 3s; animation-duration: 8s; }
+
+        p {
+            line-height: 1.6;
+            font-weight: 300;
+            font-size: 1.1rem;
+            margin-bottom: 25px;
+        }
+
+        .accent-text {
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            font-size: 0.8rem;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        /* Сетка характеристик */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .feature-item {
+            padding: 15px;
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            background: rgba(255,255,255,0.03);
+            transition: 0.3s;
+            cursor: pointer;
+        }
+
+        .feature-item:hover {
+            background: rgba(212,175,55,0.1);
+            border-color: var(--accent);
+            transform: scale(1.05);
+        }
+
+        /* Кнопка */
+        .btn {
+            display: inline-block;
+            padding: 15px 40px;
+            border: 1px solid var(--accent);
+            color: #fff;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 0.9rem;
+            transition: 0.4s;
+            background: transparent;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn:hover {
+            background: var(--accent);
+            color: #000;
+            box-shadow: 0 0 20px var(--accent);
+        }
+
+        /* Индикатор скролла */
+        .scroll-indicator {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+            opacity: 0.6;
+            text-align: center;
+        }
+
+        .mouse {
+            width: 25px;
+            height: 40px;
+            border: 2px solid white;
+            border-radius: 20px;
+            margin: 0 auto 10px;
+            position: relative;
+        }
+
+        .mouse::after {
+            content: '';
+            width: 4px;
+            height: 8px;
+            background: white;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            top: 8px;
+            border-radius: 2px;
+            animation: scroll 1.5s infinite;
+        }
+
+        @keyframes scroll {
+            0% { opacity: 1; top: 8px; }
+            100% { opacity: 0; top: 20px; }
+        }
+
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            h1 { font-size: 2rem; }
+            .glass-card { margin: 20px; padding: 25px; }
+            nav { padding: 20px; }
+        }
     </style>
 </head>
-<body class="overflow-x-hidden selection:bg-indigo-600 selection:text-white">
+<body>
 
-    <div class="grain-overlay"></div>
-    
-    <div class="background-lines">
-        <div class="line"></div>
-        <div class="line"></div>
-        <div class="line"></div>
-        <div class="line"></div>
-        <div class="line"></div>
-    </div>
-    
-    <div id="custom-cursor" class="fixed w-2 h-2 bg-white rounded-full pointer-events-none z-50 -translate-x-1/2 -translate-y-1/2 hidden md:block"></div>
-    <div id="custom-cursor-ring" class="fixed w-9 h-9 border border-white/20 rounded-full pointer-events-none z-50 -translate-x-1/2 -translate-y-1/2 transition-all duration-300 ease-out hidden md:block"></div>
+    <nav>
+        <div class="logo">Estate.Royal</div>
+        <a href="#" class="btn" style="padding: 10px 25px; font-size: 0.7rem;">Забронировать просмотр</a>
+    </nav>
 
-    <div id="aura-wrapper">
-        <div id="premium-aura"></div>
+    <div id="video-container">
+        <video id="bg-video" muted playsinline preload="auto">
+            <!-- ЗАМЕНИТЕ НА ВАШ ФАЙЛ -->
+            <source src="video.mp4" type="video/mp4">
+            Ваш браузер не поддерживает видео.
+        </video>
+        <div class="overlay"></div>
     </div>
 
-    <canvas id="webgl-stage" class="fixed inset-0 w-full h-full pointer-events-none z-10"></canvas>
+    <!-- Индикатор -->
+    <div class="scroll-indicator">
+        <div class="mouse"></div>
+        <span>Листайте вниз</span>
+    </div>
 
-    <header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-8 py-8 md:px-16 bg-gradient-to-b from-[#08080a]/90 to-transparent backdrop-blur-[2px]">
-        <div class="font-luxury text-sm tracking-[0.5em] font-semibold text-white">MONOLITH.ESTATE</div>
-        <div class="hidden md:flex gap-16 text-[10px] uppercase tracking-[0.4em] font-medium text-neutral-400">
-            <a href="#philosophy" class="hover:text-white transition-colors">Архитектура</a>
-            <a href="#spaces" class="hover:text-white transition-colors">Каталог лотов</a>
+    <!-- Секция 1: Приветствие -->
+    <section id="hero">
+        <div class="glass-card">
+            <span class="accent-text">Exclusive Location</span>
+            <h1>Гармония в скалах</h1>
+            <p>Добро пожаловать в резиденцию, где современная архитектура встречается с величием нетронутой природы. Панорамные виды, которые меняют сознание.</p>
+            <a href="#about" class="btn">Исследовать</a>
         </div>
-        <div class="text-[10px] uppercase tracking-[0.3em] font-semibold border-b border-white/30 pb-1 hover:border-white transition-colors cursor-pointer text-indigo-400">Связаться с брокером</div>
-    </header>
+    </section>
 
-    <div class="fixed top-0 left-0 h-[2px] bg-gradient-to-r from-indigo-500 to-purple-500 z-50 w-0" id="progress-bar"></div>
-
-    <main class="relative z-20 w-full">
-
-        <section class="scroller-section justify-center text-center px-4">
-            <div class="max-w-4xl z-30 pointer-events-none select-none">
-                <span class="text-[10px] uppercase tracking-[0.8em] text-indigo-400 block mb-2 font-semibold">REDEFINE ULTRALUXURY // REVERSED NODES</span>
-                
-                <svg viewBox="0 0 950 160" class="w-full max-w-3xl mx-auto mb-4">
-                    <text x="50%" y="75%" text-anchor="middle" class="contour-text font-luxury text-7xl md:text-8xl tracking-[0.12em] font-light fill-transparent stroke-white stroke-[1.2px]">
-                        MONOLITH
-                    </text>
-                </svg>
-
-                <h2 class="font-luxury text-xs md:text-sm tracking-[0.5em] text-neutral-400 font-light -mt-2">
-                    РЕЗИДЕНЦИИ НОВОГО ПОКОЛЕНИЯ С ИНТЕГРИРОВАННЫМ ИИ
-                </h2>
-            </div>
-            
-            <div class="absolute bottom-12 left-12 hidden md:block text-[9px] font-mono tracking-widest text-neutral-500 uppercase">
-                LOC: CORAL RIDGE // PRIVATE APP
-            </div>
-            <div class="absolute bottom-12 right-12 hidden md:block text-[9px] font-mono tracking-widest text-neutral-500 uppercase">
-                STATUS: PRE-MARKET INVESTMENTS
-            </div>
-        </section>
-
-        <section id="philosophy" class="scroller-section justify-between px-8 md:px-24">
-            <div class="w-full grid grid-cols-1 md:grid-cols-2 pointer-events-none z-30">
-                <div class="max-w-xs backdrop-blur-md bg-neutral-900/40 p-6 rounded-2xl border border-neutral-800 shadow-xl">
-                    <span class="text-[10px] uppercase tracking-[0.5em] text-indigo-400 block mb-3 font-semibold">01 // МАСШТАБ ОБЪЕКТА</span>
-                    <p class="text-xs text-neutral-300 leading-relaxed font-light">
-                        Вилла общей площадью 1,450 м² разворачивается по центральной оси. Модель 3D идеально масштабируется для показа геометрии.
-                    </p>
+    <!-- Секция 2: Характеристики -->
+    <section id="specs">
+        <div class="glass-card">
+            <span class="accent-text">Architecture & Space</span>
+            <h2>Превосходство в деталях</h2>
+            <div class="features-grid">
+                <div class="feature-item">
+                    <h4 style="color: var(--accent);">1,200 м²</h4>
+                    <p style="font-size: 0.8rem; margin: 0;">Общая площадь</p>
                 </div>
-                <div class="max-w-xs justify-self-end text-right backdrop-blur-md bg-neutral-900/40 p-6 rounded-2xl border border-neutral-800 shadow-xl mt-32 md:mt-0">
-                    <span class="text-[10px] uppercase tracking-[0.5em] text-purple-400 block mb-3 font-semibold">02 // МАТЕРИАЛЫ КЛАССА ААА</span>
-                    <p class="text-xs text-neutral-300 leading-relaxed font-light">
-                        Архитектурный монолитный бетон, бескаркасное структурное остекление Sky-Frame (Швейцария) и панели из натурального обожженного кедра.
-                    </p>
+                <div class="feature-item">
+                    <h4 style="color: var(--accent);">Infinity</h4>
+                    <p style="font-size: 0.8rem; margin: 0;">Бассейн с подогревом</p>
+                </div>
+                <div class="feature-item">
+                    <h4 style="color: var(--accent);">5 Спален</h4>
+                    <p style="font-size: 0.8rem; margin: 0;">С террасами</p>
+                </div>
+                <div class="feature-item">
+                    <h4 style="color: var(--accent);">Smart</h4>
+                    <p style="font-size: 0.8rem; margin: 0;">Система управления</p>
                 </div>
             </div>
-        </section>
+        </div>
+    </section>
 
-        <section id="spaces" class="min-h-screen w-full bg-[#0c0c0e] py-36 px-8 md:px-24 relative z-30 border-t border-neutral-900">
-            <div class="max-w-6xl mx-auto">
-                
-                <div class="flex flex-col md:flex-row justify-between items-start md:items-end border-b border-neutral-800 pb-8 mb-20 gap-6">
-                    <div>
-                        <span class="text-[10px] uppercase tracking-[0.6em] text-neutral-500 block mb-2 font-medium">03 // EXCLUSIVE PORTFOLIO</span>
-                        <h2 class="font-luxury text-3xl md:text-4xl font-light text-white">Доступные блоки резиденции</h2>
-                    </div>
-                    <div class="flex gap-8 text-[10px] uppercase tracking-[0.3em] text-neutral-400 font-semibold">
-                        <button data-filter="ALL" class="filter-btn text-white font-bold border-b border-white pb-1 transition-all">Все блоки</button>
-                        <button data-filter="LIVING" class="filter-btn hover:text-white pb-1 transition-all">Жилые</button>
-                        <button data-filter="LOUNGE" class="filter-btn hover:text-white pb-1 transition-all">Террасы и SPA</button>
-                    </div>
-                </div>
+    <!-- Секция 3: Интерьер -->
+    <section id="interior">
+        <div class="glass-card" style="margin-left: auto;">
+            <span class="accent-text">Interior Design</span>
+            <h2>Эстетика минимализма</h2>
+            <p>Использование натурального камня, дерева редких пород и премиального стекла создает атмосферу абсолютного спокойствия и уединения.</p>
+            <ul style="list-style: none; font-size: 0.9rem; font-weight: 300;">
+                <li style="margin-bottom: 10px;">— Потолки высотой 4.5 метра</li>
+                <li style="margin-bottom: 10px;">— Кухня от итальянского бюро</li>
+                <li>— Винотека на 500 бутылок</li>
+            </ul>
+        </div>
+    </section>
 
-                <div id="lots-grid" class="grid grid-cols-1 md:grid-cols-3 gap-8 perspective-1000">
-                    
-                    <div data-type="LIVING" class="lot-card opacity-0 bg-neutral-950 border border-neutral-900 p-8 rounded-2xl overflow-hidden relative shadow-2xl hover:border-indigo-500/50 transition-colors duration-500 group">
-                        <div class="flex justify-between items-center text-[10px] font-mono text-neutral-500 font-medium">
-                            <span>LOT // 01</span>
-                            <span class="text-emerald-400">AVAILABLE</span>
-                        </div>
-                        <h4 class="font-luxury text-2xl mt-4 mb-2 font-light text-white">Grand Atrium</h4>
-                        <p class="text-xs text-neutral-400 font-light mb-16 leading-relaxed">Двухуровневая парадная гостиная с высотой остекления 7.2 метра, открытым камином из сланца и выходом в зимний сад.</p>
-                        <div class="text-[10px] uppercase tracking-widest font-semibold text-neutral-400 group-hover:text-white transition-colors">420 M² — $4,250,000</div>
-                    </div>
-
-                    <div data-type="LIVING" class="lot-card opacity-0 bg-neutral-950 border border-neutral-900 p-8 rounded-2xl overflow-hidden relative shadow-2xl hover:border-indigo-500/50 transition-colors duration-500 group md:translate-y-12">
-                        <div class="flex justify-between items-center text-[10px] font-mono text-neutral-500 font-medium">
-                            <span>LOT // 02</span>
-                            <span class="text-amber-400">RESERVED</span>
-                        </div>
-                        <h4 class="font-luxury text-2xl mt-4 mb-2 font-light text-white">Master Floating Suite</h4>
-                        <p class="text-xs text-neutral-400 font-light mb-16 leading-relaxed">Консольный парящий жилой блок на втором уровне с персональной террасой, джакузи и панорамным обзором на 270°.</p>
-                        <div class="text-[10px] uppercase tracking-widest font-semibold text-neutral-400 group-hover:text-white transition-colors">280 M² — $3,100,000</div>
-                    </div>
-
-                    <div data-type="LOUNGE" class="lot-card opacity-0 bg-neutral-950 border border-neutral-900 p-8 rounded-2xl overflow-hidden relative shadow-2xl hover:border-purple-500/50 transition-colors duration-500 group">
-                        <div class="flex justify-between items-center text-[10px] font-mono text-neutral-500 font-medium">
-                            <span>LOT // 03</span>
-                            <span class="text-emerald-400">AVAILABLE</span>
-                        </div>
-                        <h4 class="font-luxury text-2xl mt-4 mb-2 font-light text-white">Sky Wellness Deck</h4>
-                        <p class="text-xs text-neutral-400 font-light mb-16 leading-relaxed">Эксплуатируемая кровля из бирманского тика с инфинити-бассейном, финской сауной и зоной барбекю под навесом.</p>
-                        <div class="text-[10px] uppercase tracking-widest font-semibold text-neutral-400 group-hover:text-white transition-colors">350 M² — $5,800,000</div>
-                    </div>
-
-                </div>
-            </div>
-        </section>
-    </main>
+    <!-- Секция 4: Финал/Контакты -->
+    <section id="contact">
+        <div class="glass-card" style="text-align: center; max-width: 800px;">
+            <span class="accent-text">Contact Us</span>
+            <h2>Начните новую историю</h2>
+            <p>Оставьте заявку на частную презентацию виллы и получите подробный инвестиционный план.</p>
+            <form style="display: flex; flex-direction: column; gap: 15px; margin-top: 20px;">
+                <input type="text" placeholder="Ваше имя" style="background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); padding: 15px; border-radius: 10px; color: white;">
+                <input type="email" placeholder="E-mail или Телефон" style="background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); padding: 15px; border-radius: 10px; color: white;">
+                <button class="btn">Отправить запрос</button>
+            </form>
+        </div>
+    </section>
 
     <script>
-        gsap.registerPlugin(ScrollTrigger);
-
-        const canvas = document.querySelector('#webgl-stage');
-        const scene = new THREE.Scene();
-        scene.fog = new THREE.FogExp2('#08080a', 0.14); 
-
-        const camera = new THREE.PerspectiveCamera(38, window.innerWidth / window.innerHeight, 0.1, 100);
-        camera.position.set(0, 0.6, 7.5); 
-
-        const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-        renderer.outputEncoding = THREE.sRGBEncoding;
-
-        const houseGroup = new THREE.Group();
-        scene.add(houseGroup);
-
-        const loader = new THREE.GLTFLoader();
-        let baseScale = 1;
-
-        loader.load(
-            '55cf7f5b-323a-46a6-8d28-f5a703f9dfd6.glb',
-            function (gltf) {
-                const loadedModel = gltf.scene;
-                
-                const box = new THREE.Box3().setFromObject(loadedModel);
-                const center = box.getCenter(new THREE.Vector3());
-                const size = box.getSize(new THREE.Vector3());
-                
-                loadedModel.position.x = -center.x;
-                loadedModel.position.y = -box.min.y;
-                loadedModel.position.z = -center.z;
-                
-                const maxDim = Math.max(size.x, size.y, size.z);
-                if (maxDim > 0) {
-                    baseScale = 3.4 / maxDim;
-                    houseGroup.scale.set(baseScale, baseScale, baseScale);
-                }
-                
-                loadedModel.traverse((child) => {
-                    if (child.isMesh) {
-                        child.castShadow = true;
-                        child.receiveShadow = true;
-                    }
-                });
-
-                houseGroup.add(loadedModel);
-                houseGroup.rotation.set(0.12, -0.4, 0);
-
-                initMasterScrollTimeline();
+        const video = document.getElementById('bg-video');
+        const sections = document.querySelectorAll('section');
+        
+        // 1. Управление видео при скролле
+        // Регулируйте множитель, чтобы замедлить или ускорить видео
+        window.addEventListener('scroll', () => {
+            const scrollPos = window.scrollY;
+            const maxScroll = document.body.scrollHeight - window.innerHeight;
+            const scrollFraction = scrollPos / maxScroll;
+            
+            if (video.duration) {
+                // Плавная перемотка видео
+                video.currentTime = video.duration * scrollFraction;
             }
-        );
 
-        const hemiLight = new THREE.HemisphereLight('#ffffff', '#1e1e24', 1.5);
-        scene.add(hemiLight);
-
-        const sunLight = new THREE.DirectionalLight('#ffffff', 2.2);
-        sunLight.position.set(4, 10, 5);
-        scene.add(sunLight);
-
-        const neonPoint = new THREE.PointLight('#6366f1', 2, 8);
-        neonPoint.position.set(0, -1, 2);
-        scene.add(neonPoint);
-
-        function initMasterScrollTimeline() {
-            const masterScrollTimeline = gsap.timeline({
-                scrollTrigger: {
-                    trigger: "main",
-                    start: "top top",
-                    end: "bottom bottom",
-                    scrub: 1.2
+            // 2. Активация секций (появление)
+            sections.forEach(section => {
+                const sectionTop = section.getBoundingClientRect().top;
+                const windowHeight = window.innerHeight;
+                if (sectionTop < windowHeight * 0.7) {
+                    section.classList.add('active');
+                } else {
+                    section.classList.remove('active');
                 }
             });
-
-            masterScrollTimeline.to(houseGroup.scale, {
-                x: baseScale * 2.2, y: baseScale * 2.2, z: baseScale * 2.2,
-                ease: "power2.inOut"
-            }, 0)
-            .to("#premium-aura", {
-                scale: 1.8,
-                opacity: 1,
-                ease: "power2.inOut"
-            }, 0)
-
-            .to(houseGroup.scale, {
-                x: baseScale * 0.45, y: baseScale * 0.45, z: baseScale * 0.45,
-                ease: "power2.inOut"
-            })
-            .to("#premium-aura", {
-                scale: 0.5,
-                opacity: 0.2,
-                ease: "power2.inOut"
-            }, "-=" + masterScrollTimeline.duration() / 2);
-        }
-
-        const clock = new THREE.Clock();
-        let mouseX = 0, mouseY = 0, targetX = 0, targetY = 0;
-
-        window.addEventListener('mousemove', (e) => {
-            mouseX = (e.clientX / window.innerWidth) - 0.5;
-            mouseY = (e.clientY / window.innerHeight) - 0.5;
         });
 
-        function renderFrame() {
-            const time = clock.getElapsedTime();
-
-            houseGroup.position.y = Math.sin(time * 0.6) * 0.025;
-            
-            targetX += (mouseX * 0.25 - targetX) * 0.05;
-            targetY += (mouseY * 0.15 - targetY) * 0.05;
-            
-            houseGroup.rotation.y += 0.0015;
-            houseGroup.rotation.y += targetX * 0.08;
-            houseGroup.rotation.x = 0.12 + targetY;
-
-            renderer.render(scene, camera);
-            requestAnimationFrame(renderFrame);
-        }
-        requestAnimationFrame(renderFrame);
-
-        gsap.utils.toArray('.lot-card').forEach((card) => {
-            gsap.fromTo(card, 
-                { opacity: 0, y: 140, rotateX: 18, skewY: 1.5 },
-                {
-                    opacity: 1, y: 0, rotateX: 0, skewY: 0,
-                    duration: 1.4,
-                    ease: "power4.out",
-                    scrollTrigger: {
-                        trigger: card,
-                        start: "top 88%",
-                        toggleActions: "play none none reverse"
-                    }
-                }
-            );
+        // Предзагрузка видео для плавности
+        video.addEventListener('loadedmetadata', () => {
+            console.log("Видео загружено, длительность:", video.duration);
         });
 
-        gsap.to("#progress-bar", {
-            width: "100%", ease: "none",
-            scrollTrigger: { trigger: "main", start: "top top", end: "bottom bottom", scrub: true }
-        });
-
-        const filterBtns = document.querySelectorAll('.filter-btn');
-        const lotCards = document.querySelectorAll('.lot-card');
-
-        filterBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                filterBtns.forEach(b => b.className = "filter-btn hover:text-white pb-1 transition-all");
-                btn.className = "filter-btn text-white font-bold border-b border-white pb-1 transition-all";
-
-                const filter = btn.getAttribute('data-filter');
-                lotCards.forEach(card => {
-                    const type = card.getAttribute('data-type');
-                    if (filter === 'ALL' || type === filter) {
-                        gsap.to(card, { opacity: 1, scale: 1, y: 0, duration: 0.4, display: 'block' });
-                    } else {
-                        gsap.to(card, { opacity: 0, scale: 0.95, y: 25, duration: 0.3, display: 'none' });
-                    }
+        // Обработка кликов по кнопкам (плавный скролл)
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
                 });
             });
-        });
-
-        const cDot = document.getElementById('custom-cursor');
-        const cRing = document.getElementById('custom-cursor-ring');
-
-        window.addEventListener('mousemove', (e) => {
-            gsap.to(cDot, { x: e.clientX, y: e.clientY, duration: 0.02 });
-            gsap.to(cRing, { x: e.clientX, y: e.clientY, duration: 0.16 });
-        });
-
-        window.addEventListener('resize', () => {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
         });
     </script>
 </body>
