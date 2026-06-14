@@ -1,414 +1,1200 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VILLA MONOLITH // LUXURY ARCHITECTURAL EXPERIENCE</title>
-    
-    <!-- Премиальный стек библиотек -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MAISON — Exceptional Residences</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+<style>
+:root {
+  --ivory:   #F8F6F1;
+  --stone:   #E8E2D9;
+  --ash:     #6B6560;
+  --ink:     #1A1A1A;
+  --gold:    #C9A96E;
+  --gold-lt: #E2CCА4;
+  --white:   #FFFFFF;
+  --border:  rgba(26,26,26,0.1);
+}
 
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500&family=Inter:wght@200;300;400;500&display=swap');
-        
-        body { 
-            font-family: 'Inter', sans-serif; 
-            background-color: #f7f7f4; /* Благородный галерейный белый */
-            color: #1a1a1a;
-            cursor: none;
-        }
-        .font-luxury { font-family: 'Cinzel', serif; }
-        .scroller-section { height: 100vh; width: 100%; display: flex; align-items: center; position: relative; }
-        
-        /* Мягкий аналоговый шум для премиальной текстуры фона */
-        .grain-overlay {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
-            opacity: 0.02; pointer-events: none; z-index: 999; mix-blend-mode: multiply;
-        }
-    </style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; font-size: 16px; }
+
+body {
+  background: var(--ivory);
+  color: var(--ink);
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 300;
+  overflow-x: hidden;
+  cursor: none;
+}
+
+/* ── CURSOR ── */
+.cur {
+  position: fixed; width: 8px; height: 8px;
+  background: var(--ink); border-radius: 50%;
+  pointer-events: none; z-index: 9999;
+  transform: translate(-50%,-50%);
+  transition: transform 0.15s, width 0.25s, height 0.25s, background 0.25s;
+}
+.cur-ring {
+  position: fixed; width: 32px; height: 32px;
+  border: 1px solid rgba(26,26,26,0.35);
+  border-radius: 50%; pointer-events: none;
+  z-index: 9998; transform: translate(-50%,-50%);
+  transition: all 0.18s cubic-bezier(0.25,0.46,0.45,0.94);
+}
+.cur.hover { width: 14px; height: 14px; background: var(--gold); }
+.cur-ring.hover { width: 48px; height: 48px; border-color: var(--gold); }
+
+/* ── NAV ── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 2rem 3.5rem;
+  mix-blend-mode: multiply;
+  transition: padding 0.4s;
+}
+nav.scrolled { padding: 1.25rem 3.5rem; background: rgba(248,246,241,0.92); backdrop-filter: blur(16px); mix-blend-mode: normal; border-bottom: 1px solid var(--border); }
+.nav-logo {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 500; font-size: 1.5rem;
+  letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--ink); text-decoration: none;
+}
+.nav-logo em { font-style: italic; font-weight: 300; color: var(--gold); }
+.nav-links { display: flex; gap: 2.5rem; list-style: none; }
+.nav-links a {
+  font-size: 0.75rem; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--ash);
+  text-decoration: none; transition: color 0.2s;
+}
+.nav-links a:hover { color: var(--ink); }
+.nav-contact {
+  font-size: 0.75rem; letter-spacing: 0.1em;
+  text-transform: uppercase; padding: 0.7rem 1.8rem;
+  border: 1px solid var(--ink); color: var(--ink);
+  background: transparent; cursor: none;
+  transition: all 0.25s; font-family: 'DM Sans', sans-serif;
+}
+.nav-contact:hover { background: var(--ink); color: var(--ivory); }
+
+/* ── HERO ── */
+#hero {
+  height: 100vh; position: relative;
+  display: grid; grid-template-columns: 1fr 1fr;
+  overflow: hidden;
+}
+.hero-left {
+  display: flex; flex-direction: column;
+  justify-content: flex-end; padding: 0 3.5rem 5rem;
+  position: relative; z-index: 2;
+  background: var(--ivory);
+}
+.hero-tag {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.65rem; letter-spacing: 0.2em;
+  text-transform: uppercase; color: var(--gold);
+  margin-bottom: 1.75rem;
+  opacity: 0; transform: translateY(16px);
+}
+.hero-h1 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(3.5rem, 5.5vw, 6rem);
+  font-weight: 300; line-height: 1.0;
+  letter-spacing: -0.02em;
+  margin-bottom: 2rem;
+  opacity: 0;
+}
+.hero-h1 em { font-style: italic; color: var(--gold); }
+.hero-desc {
+  font-size: 0.9rem; line-height: 1.8;
+  color: var(--ash); max-width: 340px;
+  margin-bottom: 3rem; opacity: 0;
+}
+.hero-actions { display: flex; align-items: center; gap: 2.5rem; opacity: 0; }
+.btn-dark {
+  font-size: 0.75rem; letter-spacing: 0.1em;
+  text-transform: uppercase; padding: 1rem 2.5rem;
+  background: var(--ink); color: var(--ivory);
+  border: none; cursor: none; font-family: 'DM Sans', sans-serif;
+  transition: background 0.25s;
+}
+.btn-dark:hover { background: #2d2d2d; }
+.hero-link {
+  font-size: 0.75rem; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--ash);
+  text-decoration: none; display: flex;
+  align-items: center; gap: 0.6rem;
+  transition: color 0.2s;
+}
+.hero-link:hover { color: var(--ink); }
+.hero-link::after { content: '→'; transition: transform 0.2s; }
+.hero-link:hover::after { transform: translateX(4px); }
+
+.hero-right {
+  position: relative; overflow: hidden;
+}
+.hero-photo {
+  width: 100%; height: 100%; object-fit: cover;
+  transform: scale(1.08);
+  transition: transform 8s ease-out;
+}
+.hero-photo.loaded { transform: scale(1); }
+.hero-photo-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(to right, var(--ivory) 0%, transparent 25%);
+  z-index: 1;
+}
+.hero-counter {
+  position: absolute; bottom: 4rem; right: 3.5rem;
+  z-index: 2; text-align: right;
+}
+.hero-counter-num {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 4.5rem; font-weight: 300;
+  line-height: 1; color: var(--white);
+  opacity: 0;
+}
+.hero-counter-label {
+  font-size: 0.65rem; letter-spacing: 0.18em;
+  text-transform: uppercase; color: rgba(255,255,255,0.6);
+  margin-top: 0.25rem;
+}
+.hero-scroll {
+  position: absolute; bottom: 2.5rem; left: 50%;
+  transform: translateX(-50%); z-index: 10;
+  display: flex; flex-direction: column; align-items: center;
+  gap: 0.5rem; opacity: 0;
+}
+.hero-scroll span { font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ash); }
+.scroll-tick { width: 1px; height: 48px; background: linear-gradient(to bottom, var(--gold), transparent); animation: tickPulse 2.2s ease-in-out infinite; }
+@keyframes tickPulse { 0%,100%{opacity:0.4;transform:scaleY(1)} 50%{opacity:1;transform:scaleY(0.5)} }
+
+/* ── STRIP ── */
+.strip {
+  display: flex; align-items: center;
+  padding: 1.1rem 3.5rem;
+  background: var(--ink); color: var(--ivory);
+  gap: 0;
+  overflow: hidden;
+}
+.strip-track {
+  display: flex; gap: 4rem; align-items: center;
+  animation: stripScroll 30s linear infinite;
+  white-space: nowrap;
+}
+.strip-item {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 0.9rem; font-style: italic;
+  letter-spacing: 0.05em; color: rgba(248,246,241,0.7);
+  flex-shrink: 0; display: flex; align-items: center; gap: 1.5rem;
+}
+.strip-sep { color: var(--gold); font-size: 0.5rem; }
+@keyframes stripScroll { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+
+/* ── FEATURED ── */
+#featured {
+  padding: 7rem 3.5rem;
+}
+.section-header {
+  display: flex; justify-content: space-between;
+  align-items: flex-end; margin-bottom: 4rem;
+}
+.section-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.65rem; letter-spacing: 0.2em;
+  text-transform: uppercase; color: var(--gold);
+  margin-bottom: 0.75rem;
+}
+.section-h2 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(2rem, 3.5vw, 3.25rem);
+  font-weight: 300; letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+.section-h2 em { font-style: italic; color: var(--gold); }
+.section-link {
+  font-size: 0.75rem; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--ash);
+  text-decoration: none; display: flex;
+  align-items: center; gap: 0.5rem;
+  transition: color 0.2s;
+  padding-bottom: 0.25rem;
+  border-bottom: 1px solid var(--border);
+}
+.section-link:hover { color: var(--ink); border-color: var(--ink); }
+
+/* Property cards */
+.properties-grid {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr;
+  grid-template-rows: auto auto;
+  gap: 1.5px;
+  background: var(--border);
+}
+.prop-card {
+  background: var(--ivory);
+  overflow: hidden; cursor: none;
+  opacity: 0; transform: translateY(30px);
+}
+.prop-card.large { grid-row: span 2; }
+.prop-img-wrap { position: relative; overflow: hidden; }
+.prop-card.large .prop-img-wrap { height: 560px; }
+.prop-card:not(.large) .prop-img-wrap { height: 260px; }
+.prop-img {
+  width: 100%; height: 100%; object-fit: cover;
+  transition: transform 0.7s cubic-bezier(0.25,0.46,0.45,0.94);
+  display: block;
+}
+.prop-card:hover .prop-img { transform: scale(1.05); }
+.prop-badge {
+  position: absolute; top: 1.25rem; left: 1.25rem;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.6rem; letter-spacing: 0.15em;
+  text-transform: uppercase; padding: 0.35rem 0.75rem;
+  background: var(--ivory); color: var(--ink);
+}
+.prop-body { padding: 1.5rem 1.75rem 1.75rem; }
+.prop-location {
+  font-size: 0.65rem; letter-spacing: 0.15em;
+  text-transform: uppercase; color: var(--gold);
+  margin-bottom: 0.5rem;
+}
+.prop-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.4rem; font-weight: 400;
+  letter-spacing: -0.01em; margin-bottom: 0.5rem;
+  line-height: 1.25;
+}
+.prop-card.large .prop-name { font-size: 1.85rem; }
+.prop-meta {
+  display: flex; gap: 1.5rem;
+  font-size: 0.75rem; color: var(--ash);
+  margin-bottom: 1.25rem;
+}
+.prop-meta span { display: flex; align-items: center; gap: 0.35rem; }
+.prop-footer {
+  display: flex; justify-content: space-between; align-items: center;
+  padding-top: 1.25rem; border-top: 1px solid var(--border);
+}
+.prop-price {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.5rem; font-weight: 400;
+}
+.prop-card.large .prop-price { font-size: 2rem; }
+.prop-cta {
+  font-size: 0.65rem; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--ash);
+  text-decoration: none; transition: color 0.2s;
+  display: flex; align-items: center; gap: 0.4rem;
+}
+.prop-cta:hover { color: var(--ink); }
+.prop-cta::after { content: '→'; }
+
+/* Property placeholder images using CSS */
+.img-1 { background: linear-gradient(160deg, #D4C8B8 0%, #B8ADA0 40%, #9E9289 100%); }
+.img-2 { background: linear-gradient(140deg, #C8C0B5 0%, #A89E94 50%, #8E8480 100%); }
+.img-3 { background: linear-gradient(150deg, #BFB8AE 0%, #A09890 50%, #898280 100%); }
+.img-4 { background: linear-gradient(130deg, #D0C8BE 0%, #B0A89E 50%, #969090 100%); }
+.prop-img-inner {
+  width:100%; height:100%; display:flex; align-items:center; justify-content:center;
+  position: relative; overflow: hidden;
+}
+.prop-img-inner::before {
+  content: '';
+  position: absolute; inset: 0;
+}
+.prop-img-inner svg { opacity: 0.18; width: 80px; height: 80px; }
+/* Styled building visuals */
+.building-vis {
+  position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+  display: flex; align-items: flex-end; gap: 4px;
+}
+.b-tower {
+  background: rgba(26,26,26,0.12);
+  transition: height 0.3s;
+}
+
+/* ── NUMBERS ── */
+#numbers {
+  padding: 7rem 3.5rem;
+  background: var(--stone);
+  display: grid;
+  grid-template-columns: 1fr 2px 1fr 2px 1fr 2px 1fr;
+  align-items: center;
+}
+.num-divider { background: var(--border); height: 80px; }
+.num-item { padding: 2rem 3rem; text-align: center; }
+.num-val {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 4rem; font-weight: 300;
+  letter-spacing: -0.04em; line-height: 1;
+  margin-bottom: 0.5rem;
+}
+.num-val sup { font-size: 1.5rem; vertical-align: super; }
+.num-label { font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--ash); }
+
+/* ── APPROACH ── */
+#approach {
+  padding: 7rem 3.5rem;
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 8rem; align-items: center;
+}
+.approach-img-wrap {
+  position: relative; height: 620px; overflow: hidden;
+}
+.approach-img {
+  width: 100%; height: 100%;
+  background: linear-gradient(155deg, #D8D0C5, #B8B0A8, #9A928A);
+  position: relative;
+}
+.approach-img-inner {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+}
+.approach-tag {
+  position: absolute; bottom: 2rem; left: 2rem;
+  background: var(--ivory); padding: 1.25rem 1.5rem;
+}
+.approach-tag-num {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2.5rem; font-weight: 300; color: var(--gold);
+  line-height: 1;
+}
+.approach-tag-txt { font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ash); margin-top: 0.25rem; }
+.approach-content { opacity: 0; transform: translateX(30px); }
+.approach-steps { margin-top: 3rem; display: flex; flex-direction: column; gap: 0; }
+.step {
+  padding: 2rem 0;
+  border-top: 1px solid var(--border);
+  display: grid; grid-template-columns: 48px 1fr;
+  gap: 1.5rem; align-items: start;
+  transition: background 0.2s;
+}
+.step:last-child { border-bottom: 1px solid var(--border); }
+.step-n {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.65rem; color: var(--gold);
+  letter-spacing: 0.1em; padding-top: 0.2rem;
+}
+.step-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.2rem; font-weight: 400;
+  margin-bottom: 0.5rem;
+}
+.step-desc { font-size: 0.82rem; line-height: 1.75; color: var(--ash); }
+
+/* ── TESTIMONIAL ── */
+#testimonial {
+  padding: 7rem 3.5rem;
+  background: var(--ink); color: var(--ivory);
+  text-align: center;
+  position: relative; overflow: hidden;
+}
+#testimonial::before {
+  content: '"';
+  position: absolute; top: -2rem; left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 28rem; font-weight: 300; line-height: 1;
+  color: rgba(255,255,255,0.03);
+  pointer-events: none;
+}
+.testimonial-quote {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(1.75rem, 3vw, 2.75rem);
+  font-weight: 300; font-style: italic;
+  line-height: 1.45; max-width: 820px;
+  margin: 0 auto 3rem;
+  opacity: 0; transform: translateY(20px);
+}
+.testimonial-quote em { color: var(--gold); font-style: normal; }
+.testimonial-author {
+  font-size: 0.7rem; letter-spacing: 0.2em;
+  text-transform: uppercase; color: rgba(248,246,241,0.45);
+  opacity: 0;
+}
+.testimonial-author strong { color: rgba(248,246,241,0.8); letter-spacing: 0.1em; }
+
+/* ── LISTINGS ── */
+#listings { padding: 7rem 3.5rem; }
+.listings-filter {
+  display: flex; gap: 0.75rem;
+  margin-bottom: 3.5rem; flex-wrap: wrap;
+}
+.filter-btn {
+  font-size: 0.7rem; letter-spacing: 0.1em;
+  text-transform: uppercase; padding: 0.6rem 1.4rem;
+  border: 1px solid var(--border); background: transparent;
+  color: var(--ash); cursor: none;
+  transition: all 0.2s; font-family: 'DM Sans', sans-serif;
+}
+.filter-btn.active, .filter-btn:hover { border-color: var(--ink); color: var(--ink); background: var(--stone); }
+.listings-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5px; background: var(--border);
+}
+.listing-card {
+  background: var(--ivory); overflow: hidden;
+  cursor: none; opacity: 0; transform: translateY(20px);
+}
+.listing-img {
+  height: 220px; overflow: hidden; position: relative;
+}
+.listing-img-bg { width:100%; height:100%; transition: transform 0.6s cubic-bezier(0.25,0.46,0.45,0.94); }
+.listing-card:hover .listing-img-bg { transform: scale(1.06); }
+.limg-1 { background: linear-gradient(140deg, #CCC5BB 0%, #ADA69E 100%); }
+.limg-2 { background: linear-gradient(150deg, #C5BEB5 0%, #A8A19A 100%); }
+.limg-3 { background: linear-gradient(130deg, #D0C9BF 0%, #B0A9A2 100%); }
+.limg-4 { background: linear-gradient(145deg, #C8C1B8 0%, #AAA39C 100%); }
+.limg-5 { background: linear-gradient(135deg, #BEB8AF 0%, #A09A94 100%); }
+.limg-6 { background: linear-gradient(155deg, #D2CBC2 0%, #B2ABA4 100%); }
+.listing-body { padding: 1.5rem; }
+.listing-loc { font-size: 0.62rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--gold); margin-bottom: 0.4rem; }
+.listing-name { font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; font-weight: 400; margin-bottom: 0.75rem; }
+.listing-row { display: flex; justify-content: space-between; align-items: center; }
+.listing-price { font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; }
+.listing-specs { font-size: 0.7rem; color: var(--ash); letter-spacing: 0.04em; }
+
+/* ── FORM CTA ── */
+#contact {
+  padding: 7rem 3.5rem;
+  background: var(--stone);
+  display: grid; grid-template-columns: 1fr 1.2fr;
+  gap: 8rem; align-items: start;
+}
+.contact-left .section-h2 { margin-bottom: 1.5rem; }
+.contact-lead { font-size: 0.88rem; line-height: 1.8; color: var(--ash); max-width: 380px; }
+.contact-detail { margin-top: 3rem; display: flex; flex-direction: column; gap: 1.5rem; }
+.cd-item { display: flex; flex-direction: column; gap: 0.25rem; }
+.cd-label { font-size: 0.6rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold); }
+.cd-val { font-family: 'Cormorant Garamond', serif; font-size: 1.15rem; }
+.contact-form { display: flex; flex-direction: column; gap: 1px; background: var(--border); }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); }
+.form-field {
+  background: var(--ivory); padding: 1.5rem 1.75rem;
+  display: flex; flex-direction: column; gap: 0.5rem;
+}
+.form-field.full { grid-column: 1/-1; }
+.form-label { font-size: 0.6rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ash); }
+.form-input, .form-select, .form-textarea {
+  background: transparent; border: none; outline: none;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.1rem; color: var(--ink);
+  width: 100%; cursor: none;
+}
+.form-textarea { resize: none; height: 80px; }
+.form-input::placeholder, .form-textarea::placeholder { color: rgba(26,26,26,0.3); }
+.form-submit {
+  background: var(--ink); color: var(--ivory);
+  padding: 1.5rem 2rem;
+  font-size: 0.75rem; letter-spacing: 0.12em;
+  text-transform: uppercase; border: none; cursor: none;
+  font-family: 'DM Sans', sans-serif;
+  transition: background 0.25s; text-align: left;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.form-submit:hover { background: #2d2d2d; }
+.form-submit span { font-size: 1.1rem; }
+
+/* ── FOOTER ── */
+footer {
+  padding: 3rem 3.5rem;
+  background: var(--ink); color: var(--ivory);
+  display: grid; grid-template-columns: 1.5fr 1fr 1fr 1fr;
+  gap: 3rem;
+  border-top: 1px solid rgba(248,246,241,0.06);
+}
+.footer-brand { }
+.footer-logo-txt {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.5rem; font-weight: 500;
+  letter-spacing: 0.2em; margin-bottom: 1rem;
+}
+.footer-logo-txt em { font-style: italic; color: var(--gold); }
+.footer-tagline { font-size: 0.78rem; color: rgba(248,246,241,0.4); line-height: 1.7; max-width: 220px; }
+.footer-col-title { font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); margin-bottom: 1.25rem; }
+.footer-links { list-style: none; display: flex; flex-direction: column; gap: 0.75rem; }
+.footer-links a { font-size: 0.8rem; color: rgba(248,246,241,0.5); text-decoration: none; transition: color 0.2s; }
+.footer-links a:hover { color: var(--ivory); }
+.footer-bottom {
+  grid-column: 1/-1; padding-top: 2rem;
+  border-top: 1px solid rgba(248,246,241,0.06);
+  display: flex; justify-content: space-between;
+  font-size: 0.65rem; color: rgba(248,246,241,0.25);
+  letter-spacing: 0.06em;
+}
+
+/* ── CLIP REVEAL ── */
+.clip-reveal { clip-path: inset(0 100% 0 0); }
+.clip-reveal.revealed { clip-path: inset(0 0% 0 0); transition: clip-path 0.9s cubic-bezier(0.77,0,0.175,1); }
+
+/* ── ARCH ILLUSTRATION in approach ── */
+.arch-illustration {
+  width: 100%; height: 100%;
+  display: flex; align-items: flex-end; justify-content: center;
+  padding: 3rem 2rem 0;
+  gap: 8px;
+}
+.arch-building {
+  border-radius: 2px 2px 0 0;
+  background: rgba(26,26,26,0.1);
+  flex: 1;
+}
+.arch-building.tall { background: rgba(26,26,26,0.18); }
+.arch-building.accent { background: rgba(201,169,110,0.35); }
+.arch-win {
+  position: absolute;
+  background: rgba(248,246,241,0.6);
+  border-radius: 1px;
+}
+
+/* ── PROPERTY ILLUSTRATION ── */
+.house-svg { position: absolute; bottom: 15%; left: 50%; transform: translateX(-50%); opacity: 0.13; }
+
+@media (max-width: 900px) {
+  nav { padding: 1.5rem; }
+  .nav-links { display: none; }
+  #hero { grid-template-columns: 1fr; }
+  .hero-right { height: 50vh; }
+  .hero-left { padding: 2rem 2rem 4rem; }
+  #numbers { grid-template-columns: 1fr 1fr; gap: 0; }
+  .num-divider { display: none; }
+  #approach, #contact { grid-template-columns: 1fr; gap: 3rem; }
+  .approach-img-wrap { height: 350px; }
+  #featured, #listings, #approach, #contact, #testimonial, #numbers { padding: 4rem 1.5rem; }
+  .properties-grid, .listings-row { grid-template-columns: 1fr; }
+  .prop-card.large { grid-row: auto; }
+  .prop-card.large .prop-img-wrap { height: 300px; }
+  footer { grid-template-columns: 1fr 1fr; }
+  .form-row { grid-template-columns: 1fr; }
+}
+</style>
 </head>
-<body class="overflow-x-hidden selection:bg-neutral-900 selection:text-white">
+<body>
 
-    <!-- ТЕКСТУРНЫЙ СЛОЙ И КОНТРАСТНЫЙ КУРСОР -->
-    <div class="grain-overlay"></div>
-    <div id="custom-cursor" class="fixed w-2 h-2 bg-neutral-900 rounded-full pointer-events-none z-50 -translate-x-1/2 -translate-y-1/2 hidden md:block"></div>
-    <div id="custom-cursor-ring" class="fixed w-8 h-8 border border-neutral-900/20 rounded-full pointer-events-none z-50 -translate-x-1/2 -translate-y-1/2 transition-all duration-300 ease-out hidden md:block"></div>
+<div class="cur" id="cur"></div>
+<div class="cur-ring" id="curRing"></div>
 
-    <!-- ТРЕХМЕРНАЯ СЦЕНА -->
-    <canvas id="webgl-stage" class="fixed inset-0 w-full h-full pointer-events-none z-10"></canvas>
+<!-- NAV -->
+<nav id="mainNav">
+  <a href="#" class="nav-logo">Ma<em>i</em>son</a>
+  <ul class="nav-links">
+    <li><a href="#featured">Properties</a></li>
+    <li><a href="#listings">Listings</a></li>
+    <li><a href="#approach">Our Approach</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <button class="nav-contact">Private Viewing</button>
+</nav>
 
-    <!-- ХЕДЕР -->
-    <header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-8 py-8 md:px-16 bg-gradient-to-b from-[#f7f7f4]/80 to-transparent backdrop-blur-[2px]">
-        <div class="font-luxury text-sm tracking-[0.4em] font-medium text-neutral-900">MONOLITH // RESIDENCE</div>
-        <div class="hidden md:flex gap-16 text-[10px] uppercase tracking-[0.4em] font-medium text-neutral-500">
-            <a href="#philosophy" class="hover:text-black transition-colors">Philosophy</a>
-            <a href="#blueprint" class="hover:text-black transition-colors">3D Inspector</a>
-            <a href="#spaces" class="hover:text-black transition-colors">Available Lots</a>
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-left">
+    <p class="hero-tag" id="heroTag">Est. 1994 · Exceptional Residences</p>
+    <h1 class="hero-h1" id="heroH1">
+      Find your<br>
+      <em>ideal</em><br>
+      sanctuary
+    </h1>
+    <p class="hero-desc" id="heroDesc">
+      We present the world's most discerning properties — curated for those who understand that a home is more than an address.
+    </p>
+    <div class="hero-actions" id="heroActions">
+      <button class="btn-dark">Explore Properties</button>
+      <a href="#approach" class="hero-link">Our philosophy</a>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="hero-photo-overlay"></div>
+    <!-- Beautiful architectural gradient instead of missing image -->
+    <div style="width:100%;height:100%;background:linear-gradient(160deg,#C8C0B4 0%,#A8A09A 30%,#8C8680 60%,#706A66 100%);position:relative;overflow:hidden;">
+      <!-- Abstract architectural lines -->
+      <svg width="100%" height="100%" viewBox="0 0 600 900" preserveAspectRatio="xMidYMid slice" style="position:absolute;inset:0;opacity:0.12;">
+        <rect x="80" y="200" width="120" height="600" fill="#1A1A1A"/>
+        <rect x="220" y="300" width="80" height="500" fill="#1A1A1A"/>
+        <rect x="320" y="150" width="160" height="650" fill="#1A1A1A"/>
+        <rect x="100" y="220" width="16" height="20" fill="white" opacity="0.8"/>
+        <rect x="100" y="260" width="16" height="20" fill="white" opacity="0.8"/>
+        <rect x="100" y="300" width="16" height="20" fill="white" opacity="0.6"/>
+        <rect x="140" y="220" width="16" height="20" fill="white" opacity="0.7"/>
+        <rect x="140" y="260" width="16" height="20" fill="white" opacity="0.5"/>
+        <rect x="340" y="170" width="22" height="26" fill="white" opacity="0.9"/>
+        <rect x="380" y="170" width="22" height="26" fill="white" opacity="0.7"/>
+        <rect x="420" y="170" width="22" height="26" fill="white" opacity="0.8"/>
+        <rect x="340" y="220" width="22" height="26" fill="white" opacity="0.6"/>
+        <rect x="380" y="220" width="22" height="26" fill="white" opacity="0.9"/>
+        <rect x="420" y="220" width="22" height="26" fill="white" opacity="0.5"/>
+        <rect x="340" y="270" width="22" height="26" fill="white" opacity="0.7"/>
+        <rect x="380" y="270" width="22" height="26" fill="white" opacity="0.8"/>
+        <line x1="0" y1="800" x2="600" y2="800" stroke="#1A1A1A" stroke-width="2" opacity="0.3"/>
+      </svg>
+      <div style="position:absolute;bottom:0;left:0;right:0;height:40%;background:linear-gradient(to top,rgba(26,26,26,0.5),transparent);"></div>
+    </div>
+    <div class="hero-counter">
+      <div class="hero-counter-num" id="heroCounterNum">—</div>
+      <div class="hero-counter-label">Properties available</div>
+    </div>
+  </div>
+  <div class="hero-scroll" id="heroScroll">
+    <span>Scroll</span>
+    <div class="scroll-tick"></div>
+  </div>
+</section>
+
+<!-- STRIP -->
+<div class="strip">
+  <div class="strip-track" id="stripTrack"></div>
+</div>
+
+<!-- FEATURED -->
+<section id="featured">
+  <div class="section-header">
+    <div>
+      <div class="section-label">Featured Residences</div>
+      <h2 class="section-h2">Properties of<br><em>distinction</em></h2>
+    </div>
+    <a href="#listings" class="section-link">View all listings</a>
+  </div>
+
+  <div class="properties-grid">
+    <!-- Large card -->
+    <div class="prop-card large" data-delay="0">
+      <div class="prop-img-wrap">
+        <div class="prop-img-inner img-1" style="height:100%;position:relative;">
+          <svg viewBox="0 0 100 120" style="opacity:0.1;position:absolute;" xmlns="http://www.w3.org/2000/svg">
+            <rect x="20" y="40" width="60" height="70" fill="#1A1A1A"/>
+            <polygon points="10,40 50,10 90,40" fill="#1A1A1A"/>
+            <rect x="35" y="70" width="12" height="18" fill="white"/>
+            <rect x="53" y="70" width="12" height="18" fill="white"/>
+            <rect x="44" y="88" width="12" height="22" fill="white"/>
+          </svg>
+          <div class="building-vis" style="position:absolute;bottom:0;left:0;right:0;display:flex;align-items:flex-end;justify-content:center;gap:6px;padding:0 20px;">
+            <div style="width:60px;height:220px;background:rgba(26,26,26,0.15);border-radius:2px 2px 0 0;"></div>
+            <div style="width:90px;height:320px;background:rgba(26,26,26,0.2);border-radius:2px 2px 0 0;"></div>
+            <div style="width:55px;height:180px;background:rgba(26,26,26,0.12);border-radius:2px 2px 0 0;"></div>
+          </div>
         </div>
-        <div class="text-[10px] uppercase tracking-[0.3em] font-medium border-b border-black/30 pb-1 hover:border-black transition-colors cursor-pointer text-neutral-800">Request Brochure</div>
-    </header>
+        <span class="prop-badge">New listing</span>
+      </div>
+      <div class="prop-body">
+        <div class="prop-location">Knightsbridge, London</div>
+        <div class="prop-name">The Belgravia Penthouse</div>
+        <div class="prop-meta">
+          <span>4 bed</span>
+          <span>3 bath</span>
+          <span>312 m²</span>
+          <span>Penthouse</span>
+        </div>
+        <div class="prop-footer">
+          <div class="prop-price">£ 8,750,000</div>
+          <a href="#" class="prop-cta">View property</a>
+        </div>
+      </div>
+    </div>
 
-    <!-- ТОНКИЙ ЛЮКС-ПРОГРЕСС СТРАНИЦЫ -->
-    <div class="fixed top-0 left-0 h-[2px] bg-neutral-900 z-50 w-0" id="progress-bar"></div>
+    <!-- Card 2 -->
+    <div class="prop-card" data-delay="0.1">
+      <div class="prop-img-wrap">
+        <div class="prop-img-inner img-2" style="height:100%;position:relative;">
+          <div style="position:absolute;bottom:0;left:50%;transform:translateX(-50%);display:flex;align-items:flex-end;gap:4px;">
+            <div style="width:40px;height:120px;background:rgba(26,26,26,0.15);border-radius:2px 2px 0 0;"></div>
+            <div style="width:55px;height:160px;background:rgba(26,26,26,0.2);border-radius:2px 2px 0 0;"></div>
+            <div style="width:35px;height:100px;background:rgba(26,26,26,0.12);border-radius:2px 2px 0 0;"></div>
+          </div>
+        </div>
+        <span class="prop-badge">Exclusive</span>
+      </div>
+      <div class="prop-body">
+        <div class="prop-location">Saint-Germain, Paris</div>
+        <div class="prop-name">Appartement Haussmannien</div>
+        <div class="prop-meta">
+          <span>3 bed</span>
+          <span>2 bath</span>
+          <span>180 m²</span>
+        </div>
+        <div class="prop-footer">
+          <div class="prop-price">€ 4,200,000</div>
+          <a href="#" class="prop-cta">View</a>
+        </div>
+      </div>
+    </div>
 
-    <!-- КОНТЕНТ -->
-    <main class="relative z-20 w-full">
+    <!-- Card 3 -->
+    <div class="prop-card" data-delay="0.15">
+      <div class="prop-img-wrap">
+        <div class="prop-img-inner img-3" style="height:100%;position:relative;">
+          <div style="position:absolute;bottom:0;left:50%;transform:translateX(-50%);display:flex;align-items:flex-end;gap:4px;">
+            <div style="width:70px;height:140px;background:rgba(26,26,26,0.18);border-radius:2px 2px 0 0;"></div>
+            <div style="width:45px;height:110px;background:rgba(26,26,26,0.12);border-radius:2px 2px 0 0;"></div>
+          </div>
+        </div>
+        <span class="prop-badge">Sea views</span>
+      </div>
+      <div class="prop-body">
+        <div class="prop-location">Côte d'Azur, Monaco</div>
+        <div class="prop-name">Villa Méditerranée</div>
+        <div class="prop-meta">
+          <span>5 bed</span>
+          <span>4 bath</span>
+          <span>420 m²</span>
+        </div>
+        <div class="prop-footer">
+          <div class="prop-price">€ 12,500,000</div>
+          <a href="#" class="prop-cta">View</a>
+        </div>
+      </div>
+    </div>
 
-        <!-- СЕКЦИЯ 1: HERO -->
-        <section class="scroller-section justify-start px-8 md:px-24">
-            <div class="max-w-3xl z-30">
-                <span class="text-[10px] uppercase tracking-[0.6em] text-neutral-400 block mb-4 font-medium">// Pure Form Exhibit</span>
-                <h1 id="hero-title" class="font-luxury text-5xl md:text-8xl font-light tracking-tight leading-none mb-8 text-neutral-900">
-                    Quiet <br><span class="italic font-normal text-neutral-500">Luxury.</span>
-                </h1>
-                <p class="text-xs md:text-sm text-neutral-500 max-w-sm font-light tracking-wide leading-relaxed mb-8">
-                    Премиальное интерактивное пространство. Твоя 3D-модель выровнена по горизонту и представлена в безупречном студийном освещении.
-                </p>
-                <div class="text-[9px] uppercase tracking-[0.4em] text-neutral-400 font-medium">
-                    Scroll down to explore physics
-                </div>
-            </div>
-        </section>
+    <!-- Card 4 -->
+    <div class="prop-card" data-delay="0.2">
+      <div class="prop-img-wrap">
+        <div class="prop-img-inner img-4" style="height:100%;position:relative;">
+          <div style="position:absolute;bottom:0;left:50%;transform:translateX(-50%);display:flex;align-items:flex-end;gap:3px;">
+            <div style="width:38px;height:100px;background:rgba(26,26,26,0.12);border-radius:2px 2px 0 0;"></div>
+            <div style="width:52px;height:145px;background:rgba(26,26,26,0.2);border-radius:2px 2px 0 0;"></div>
+            <div style="width:38px;height:95px;background:rgba(26,26,26,0.12);border-radius:2px 2px 0 0;"></div>
+          </div>
+        </div>
+        <span class="prop-badge">Private island</span>
+      </div>
+      <div class="prop-body">
+        <div class="prop-location">Dubai, UAE</div>
+        <div class="prop-name">Palm Signature Villa</div>
+        <div class="prop-meta">
+          <span>6 bed</span>
+          <span>7 bath</span>
+          <span>850 m²</span>
+        </div>
+        <div class="prop-footer">
+          <div class="prop-price">$ 22,000,000</div>
+          <a href="#" class="prop-cta">View</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
-        <!-- СЕКЦИЯ 2: ФИЛОСОФИЯ -->
-        <section id="philosophy" class="scroller-section justify-end px-8 md:px-24">
-            <div class="max-w-2xl text-right z-30">
-                <span class="text-[10px] uppercase tracking-[0.6em] text-neutral-400 block mb-6 font-medium">// Architectural Weight</span>
-                <h2 id="stagger-text" class="font-luxury text-3xl md:text-5xl font-light leading-tight text-neutral-900 mb-6">
-                    Идеальный баланс пропорций, света и тени.
-                </h2>
-                <p class="text-xs text-neutral-500 max-w-sm ml-auto font-light leading-relaxed">
-                    При скролле объект плавно смещается, создавая глубокий кинематографичный параллакс-эффект взаимодействия с интерфейсом.
-                </p>
-            </div>
-        </section>
+<!-- NUMBERS -->
+<section id="numbers" style="padding:5rem 3.5rem;">
+  <div class="num-item">
+    <div class="num-val" data-target="2400" data-suffix="+"><span class="counter-val">0</span>+</div>
+    <div class="num-label">Properties sold</div>
+  </div>
+  <div class="num-divider"></div>
+  <div class="num-item">
+    <div class="num-val" data-target="30" data-suffix="+"><span class="counter-val">0</span>+ yrs</div>
+    <div class="num-label">Market experience</div>
+  </div>
+  <div class="num-divider"></div>
+  <div class="num-item">
+    <div class="num-val" data-target="18" data-suffix=""><span class="counter-val">0</span></div>
+    <div class="num-label">Countries served</div>
+  </div>
+  <div class="num-divider"></div>
+  <div class="num-item">
+    <div class="num-val" data-target="97" data-suffix="%"><span class="counter-val">0</span>%</div>
+    <div class="num-label">Client satisfaction</div>
+  </div>
+</section>
 
-        <!-- СЕКЦИЯ 3: ИНСПЕКТОР -->
-        <section id="blueprint" class="scroller-section justify-start px-8 md:px-24">
-            <div class="max-w-md bg-white/70 border border-white/80 p-8 rounded-2xl backdrop-blur-xl z-30 shadow-[0_30px_60px_rgba(0,0,0,0.03)]">
-                <span class="text-[10px] uppercase tracking-[0.6em] text-neutral-400 block mb-2 font-medium">03 // Mesh Control</span>
-                <h3 class="font-luxury text-2xl mb-4 font-light text-neutral-900">Проекционный анализ</h3>
-                <p class="text-xs leading-relaxed text-neutral-500 mb-8 tracking-wide">
-                    Управление фокусом камеры и материалами объекта. Кнопка Blueprint переключает модель в режим чистых линий чертежа.
-                </p>
-                
-                <div class="flex flex-col gap-2">
-                    <button id="ui-zoom-house" class="magnetic-target text-left px-5 py-4 text-[10px] uppercase tracking-[0.2em] border border-neutral-200 hover:border-neutral-900 hover:bg-neutral-900 hover:text-white rounded-lg transition-all flex justify-between items-center bg-white/50 group font-medium">
-                        <span>Макро-фокус на детали</span>
-                        <span class="w-1.5 h-1.5 rounded-full bg-neutral-300 group-hover:bg-white transition-colors"></span>
-                    </button>
-                    <button id="ui-xray-house" class="magnetic-target text-left px-5 py-4 text-[10px] uppercase tracking-[0.2em] border border-neutral-200 hover:border-neutral-900 hover:bg-neutral-900 hover:text-white rounded-lg transition-all flex justify-between items-center bg-white/50 group font-medium">
-                        <span>Режим чертежа (Blueprint)</span>
-                        <span id="xray-dot" class="w-1.5 h-1.5 rounded-full bg-neutral-300 group-hover:bg-white transition-all"></span>
-                    </button>
-                    <button id="ui-reset-house" class="text-center text-[9px] uppercase tracking-[0.3em] text-neutral-400 hover:text-black mt-4 underline transition-colors font-medium">
-                        Вернуть базовый ракурс
-                    </button>
-                </div>
-            </div>
-        </section>
+<!-- APPROACH -->
+<section id="approach">
+  <div class="approach-img-wrap">
+    <div class="approach-img" style="width:100%;height:100%;">
+      <div style="width:100%;height:100%;background:linear-gradient(155deg,#D0C8BC 0%,#B0A89E 40%,#928C86 100%);position:relative;overflow:hidden;">
+        <div class="arch-illustration">
+          <div class="arch-building" style="height:55%;"></div>
+          <div class="arch-building tall" style="height:80%;"></div>
+          <div class="arch-building accent" style="height:90%;"></div>
+          <div class="arch-building" style="height:65%;"></div>
+          <div class="arch-building tall" style="height:75%;"></div>
+        </div>
+        <div style="position:absolute;inset:0;background:linear-gradient(to bottom,transparent 50%,rgba(26,26,26,0.3) 100%);"></div>
+      </div>
+    </div>
+    <div class="approach-tag">
+      <div class="approach-tag-num">98</div>
+      <div class="approach-tag-txt">Avg. days to close</div>
+    </div>
+  </div>
 
-        <!-- СЕКЦИЯ 4: ФИЛЬТРАЦИЯ ЛОТОВ -->
-        <section id="spaces" class="min-h-screen w-full bg-[#f2f2ee] py-32 px-8 md:px-24 relative z-30">
-            <div class="max-w-6xl mx-auto">
-                <div class="flex flex-col md:flex-row justify-between items-start md:items-end border-b border-neutral-300 pb-8 mb-16 gap-6">
-                    <div>
-                        <span class="text-[10px] uppercase tracking-[0.6em] text-neutral-400 block mb-2 font-medium">04 // Curated Lots</span>
-                        <h2 class="font-luxury text-4xl md:text-5xl font-light text-neutral-900">Доступные резиденции</h2>
-                    </div>
-                    <div class="flex gap-8 text-[10px] uppercase tracking-[0.3em] text-neutral-400 font-medium">
-                        <button data-filter="ALL" class="filter-btn text-black font-bold border-b border-black pb-1 transition-all">Все</button>
-                        <button data-filter="LIVING" class="filter-btn hover:text-black pb-1 transition-all">Жилые</button>
-                        <button data-filter="LOUNGE" class="filter-btn hover:text-black pb-1 transition-all">Открытые</button>
-                    </div>
-                </div>
+  <div class="approach-content" id="approachContent">
+    <div class="section-label">The Maison Method</div>
+    <h2 class="section-h2">A considered approach<br>to <em>every transaction</em></h2>
+    <p style="margin-top:1.25rem;font-size:0.88rem;line-height:1.8;color:var(--ash);max-width:400px;">
+      We believe exceptional properties deserve exceptional representation. Our process combines deep market knowledge with personal attention at every stage.
+    </p>
+    <div class="approach-steps">
+      <div class="step">
+        <div class="step-n">I</div>
+        <div>
+          <div class="step-title">Discovery &amp; Vision</div>
+          <div class="step-desc">We begin by understanding not just your requirements, but your way of living — the details that make a property truly yours.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-n">II</div>
+        <div>
+          <div class="step-title">Curated Selection</div>
+          <div class="step-desc">Access to properties before they reach the market. Our global network of owners, developers, and agents gives you first view.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-n">III</div>
+        <div>
+          <div class="step-title">Private Presentation</div>
+          <div class="step-desc">Unhurried viewings, comprehensive documentation, and complete discretion — always on your schedule.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-n">IV</div>
+        <div>
+          <div class="step-title">Seamless Completion</div>
+          <div class="step-desc">From offer to keys, we coordinate every legal, financial, and logistical detail so you can focus on what matters.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
-                <div id="lots-grid" class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    <div data-type="LIVING" class="lot-card group bg-white border border-neutral-200/60 p-8 rounded-xl transition-all duration-500 hover:shadow-[0_40px_80px_rgba(0,0,0,0.04)] hover:-translate-y-1 overflow-hidden relative">
-                        <span class="text-[10px] text-neutral-400 font-mono font-medium">LOT // 01</span>
-                        <h4 class="font-luxury text-2xl mt-4 mb-2 font-light text-neutral-900">Grand Atrium</h4>
-                        <p class="text-xs text-neutral-500 font-light mb-12 leading-relaxed">Двухуровневая галерейная гостиная с панорамным остеклением в пол и видом на сад.</p>
-                        <div class="text-[10px] uppercase tracking-widest font-medium text-neutral-400 group-hover:text-black transition-colors">420 M² — Свободно</div>
-                    </div>
-                    <div data-type="LIVING" class="lot-card group bg-white border border-neutral-200/60 p-8 rounded-xl transition-all duration-500 hover:shadow-[0_40px_80px_rgba(0,0,0,0.04)] hover:-translate-y-1 overflow-hidden relative">
-                        <span class="text-[10px] text-neutral-400 font-mono font-medium">LOT // 02</span>
-                        <h4 class="font-luxury text-2xl mt-4 mb-2 font-light text-neutral-900">Master Suite</h4>
-                        <p class="text-xs text-neutral-500 font-light mb-12 leading-relaxed">Консольное приватное крыло с интегрированной спа-зоной и скрытой мастер-гардеробной.</p>
-                        <div class="text-[10px] uppercase tracking-widest font-medium text-neutral-400 group-hover:text-black transition-colors">180 M² — Резерв</div>
-                    </div>
-                    <div data-type="LOUNGE" class="lot-card group bg-white border border-neutral-200/60 p-8 rounded-xl transition-all duration-500 hover:shadow-[0_40px_80px_rgba(0,0,0,0.04)] hover:-translate-y-1 overflow-hidden relative">
-                        <span class="text-[10px] text-neutral-400 font-mono font-medium">LOT // 03</span>
-                        <h4 class="font-luxury text-2xl mt-4 mb-2 font-light text-neutral-900">Sky Terrace</h4>
-                        <p class="text-xs text-neutral-500 font-light mb-12 leading-relaxed">Эксплуатируемая палубная кровля из тика с приватным бассейном и зоной камина.</p>
-                        <div class="text-[10px] uppercase tracking-widest font-medium text-neutral-400 group-hover:text-black transition-colors">250 M² — Свободно</div>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </main>
+<!-- TESTIMONIAL -->
+<section id="testimonial">
+  <blockquote class="testimonial-quote" id="testimonialQuote">
+    "Maison found us a home we didn't know existed. Not simply a transaction — a <em>transformation</em> in how we live."
+  </blockquote>
+  <p class="testimonial-author" id="testimonialAuthor">
+    <strong>Catherine &amp; Edward Harrington</strong> &nbsp;·&nbsp; Purchased in Mayfair, 2023
+  </p>
+</section>
 
-    <!-- СЦЕНА THREE.JS И АНИМАЦИИ -->
-    <script>
-        gsap.registerPlugin(ScrollTrigger);
+<!-- LISTINGS -->
+<section id="listings">
+  <div class="section-header">
+    <div>
+      <div class="section-label">Current Listings</div>
+      <h2 class="section-h2">Available now</h2>
+    </div>
+  </div>
+  <div class="listings-filter">
+    <button class="filter-btn active">All</button>
+    <button class="filter-btn">London</button>
+    <button class="filter-btn">Paris</button>
+    <button class="filter-btn">Mediterranean</button>
+    <button class="filter-btn">Middle East</button>
+    <button class="filter-btn">Americas</button>
+  </div>
+  <div class="listings-row">
+    <div class="listing-card" data-delay="0">
+      <div class="listing-img"><div class="listing-img-bg limg-1" style="height:100%;width:100%;"></div></div>
+      <div class="listing-body">
+        <div class="listing-loc">Marylebone, London</div>
+        <div class="listing-name">The Portland Townhouse</div>
+        <div class="listing-row">
+          <div class="listing-price">£ 5,400,000</div>
+          <div class="listing-specs">4 bed · 240 m²</div>
+        </div>
+      </div>
+    </div>
+    <div class="listing-card" data-delay="0.07">
+      <div class="listing-img"><div class="listing-img-bg limg-2" style="height:100%;width:100%;"></div></div>
+      <div class="listing-body">
+        <div class="listing-loc">Arrondissement 16, Paris</div>
+        <div class="listing-name">Résidence Trocadéro</div>
+        <div class="listing-row">
+          <div class="listing-price">€ 6,200,000</div>
+          <div class="listing-specs">5 bed · 310 m²</div>
+        </div>
+      </div>
+    </div>
+    <div class="listing-card" data-delay="0.14">
+      <div class="listing-img"><div class="listing-img-bg limg-3" style="height:100%;width:100%;"></div></div>
+      <div class="listing-body">
+        <div class="listing-loc">Marbella, Spain</div>
+        <div class="listing-name">Villa Sierra Blanca</div>
+        <div class="listing-row">
+          <div class="listing-price">€ 9,800,000</div>
+          <div class="listing-specs">6 bed · 650 m²</div>
+        </div>
+      </div>
+    </div>
+    <div class="listing-card" data-delay="0.0">
+      <div class="listing-img"><div class="listing-img-bg limg-4" style="height:100%;width:100%;"></div></div>
+      <div class="listing-body">
+        <div class="listing-loc">Manhattan, New York</div>
+        <div class="listing-name">Central Park South Duplex</div>
+        <div class="listing-row">
+          <div class="listing-price">$ 18,500,000</div>
+          <div class="listing-specs">4 bed · 400 m²</div>
+        </div>
+      </div>
+    </div>
+    <div class="listing-card" data-delay="0.07">
+      <div class="listing-img"><div class="listing-img-bg limg-5" style="height:100%;width:100%;"></div></div>
+      <div class="listing-body">
+        <div class="listing-loc">Lugano, Switzerland</div>
+        <div class="listing-name">Villa Lago d'Oro</div>
+        <div class="listing-row">
+          <div class="listing-price">CHF 7,900,000</div>
+          <div class="listing-specs">5 bed · 480 m²</div>
+        </div>
+      </div>
+    </div>
+    <div class="listing-card" data-delay="0.14">
+      <div class="listing-img"><div class="listing-img-bg limg-6" style="height:100%;width:100%;"></div></div>
+      <div class="listing-body">
+        <div class="listing-loc">Jumeirah, Dubai</div>
+        <div class="listing-name">Madinat Waterfront Mansion</div>
+        <div class="listing-row">
+          <div class="listing-price">$ 14,200,000</div>
+          <div class="listing-specs">7 bed · 900 m²</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
-        // ==========================================
-        // 1. ИНИЦИАЛИЗАЦИЯ СЦЕНЫ В СВЕТЛЫХ ТОНАХ
-        // ==========================================
-        const canvas = document.querySelector('#webgl-stage');
-        const scene = new THREE.Scene();
-        
-        // Мягкий туман цвета фона для бесшовного растворения краев сцены
-        scene.fog = new THREE.FogExp2('#f7f7f4', 0.14);
+<!-- CONTACT -->
+<section id="contact">
+  <div class="contact-left">
+    <div class="section-label">Private Enquiry</div>
+    <h2 class="section-h2">Begin your<br><em>search</em></h2>
+    <p class="contact-lead">
+      Our advisors are available for confidential consultations — in person, by telephone, or video call — in any timezone.
+    </p>
+    <div class="contact-detail">
+      <div class="cd-item">
+        <div class="cd-label">London Office</div>
+        <div class="cd-val">+44 20 7946 0958</div>
+      </div>
+      <div class="cd-item">
+        <div class="cd-label">Email</div>
+        <div class="cd-val">enquiries@maison.co</div>
+      </div>
+      <div class="cd-item">
+        <div class="cd-label">Hours</div>
+        <div class="cd-val">Mon – Sat, 9am – 7pm GMT</div>
+      </div>
+    </div>
+  </div>
 
-        const camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.1, 100);
-        camera.position.set(0, 1.5, 7.5); // Ставим камеру чуть выше для лучшего обзора
+  <div class="contact-form" id="contactForm">
+    <div class="form-row">
+      <div class="form-field">
+        <label class="form-label">First name</label>
+        <input class="form-input" type="text" placeholder="Alexandra">
+      </div>
+      <div class="form-field">
+        <label class="form-label">Last name</label>
+        <input class="form-input" type="text" placeholder="Whitmore">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-field">
+        <label class="form-label">Email</label>
+        <input class="form-input" type="email" placeholder="alex@example.com">
+      </div>
+      <div class="form-field">
+        <label class="form-label">Budget range</label>
+        <select class="form-select form-input">
+          <option>£1m – £3m</option>
+          <option>£3m – £7m</option>
+          <option selected>£7m – £15m</option>
+          <option>£15m+</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-field" style="background:var(--ivory);">
+      <label class="form-label">Tell us about your ideal property</label>
+      <textarea class="form-textarea" placeholder="I'm looking for a family home near good schools, with outdoor space and ideally a view…"></textarea>
+    </div>
+    <button class="form-submit">
+      Send private enquiry <span>→</span>
+    </button>
+  </div>
+</section>
 
-        const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-        renderer.outputEncoding = THREE.sRGBEncoding;
+<!-- FOOTER -->
+<footer>
+  <div class="footer-brand">
+    <div class="footer-logo-txt">Ma<em>i</em>son</div>
+    <p class="footer-tagline">Representing the world's most exceptional residential properties since 1994.</p>
+  </div>
+  <div>
+    <div class="footer-col-title">Properties</div>
+    <ul class="footer-links">
+      <li><a href="#">For Sale</a></li>
+      <li><a href="#">For Rent</a></li>
+      <li><a href="#">New Developments</a></li>
+      <li><a href="#">Off-market</a></li>
+    </ul>
+  </div>
+  <div>
+    <div class="footer-col-title">Company</div>
+    <ul class="footer-links">
+      <li><a href="#">About Maison</a></li>
+      <li><a href="#">Our Advisors</a></li>
+      <li><a href="#">Press</a></li>
+      <li><a href="#">Careers</a></li>
+    </ul>
+  </div>
+  <div>
+    <div class="footer-col-title">Global Offices</div>
+    <ul class="footer-links">
+      <li><a href="#">London</a></li>
+      <li><a href="#">Paris</a></li>
+      <li><a href="#">Dubai</a></li>
+      <li><a href="#">New York</a></li>
+      <li><a href="#">Monaco</a></li>
+    </ul>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 Maison Residential Ltd. All rights reserved.</span>
+    <span>Privacy Policy · Terms of Use · Cookie Settings</span>
+  </div>
+</footer>
 
-        // Группа-контейнер для управления инерцией и скроллом
-        const houseGroup = new THREE.Group();
-        scene.add(houseGroup);
+<script>
+// ── CURSOR ──
+const cur = document.getElementById('cur');
+const curRing = document.getElementById('curRing');
+let mx=0, my=0, rx=0, ry=0;
+document.addEventListener('mousemove', e => {
+  mx = e.clientX; my = e.clientY;
+  cur.style.left = mx+'px'; cur.style.top = my+'px';
+});
+(function ring(){ rx+=(mx-rx)*0.1; ry+=(my-ry)*0.1; curRing.style.left=rx+'px'; curRing.style.top=ry+'px'; requestAnimationFrame(ring); })();
+document.querySelectorAll('a,button,input,select,textarea').forEach(el => {
+  el.addEventListener('mouseenter', () => { cur.classList.add('hover'); curRing.classList.add('hover'); });
+  el.addEventListener('mouseleave', () => { cur.classList.remove('hover'); curRing.classList.remove('hover'); });
+});
 
-        // Хранилище материалов для эффекта Blueprint (чертеж)
-        let originalMaterials = new Map();
-        const blueprintMaterial = new THREE.MeshBasicMaterial({ 
-            color: '#1a1a1a', 
-            wireframe: true, 
-            transparent: true, 
-            opacity: 0.08 
-        });
+// ── NAV SCROLL ──
+window.addEventListener('scroll', () => {
+  document.getElementById('mainNav').classList.toggle('scrolled', window.scrollY > 60);
+});
 
-        // ==========================================
-        // 2. ВЫРАВНИВАНИЕ И ЗАГРУЗКА 3D МОДЕЛИ
-        // ==========================================
-        const loader = new THREE.GLTFLoader();
-        
-        loader.load(
-            '55cf7f5b-323a-46a6-8d28-f5a703f9dfd6.glb',
-            function (gltf) {
-                const loadedModel = gltf.scene;
-                
-                // Рассчитываем точные габариты твоей уникальной модели
-                const box = new THREE.Box3().setFromObject(loadedModel);
-                const center = box.getCenter(new THREE.Vector3());
-                const size = box.getSize(new THREE.Vector3());
-                
-                // ИДЕАЛЬНОЕ ВЫРАВНИВАНИЕ: 
-                // Центрируем по осям X и Z, а низ модели (основание фундамента) ставим строго на уровень Y = 0
-                loadedModel.position.x = -center.x;
-                loadedModel.position.y = -box.min.y; 
-                loadedModel.position.z = -center.z;
-                
-                // ИНТЕЛЛЕКТУАЛЬНЫЙ МАСШТАБ: Подгоняем модель под оптимальный размер на экране независимо от её исходных размеров
-                const maxDim = Math.max(size.x, size.y, size.z);
-                if (maxDim > 0) {
-                    const scaleFactor = 3.6 / maxDim; // Оптимальный коэффициент масштаба сцены
-                    houseGroup.scale.set(scaleFactor, scaleFactor, scaleFactor);
-                }
-                
-                // Накапливаем текстуры для рентгена
-                loadedModel.traverse((child) => {
-                    if (child.isMesh) {
-                        originalMaterials.set(child, child.material.clone());
-                        child.castShadow = true;
-                        child.receiveShadow = true;
-                    }
-                });
+// ── GSAP ──
+gsap.registerPlugin(ScrollTrigger);
 
-                houseGroup.add(loadedModel);
-                
-                // ЭЛИТНЫЙ НАЧАЛЬНЫЙ РАКУРС: красивый разворот фасада в 3/4
-                houseGroup.rotation.set(0.2, -0.6, 0);
-            },
-            undefined,
-            function (error) {
-                console.error('Ошибка загрузки модели. Проверь наличие файла рядом с индексом.', error);
-            }
-        );
+// Hero entrance — staggered clip reveals
+const heroTL = gsap.timeline({ delay: 0.3 });
+heroTL
+  .to('#heroTag', { opacity:1, y:0, duration:0.7, ease:'power2.out' })
+  .to('#heroH1',  { opacity:1, duration:0.1 }, '-=0.2')
+  .from('#heroH1 > *', { y:60, opacity:0, duration:0.9, stagger:0.12, ease:'power3.out' }, '-=0.1')
+  .to('#heroDesc',    { opacity:1, y:0, duration:0.6, ease:'power2.out' }, '-=0.4')
+  .to('#heroActions', { opacity:1, y:0, duration:0.5, ease:'power2.out' }, '-=0.3')
+  .to('#heroScroll',  { opacity:1, duration:0.4 }, '-=0.1')
+  .to('#heroCounterNum', { opacity:1, duration:0.4 }, '-=0.3');
 
-        // ==========================================
-        // 3. ПРЕМИАЛЬНОЕ СТУДИЙНОЕ ОСВЕЩЕНИЕ
-        // ==========================================
-        // Мягкий свет полусферы (имитация неба и отражения от теплого пола)
-        const hemiLight = new THREE.HemisphereLight('#ffffff', '#e0e0d8', 1.2);
-        scene.add(hemiLight);
+// Animate counter in hero
+let heroCount = { v: 0 };
+gsap.to(heroCount, { v:127, duration:2, delay:1.2, ease:'power2.out',
+  onUpdate: () => { document.getElementById('heroCounterNum').textContent = Math.round(heroCount.v); }
+});
 
-        // Направленное солнце, создающее объемные тени на архитектурных гранях
-        const sunLight = new THREE.DirectionalLight('#fffdf5', 1.5);
-        sunLight.position.set(6, 10, 4);
-        scene.add(sunLight);
+// Stats counters
+document.querySelectorAll('[data-target]').forEach(el => {
+  const counterEl = el.querySelector('.counter-val');
+  const target = +el.dataset.target;
+  ScrollTrigger.create({ trigger: el, start:'top 85%', once:true, onEnter:() => {
+    gsap.to({ v:0 }, { v:target, duration:1.8, ease:'power2.out',
+      onUpdate: function(){ counterEl.textContent = Math.round(this.targets()[0].v); }
+    });
+  }});
+});
 
-        // Деликатная контурная подсветка с противоположной стороны
-        const bounceLight = new THREE.DirectionalLight('#dce3f0', 0.6);
-        bounceLight.position.set(-6, -2, -4);
-        scene.add(bounceLight);
+// Section titles clip reveal
+gsap.utils.toArray('.section-h2').forEach(el => {
+  gsap.from(el, { opacity:0, y:28, duration:0.8, ease:'power2.out',
+    scrollTrigger: { trigger:el, start:'top 88%', once:true }
+  });
+});
+gsap.utils.toArray('.section-label').forEach(el => {
+  gsap.from(el, { opacity:0, x:-16, duration:0.6, ease:'power2.out',
+    scrollTrigger: { trigger:el, start:'top 90%', once:true }
+  });
+});
 
+// Property cards — stagger fade up
+document.querySelectorAll('.prop-card').forEach((card) => {
+  const delay = +(card.dataset.delay||0);
+  gsap.to(card, { opacity:1, y:0, duration:0.8, delay, ease:'power2.out',
+    scrollTrigger: { trigger:'#featured', start:'top 75%', once:true }
+  });
+});
 
-        // ==========================================
-        // 4. ДИНАМИКА, ИНЕРЦИЯ И МИКРОПАРAЛЛАКС
-        // ==========================================
-        const clock = new THREE.Clock();
-        let isUserInspecting = false;
-        let mouseX = 0, mouseY = 0, targetX = 0, targetY = 0;
+// Approach text
+gsap.to('#approachContent', { opacity:1, x:0, duration:1, ease:'power2.out',
+  scrollTrigger: { trigger:'#approach', start:'top 70%', once:true }
+});
+gsap.utils.toArray('.step').forEach((step, i) => {
+  gsap.from(step, { opacity:0, y:20, duration:0.6, delay:i*0.1, ease:'power2.out',
+    scrollTrigger: { trigger:'#approach', start:'top 65%', once:true }
+  });
+});
 
-        window.addEventListener('mousemove', (e) => {
-            mouseX = (e.clientX / window.innerWidth) - 0.5;
-            mouseY = (e.clientY / window.innerHeight) - 0.5;
-        });
+// Testimonial
+gsap.to('#testimonialQuote', { opacity:1, y:0, duration:1, ease:'power2.out',
+  scrollTrigger: { trigger:'#testimonial', start:'top 75%', once:true }
+});
+gsap.to('#testimonialAuthor', { opacity:1, duration:0.8, delay:0.3,
+  scrollTrigger: { trigger:'#testimonial', start:'top 75%', once:true }
+});
 
-        function renderLoop() {
-            const time = clock.getElapsedTime();
+// Listing cards
+document.querySelectorAll('.listing-card').forEach((card,i) => {
+  gsap.to(card, { opacity:1, y:0, duration:0.7, delay:+(card.dataset.delay||0),
+    ease:'power2.out',
+    scrollTrigger: { trigger:'.listings-row', start:'top 80%', once:true }
+  });
+});
 
-            if (!isUserInspecting) {
-                // Изящная микро-левитация (имитация дыхания камеры)
-                houseGroup.position.y = Math.sin(time * 0.8) * 0.04;
-                
-                // Плавное следование за курсором мыши с дорогой инерцией
-                targetX += (mouseX * 0.3 - targetX) * 0.04;
-                targetY += (mouseY * 0.2 - targetY) * 0.04;
-                
-                // Базовое вращение + реакция на мышь
-                houseGroup.rotation.y = -0.6 + (time * 0.03) + targetX;
-                houseGroup.rotation.x = 0.2 + targetY;
-            }
+// Contact form
+gsap.from('#contactForm', { opacity:0, y:30, duration:0.9, ease:'power2.out',
+  scrollTrigger: { trigger:'#contact', start:'top 75%', once:true }
+});
+gsap.from('.contact-left', { opacity:0, x:-30, duration:0.9, ease:'power2.out',
+  scrollTrigger: { trigger:'#contact', start:'top 75%', once:true }
+});
 
-            renderer.render(scene, camera);
-            requestAnimationFrame(renderLoop);
-        }
-        requestAnimationFrame(renderLoop);
+// Parallax on hero right side
+gsap.to('.hero-right', { yPercent:-12, ease:'none',
+  scrollTrigger: { trigger:'#hero', scrub:1.5, start:'top top', end:'bottom top' }
+});
 
+// Numbers section
+gsap.from('#numbers .num-item', { opacity:0, y:30, stagger:0.12, duration:0.7, ease:'power2.out',
+  scrollTrigger: { trigger:'#numbers', start:'top 80%', once:true }
+});
 
-        // ==========================================
-        // 5. ИНТЕГРАЦИЯ СКРОЛЛА (GSAP)
-        // ==========================================
-        gsap.to("#progress-bar", {
-            width: "100%", ease: "none",
-            scrollTrigger: { trigger: "main", start: "top top", end: "bottom bottom", scrub: true }
-        });
+// ── STRIP ──
+const stripItems = [
+  'Exceptional Residences','Private Viewings','Global Portfolio',
+  'Discreet Service','30 Years Experience','18 Countries',
+  'Curated Properties','Off-Market Access','Expert Advisors'
+];
+const track = document.getElementById('stripTrack');
+[...stripItems,...stripItems,...stripItems,...stripItems].forEach((item,i) => {
+  const d = document.createElement('div');
+  d.className = 'strip-item';
+  d.innerHTML = (i>0 ? '<span class="strip-sep">✦</span>' : '') + item;
+  track.appendChild(d);
+});
 
-        // Элегантный увод модели в сторону во второй секции
-        gsap.to(houseGroup.position, {
-            x: 1.4, y: -0.2, z: -0.4,
-            scrollTrigger: {
-                trigger: "#philosophy", start: "top bottom", end: "top top", scrub: 1
-            }
-        });
-
-        // Эффект раскрытия текста по буквам
-        const txt = document.getElementById('stagger-text');
-        const split = txt.textContent.trim().split("");
-        txt.textContent = "";
-        split.forEach(letter => {
-            const span = document.createElement("span");
-            span.textContent = letter;
-            span.className = "inline-block opacity-10 translate-y-1 transition-all duration-700";
-            txt.appendChild(span);
-        });
-
-        gsap.to(txt.children, {
-            opacity: 1, y: 0, stagger: 0.01, ease: "power3.out",
-            scrollTrigger: { trigger: "#philosophy", start: "top 70%", toggleActions: "play none none reverse" }
-        });
-
-
-        // ==========================================
-        // 6. ИНТЕРФЕЙСНЫЙ ИНСПЕКТОР (ИНТЕРАКТИВ)
-        // ==========================================
-        let isBlueprintActive = false;
-
-        document.getElementById('ui-zoom-house').addEventListener('click', () => {
-            isUserInspecting = true;
-            gsap.to(camera.position, { x: 0, y: 0.8, z: 2.2, duration: 2.5, ease: "power4.inOut" });
-            gsap.to(houseGroup.rotation, { x: 0.1, y: -0.2, z: 0, duration: 2.5, ease: "power4.inOut" });
-            gsap.to(houseGroup.position, { x: -0.4, y: -0.3, z: 0, duration: 2.5, ease: "power4.inOut" });
-        });
-
-        document.getElementById('ui-xray-house').addEventListener('click', () => {
-            const dot = document.getElementById('xray-dot');
-            isBlueprintActive = !isBlueprintActive;
-
-            if(isBlueprintActive) {
-                dot.className = "w-1.5 h-1.5 rounded-full bg-neutral-900 shadow-[0_0_8px_rgba(0,0,0,0.3)]";
-                houseGroup.traverse((child) => {
-                    if (child.isMesh) child.material = blueprintMaterial;
-                });
-            } else {
-                dot.className = "w-1.5 h-1.5 rounded-full bg-neutral-300";
-                houseGroup.traverse((child) => {
-                    if (child.isMesh && originalMaterials.has(child)) {
-                        child.material = originalMaterials.get(child).clone();
-                    }
-                });
-            }
-        });
-
-        document.getElementById('ui-reset-house').addEventListener('click', () => {
-            gsap.to(camera.position, { x: 0, y: 1.5, z: 7.5, duration: 1.8, ease: "power3.out", onComplete: () => { isUserInspecting = false; } });
-            gsap.to(houseGroup.position, { x: 1.4, y: -0.2, z: -0.4, duration: 1.8, ease: "power3.out" });
-        });
-
-
-        // ==========================================
-        // 7. СОРТИРОВКА КАРТОЧЕК И КУРСОР
-        // ==========================================
-        const filterBtns = document.querySelectorAll('.filter-btn');
-        const lotCards = document.querySelectorAll('.lot-card');
-
-        filterBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                filterBtns.forEach(b => b.className = "filter-btn hover:text-black pb-1 transition-all");
-                btn.className = "filter-btn text-black font-bold border-b border-black pb-1 transition-all";
-
-                const filter = btn.getAttribute('data-filter');
-                lotCards.forEach(card => {
-                    const type = card.getAttribute('data-type');
-                    if (filter === 'ALL' || type === filter) {
-                        gsap.to(card, { opacity: 1, scale: 1, y: 0, duration: 0.4, display: 'block' });
-                    } else {
-                        gsap.to(card, { opacity: 0, scale: 0.95, y: 15, duration: 0.3, display: 'none' });
-                    }
-                });
-            });
-        });
-
-        const cDot = document.getElementById('custom-cursor');
-        const cRing = document.getElementById('custom-cursor-ring');
-        const magnets = document.querySelectorAll('.magnetic-target');
-
-        window.addEventListener('mousemove', (e) => {
-            gsap.to(cDot, { x: e.clientX, y: e.clientY, duration: 0.05 });
-            gsap.to(cRing, { x: e.clientX, y: e.clientY, duration: 0.2 });
-        });
-
-        magnets.forEach(m => {
-            m.addEventListener('mousemove', (e) => {
-                const rect = m.getBoundingClientRect();
-                const x = e.clientX - (rect.left + rect.width / 2);
-                const y = e.clientY - (rect.top + rect.height / 2);
-                gsap.to(m, { x: x * 0.25, y: y * 0.25, duration: 0.3 });
-                cRing.style.transform = 'translate(-50%, -50%) scale(1.4)';
-                cRing.style.borderColor = '#1a1a1a';
-            });
-            m.addEventListener('mouseleave', () => {
-                gsap.to(m, { x: 0, y: 0, duration: 0.5, ease: "power2.out" });
-                cRing.style.transform = 'translate(-50%, -50%) scale(1)';
-                cRing.style.borderColor = 'rgba(0,0,0,0.2)';
-            });
-        });
-
-        window.addEventListener('resize', () => {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        });
-    </script>
+// ── FILTER BUTTONS ──
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  });
+});
+</script>
 </body>
 </html>
