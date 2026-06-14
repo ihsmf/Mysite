@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="ru" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Monolith | Premium Real Estate Specimen</title>
+    <title>The Monolith Engine | Next-Gen UI</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -12,159 +12,132 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/Flip.min.js"></script>
 
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=Plus+Jakarta+Sans:wght@300;400;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=Plus+Jakarta+Sans:wght@300;400;500&display=swap');
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #F5F5F0; color: #1A1A1A; }
         .font-serif { font-family: 'Playfair Display', serif; }
+        .reveal-hidden { clip-path: polygon(0 0, 100% 0, 100% 0, 0 0); }
     </style>
 </head>
 <body class="overflow-x-hidden selection:bg-[#1A1A1A] selection:text-[#F5F5F0]">
 
     <canvas id="webgl-canvas" class="fixed inset-0 w-full h-full pointer-events-none z-10 hidden md:block"></canvas>
 
-    <nav class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-6 py-6 md:px-12 backdrop-blur-sm bg-[#F5F5F0]/40">
+    <nav id="site-nav" class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-6 py-6 md:px-12 opacity-0 -translate-y-4">
         <div class="font-serif text-xl tracking-widest font-medium">M O N O L I T H</div>
         <div class="hidden md:flex gap-12 text-xs uppercase tracking-widest text-[#1A1A1A]/70">
-            <a href="#section-philosophy" class="hover:text-black transition-colors">Philosophy</a>
-            <a href="#section-interactive" class="hover:text-black transition-colors">Specimen</a>
-            <a href="#section-selector" class="hover:text-black transition-colors">Layouts</a>
+            <a href="#section-philosophy" class="hover:text-black transition-colors">Философия</a>
+            <a href="#section-interactive" class="hover:text-black transition-colors">Спецификация</a>
+            <a href="#section-selector" class="hover:text-black transition-colors">Планировки</a>
         </div>
-        <button class="border border-[#1A1A1A] px-5 py-2 text-xs uppercase tracking-widest hover:bg-[#1A1A1A] hover:text-[#F5F5F0] transition-all duration-300">
-            Registry
+        <button class="border border-[#1A1A1A] px-5 py-2 text-xs uppercase tracking-widest hover:bg-[#1A1A1A] hover:text-[#F5F5F0] transition-all duration-500">
+            Вход в Клуб
         </button>
     </nav>
+
+    <div class="fixed top-0 left-0 h-[2px] bg-[#1A1A1A] z-50 w-0" id="scroll-progress"></div>
 
     <main class="relative z-20 w-full">
 
         <section class="h-screen w-full flex flex-col justify-between px-6 py-24 md:px-24 md:py-32">
-            <div class="w-full"></div>
-            <div class="max-w-2xl">
-                <h1 class="font-serif text-5xl md:text-8xl font-light tracking-tight leading-[1.05] mb-8">
-                    Architecture <br><span class="italic">of Omission.</span>
+            <div></div>
+            <div class="max-w-3xl">
+                <h1 id="hero-title" class="reveal-hidden font-serif text-5xl md:text-8xl font-light tracking-tight leading-[1.05] mb-8">
+                    Эстетика <br><span class="italic text-neutral-600">вычитания.</span>
                 </h1>
-                <p class="text-sm md:text-base text-[#1A1A1A]/60 max-w-sm font-light leading-relaxed mb-6">
-                    A physical study in radical spatial silence, positioned above the urban canopy line.
+                <p id="hero-sub" class="opacity-0 translate-y-4 text-sm md:text-base text-[#1A1A1A]/60 max-w-sm font-light leading-relaxed">
+                    Радикальный отказ от лишнего декора в пользу чистого света, пропорций и тектоники.
                 </p>
             </div>
             <div class="text-xs uppercase tracking-widest text-[#1A1A1A]/40 flex justify-between items-center">
-                <span>Scroll to descend — Year 2026</span>
-                <span class="hidden md:block">Inertial Parallax Active</span>
+                <span>Листайте, чтобы погрузиться</span>
+                <span class="hidden md:block">Engine: Three.js + GSAP 2026</span>
             </div>
         </section>
 
-        <section id="section-philosophy" class="h-screen w-full flex items-center px-6 md:px-24">
+        <section id="section-philosophy" class="h-screen w-full flex items-center px-6 md:px-24 relative">
             <div class="max-w-2xl">
                 <p id="kinetic-text" class="font-serif text-3xl md:text-5xl font-light leading-snug text-[#1A1A1A]">
-                    We stripped away elements until only space, raw daylight transmission, and native stone remained.
+                    Мы убирали элементы до тех пор, пока не осталось лишь чистое пространство, прорезанное полуденным солнцем.
                 </p>
             </div>
         </section>
 
         <section id="section-interactive" class="h-screen w-full flex flex-col md:flex-row items-center justify-between px-6 md:px-24 relative">
             <div class="max-w-xs z-30 pointer-events-auto bg-[#F5F5F0]/90 md:bg-transparent p-6 md:p-0 border border-neutral-200 md:border-none">
-                <h3 class="font-serif text-2xl md:text-3xl mb-4 font-light">Structural Radiography</h3>
+                <h3 class="font-serif text-2xl md:text-3xl mb-4 font-light">Объемный анализ</h3>
                 <p class="text-xs md:text-sm leading-relaxed text-[#1A1A1A]/70 mb-6">
-                    Scroll down to rotate the core specimen framework. Use the spatial nodes to adjust exposure metrics.
+                    Используйте интерактивные триггеры для переключения режимов отображения всей структуры.
                 </p>
-                <div class="flex flex-col gap-3 pointer-events-auto">
+                <div class="flex flex-col gap-3">
                     <button id="btn-zoom-penthouse" class="border border-neutral-300 text-left px-4 py-3 text-xs uppercase tracking-widest hover:border-black transition-all bg-white flex justify-between items-center">
-                        <span>Node A // Upper Duplexes</span>
-                        <span class="w-2 h-2 rounded-full bg-neutral-400"></span>
+                        <span>Фокус: Пентхаусы</span>
+                        <span class="w-2 h-2 rounded-full bg-neutral-400 animate-pulse"></span>
                     </button>
                     <button id="btn-toggle-xray" class="border border-neutral-300 text-left px-4 py-3 text-xs uppercase tracking-widest hover:border-black transition-all bg-white flex justify-between items-center">
-                        <span>Node B // Blueprint Layer</span>
+                        <span>Рентген-структура</span>
                         <span id="xray-indicator" class="w-2 h-2 rounded-full bg-neutral-300"></span>
                     </button>
                 </div>
             </div>
 
             <div id="info-popover" class="opacity-0 translate-x-12 fixed top-1/3 right-12 md:right-24 w-80 backdrop-blur-xl bg-white/80 border border-white/50 p-8 shadow-2xl z-40 transition-all duration-500 hidden md:block">
-                <h4 class="font-serif text-xl mb-2 tracking-wide">The Penthouse Skyway</h4>
+                <h4 class="font-serif text-xl mb-2 tracking-wide">Skyline Villa</h4>
                 <p class="text-xs text-[#1A1A1A]/80 leading-relaxed mb-6">
-                    Double-height structural volumes lined completely with hand-selected European ivory travertine. Uninterrupted horizons.
+                    Панорамное остекление по периметру 360°. Потолки 4.2 метра. Приватный доступ к вертолетной площадке.
                 </p>
                 <button id="btn-reset-cam" class="text-xs font-semibold uppercase tracking-widest underline hover:text-neutral-500">
-                    Return to Overview
+                    Сбросить камеру
                 </button>
             </div>
         </section>
-
-        <div class="block md:hidden px-6 my-6">
-            <div class="w-full h-96 bg-neutral-200 bg-[url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80')] bg-cover bg-center"></div>
-        </div>
 
         <section id="section-selector" class="min-h-screen w-full bg-[#1A1A1A] text-[#F5F5F0] py-32 px-6 md:px-24">
             <div class="w-full max-w-5xl mx-auto">
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-end border-b border-white/10 pb-6 mb-12 gap-6">
                     <div>
-                        <span class="text-xs uppercase tracking-widest opacity-40 block mb-2">Availability Index</span>
-                        <h2 class="font-serif text-3xl md:text-5xl font-light">Spatial Variants</h2>
+                        <span class="text-xs uppercase tracking-widest opacity-40 block mb-2">Каталог</span>
+                        <h2 class="font-serif text-3xl md:text-5xl font-light">Пространственные решения</h2>
                     </div>
                     <div class="flex gap-8 text-xs tracking-widest uppercase text-white/40">
-                        <button data-filter="ALL" class="filter-btn text-white font-bold transition-colors">All Units</button>
-                        <button data-filter="Penthouse" class="filter-btn hover:text-white transition-colors">Duplexes</button>
-                        <button data-filter="Studio" class="filter-btn hover:text-white transition-colors">Courtyards</button>
+                        <button data-filter="ALL" class="filter-btn text-white font-bold transition-colors">Все</button>
+                        <button data-filter="Penthouse" class="filter-btn hover:text-white transition-colors">Пентхаусы</button>
+                        <button data-filter="Studio" class="filter-btn hover:text-white transition-colors">Студии</button>
                     </div>
                 </div>
 
-                <div id="flip-container" class="grid grid-cols-1 md:grid-cols-2 gap-6 min-h-[400px]">
+                <div id="flip-container" class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div data-type="Penthouse" class="floor-card group bg-neutral-900/50 border border-white/5 p-8 relative overflow-hidden transition-all duration-300 hover:border-white/20">
                         <div class="flex justify-between items-start mb-16">
-                            <div><span class="text-xs uppercase opacity-40 tracking-wider block mb-1">Floor 12-14</span><h4 class="font-serif text-2xl">340 Sq.M Suite</h4></div>
-                            <span class="text-xs tabular-nums opacity-30">SPEC // 01A</span>
+                            <div><span class="text-xs uppercase opacity-40 tracking-wider block mb-1">Level 14</span><h4 class="font-serif text-2xl">340 м²</h4></div>
+                            <span class="text-xs opacity-30">№ 01A</span>
                         </div>
-                        <p class="text-xs tracking-wide text-white/50">Exposure: North Horizon Skyway</p>
-                        <div class="absolute inset-0 bg-neutral-800 opacity-0 group-hover:opacity-10 pointer-events-none transition-opacity duration-500 bg-[url('https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=600&q=80')] bg-cover bg-center"></div>
+                        <div class="absolute inset-0 bg-neutral-800 opacity-0 group-hover:opacity-20 pointer-events-none transition-opacity duration-500 bg-[url('https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=600&q=80')] bg-cover bg-center"></div>
                     </div>
                     <div data-type="Penthouse" class="floor-card group bg-neutral-900/50 border border-white/5 p-8 relative overflow-hidden transition-all duration-300 hover:border-white/20">
                         <div class="flex justify-between items-start mb-16">
-                            <div><span class="text-xs uppercase opacity-40 tracking-wider block mb-1">Floor 15</span><h4 class="font-serif text-2xl">410 Sq.M Pavilion</h4></div>
-                            <span class="text-xs tabular-nums opacity-30">SPEC // 01B</span>
+                            <div><span class="text-xs uppercase opacity-40 tracking-wider block mb-1">Level 15</span><h4 class="font-serif text-2xl">410 м²</h4></div>
+                            <span class="text-xs opacity-30">№ 01B</span>
                         </div>
-                        <p class="text-xs tracking-wide text-white/50">Exposure: Full East River Meridian</p>
-                        <div class="absolute inset-0 bg-neutral-800 opacity-0 group-hover:opacity-10 pointer-events-none transition-opacity duration-500 bg-[url('https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=600&q=80')] bg-cover bg-center"></div>
+                        <div class="absolute inset-0 bg-neutral-800 opacity-0 group-hover:opacity-20 pointer-events-none transition-opacity duration-500 bg-[url('https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=600&q=80')] bg-cover bg-center"></div>
                     </div>
                     <div data-type="Studio" class="floor-card group bg-neutral-900/50 border border-white/5 p-8 relative overflow-hidden transition-all duration-300 hover:border-white/20">
                         <div class="flex justify-between items-start mb-16">
-                            <div><span class="text-xs uppercase opacity-40 tracking-wider block mb-1">Floor 02-04</span><h4 class="font-serif text-2xl">110 Sq.M Garden</h4></div>
-                            <span class="text-xs tabular-nums opacity-30">SPEC // 04C</span>
+                            <div><span class="text-xs uppercase opacity-40 tracking-wider block mb-1">Level 02</span><h4 class="font-serif text-2xl">110 м²</h4></div>
+                            <span class="text-xs opacity-30">№ 04C</span>
                         </div>
-                        <p class="text-xs tracking-wide text-white/50">Exposure: Internal Zen Stone Atrium</p>
-                        <div class="absolute inset-0 bg-neutral-800 opacity-0 group-hover:opacity-10 pointer-events-none transition-opacity duration-500 bg-[url('https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=600&q=80')] bg-cover bg-center"></div>
-                    </div>
-                    <div data-type="Studio" class="floor-card group bg-neutral-900/50 border border-white/5 p-8 relative overflow-hidden transition-all duration-300 hover:border-white/20">
-                        <div class="flex justify-between items-start mb-16">
-                            <div><span class="text-xs uppercase opacity-40 tracking-wider block mb-1">Floor 05-07</span><h4 class="font-serif text-2xl">145 Sq.M Gallery</h4></div>
-                            <span class="text-xs tabular-nums opacity-30">SPEC // 04D</span>
-                        </div>
-                        <p class="text-xs tracking-wide text-white/50">Exposure: Western Linear Sunset Park</p>
-                        <div class="absolute inset-0 bg-neutral-800 opacity-0 group-hover:opacity-10 pointer-events-none transition-opacity duration-500 bg-[url('https://images.unsplash.com/photo-1600566752355-35792bedcfea?auto=format&fit=crop&w=600&q=80')] bg-cover bg-center"></div>
+                        <div class="absolute inset-0 bg-neutral-800 opacity-0 group-hover:opacity-20 pointer-events-none transition-opacity duration-500 bg-[url('https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=600&q=80')] bg-cover bg-center"></div>
                     </div>
                 </div>
-            </div>
-        </section>
-
-        <section class="h-screen w-full bg-[#EAEAEA] relative overflow-hidden flex items-end p-6 md:p-24">
-            <div class="absolute inset-0 bg-neutral-300 mix-blend-color filter grayscale contrast-125" style="background-image: radial-gradient(#1a1a1a 0.75px, transparent 0.75px); background-size: 24px 24px;"></div>
-            <div class="relative z-10 backdrop-blur-md bg-white/95 text-[#1A1A1A] p-8 max-w-sm border border-neutral-200 shadow-xl">
-                <span class="text-[10px] uppercase tracking-widest font-bold block mb-1 text-neutral-400">Coordinates Suite</span>
-                <h4 class="font-serif text-xl mb-3 font-light">The Meridian Intersection</h4>
-                <p class="text-xs leading-relaxed text-neutral-600">
-                    Sited at the direct center of premium private heliports, Michelin-starred provisions, and historical custom docking channels.
-                </p>
             </div>
         </section>
 
         <section class="h-screen w-full flex flex-col justify-center items-center bg-[#F5F5F0] px-6">
             <div class="text-center max-w-xl">
-                <h2 class="font-serif text-4xl md:text-6xl font-light tracking-tight mb-8">Request Entry Token</h2>
+                <h2 class="font-serif text-4xl md:text-6xl font-light tracking-tight mb-8">Получить ключ доступа</h2>
                 <form class="flex flex-col md:flex-row gap-6 w-full justify-center items-center" onsubmit="event.preventDefault();">
-                    <input 
-                        type="email" 
-                        placeholder="SECURE EMAIL AXIS" 
-                        class="bg-transparent border-b border-[#1A1A1A]/30 py-3 px-2 text-xs w-72 focus:outline-none focus:border-[#1A1A1A] tracking-widest text-center uppercase transition-colors"
-                    >
+                    <input type="email" placeholder="SECURE EMAIL NODE" class="bg-transparent border-b border-[#1A1A1A]/30 py-3 px-2 text-xs w-72 focus:outline-none focus:border-[#1A1A1A] tracking-widest text-center uppercase transition-colors">
                     <button id="magnetic-btn" class="bg-[#1A1A1A] text-[#F5F5F0] text-xs uppercase tracking-widest px-10 py-4 font-semibold hover:shadow-2xl transition-shadow duration-300">
-                        Submit Request
+                        Отправить запрос
                     </button>
                 </form>
             </div>
@@ -175,25 +148,24 @@
         gsap.registerPlugin(ScrollTrigger, Flip);
 
         // ==========================================
-        // 1. INITIALIZE THREE.JS WEBGL PIPELINE
+        // 1. ИНИЦИАЛИЗАЦИЯ СЦЕНЫ И ДОПОЛНИТЕЛЬНЫХ ОБЪЕКТОВ
         // ==========================================
         const canvas = document.querySelector('#webgl-canvas');
         const scene = new THREE.Scene();
         
         const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
-        camera.position.set(0, 0, 5);
+        camera.position.set(0, 0, 5.5);
 
         const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-        renderer.shadowMap.enabled = true;
 
-        // Custom Shader Material (Clay Plaster morphing into Architectural X-Ray Wireframe Grid)
+        // Основной кастомный материал для эффекта рентгена
         const customMaterial = new THREE.ShaderMaterial({
             uniforms: {
                 uWireframeProgress: { value: 0.0 },
                 uColorPlaster: { value: new THREE.Color('#E6E6DE') },
-                uColorGrid: { value: new THREE.Color('#1A1A1A') }
+                uColorGrid: { value: new THREE.Color('#2A2A2A') }
             },
             vertexShader: `
                 varying vec2 vUv;
@@ -211,12 +183,12 @@
                 varying vec2 vUv;
                 varying vec3 vNormal;
                 void main() {
-                    float edgeX = step(0.015, mod(vUv.x * 12.0, 1.0));
-                    float edgeY = step(0.015, mod(vUv.y * 18.0, 1.0));
+                    float edgeX = step(0.015, mod(vUv.x * 10.0, 1.0));
+                    float edgeY = step(0.015, mod(vUv.y * 15.0, 1.0));
                     float gridPattern = 1.0 - (edgeX * edgeY);
                     
-                    vec3 plaster = uColorPlaster * max(0.5, dot(vNormal, vec3(0.5, 1.0, 0.7)));
-                    vec3 wireframe = uColorGrid + vec3(gridPattern * 0.5);
+                    vec3 plaster = uColorPlaster * max(0.4, dot(vNormal, vec3(0.5, 1.0, 0.6)));
+                    vec3 wireframe = uColorGrid + vec3(gridPattern * 0.6);
                     
                     vec3 finalColor = mix(plaster, wireframe, uWireframeProgress);
                     gl_FragColor = vec4(finalColor, 1.0);
@@ -224,104 +196,174 @@
             `
         });
 
-        // Generate Monolithic Building Asset
-        const geometry = new THREE.BoxGeometry(1.6, 3.2, 1.6);
-        const buildingMesh = new THREE.Mesh(geometry, customMaterial);
-        scene.add(buildingMesh);
+        // Главный объект (Монолит)
+        const geometry = new THREE.BoxGeometry(1.4, 2.8, 1.4);
+        const mainBuilding = new THREE.Mesh(geometry, customMaterial);
+        const webglGroup = new THREE.Group();
+        webglGroup.add(mainBuilding);
+        scene.add(webglGroup);
 
-        // Studio Lighting Strategy
-        const ambientLight = new THREE.AmbientLight('#ffffff', 0.8);
+        // ДОПОЛНИТЕЛЬНЫЕ ОБЪЕКТЫ: Абстрактные парящие плиты для создания параллакса глубины
+        const floatingObjects = [];
+        const slabGeo = new THREE.BoxGeometry(0.8, 0.05, 0.8);
+        const slabMat = new THREE.MeshStandardMaterial({ color: '#D4D4CC', roughness: 0.6 });
+
+        for(let i = 0; i < 5; i++) {
+            const slab = new THREE.Mesh(slabGeo, slabMat);
+            slab.position.set(
+                (Math.random() - 0.5) * 4,
+                (Math.random() - 0.5) * 4,
+                (Math.random() - 0.5) * 2 - 1
+            );
+            slab.rotation.set(Math.random(), Math.random(), 0);
+            webglGroup.add(slab);
+            floatingObjects.push(slab);
+        }
+
+        // 3D-ТЕКСТ / МЕТКИ (Генерация через динамический Canvas 2D)
+        function create3DTextTexture(text) {
+            const textCanvas = document.createElement('canvas');
+            textCanvas.width = 512;
+            textCanvas.height = 128;
+            const ctx = textCanvas.getContext('2d');
+            ctx.fillStyle = 'rgba(0,0,0,0)';
+            ctx.fillRect(0,0,512,128);
+            ctx.font = 'Light 32px serif';
+            ctx.fillStyle = '#1A1A1A';
+            ctx.textAlign = 'center';
+            ctx.fillText(text, 256, 64);
+            
+            const texture = new THREE.CanvasTexture(textCanvas);
+            const mat = new THREE.MeshBasicMaterial({ map: texture, transparent: true, side: THREE.DoubleSide });
+            const geo = new THREE.PlaneGeometry(2, 0.5);
+            return new THREE.Mesh(geo, mat);
+        }
+
+        const label3D = create3DTextTexture("LATITUDE 55.75°");
+        label3D.position.set(0, 1.8, 0);
+        webglGroup.add(label3D);
+
+        // Свет
+        const ambientLight = new THREE.AmbientLight('#ffffff', 0.9);
         scene.add(ambientLight);
 
-        const dirLight = new THREE.DirectionalLight('#ffffff', 1.5);
-        dirLight.position.set(5, 8, 5);
-        scene.add(dirLight);
+        const sunLight = new THREE.DirectionalLight('#ffffff', 1.8);
+        sunLight.position.set(5, 5, 4);
+        scene.add(sunLight);
 
-        // Mouse Parallax Track Variables
-        let mouseX = 0, mouseY = 0;
-        let targetX = 0, targetY = 0;
+        // Интерактивные переменные трекинга мыши
+        let mouse = { x: 0, y: 0, targetX: 0, targetY: 0 };
         let isZoomed = false;
-        let targetWireframe = 0;
+        let xrayTarget = 0;
 
         window.addEventListener('mousemove', (e) => {
-            mouseX = (e.clientX / window.innerWidth) - 0.5;
-            mouseY = (e.clientY / window.innerHeight) - 0.5;
+            mouse.x = (e.clientX / window.innerWidth) - 0.5;
+            mouse.y = (e.clientY / window.innerHeight) - 0.5;
         });
 
-        // WebGL High Frequency Frame loop
-        function tick() {
+        // ГЛАВНЫЙ НАБЛЮДАТЕЛЬНЫЙ ЦИКЛ РЕНДЕРА (АНИМАЦИЯ КАЖДОГО КАДРА)
+        function animateLoop(time) {
+            // Мягкий непрерывный автономный дрейф (даже без движений мыши)
+            const elapsedTime = time * 0.001;
+            
             if (!isZoomed) {
-                targetX += (mouseX * 0.4 - targetX) * 0.08;
-                targetY += (mouseY * 0.3 - targetY) * 0.08;
+                // Инерционное сглаживание для мыши
+                mouse.targetX += (mouse.x * 0.3 - mouse.targetX) * 0.05;
+                mouse.targetY += (mouse.y * 0.2 - mouse.targetY) * 0.05;
                 
-                buildingMesh.rotation.y = targetX;
-                buildingMesh.rotation.x = targetY;
+                webglGroup.rotation.y = mouse.targetX + Math.sin(elapsedTime * 0.2) * 0.05;
+                webglGroup.rotation.x = mouse.targetY + Math.cos(elapsedTime * 0.2) * 0.03;
             }
 
-            // Smooth linear interpolation for Shader Morph Uniform Values
-            customMaterial.uniforms.uWireframeProgress.value += (targetWireframe - customMaterial.uniforms.uWireframeProgress.value) * 0.1;
+            // Плавный волнообразный дрейф парящих плит декора
+            floatingObjects.forEach((slab, index) => {
+                slab.position.y += Math.sin(elapsedTime + index) * 0.002;
+                slab.rotation.y += 0.002;
+            });
+
+            // 3D-Текст всегда разворачивается «лицом» к камере (Эффект Биллборда)
+            label3D.lookAt(camera.position);
+
+            // Интерполяция изменения состояния шейдера (Рентген)
+            customMaterial.uniforms.uWireframeProgress.value += (xrayTarget - customMaterial.uniforms.uWireframeProgress.value) * 0.1;
 
             renderer.render(scene, camera);
-            requestAnimationFrame(tick);
+            requestAnimationFrame(animateLoop);
         }
-        tick();
+        requestAnimationFrame(animateLoop);
 
 
         // ==========================================
-        // 2. MASTER GSAP SCROLLTRIGGER ENGINE
+        // 2. СТАРТОВЫЕ АНИМАЦИИ ПРИ ЗАГРУЗКЕ СТРАНИЦЫ
         // ==========================================
-        const mm = gsap.matchMedia();
+        window.addEventListener('DOMContentLoaded', () => {
+            const tl = gsap.timeline({ defaults: { ease: "power4.out", duration: 1.4 }});
+            
+            tl.to("#site-nav", { opacity: 1, y: 0 }, 0.2)
+              .to("#hero-title", { clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 100%)" }, 0.4)
+              .to("#hero-sub", { opacity: 1, y: 0 }, 0.6);
+        });
 
-        mm.add("(min-width: 768px)", () => {
-            // Master Timeline mapping 3D transformation steps to scroll position
-            const masterTimeline = gsap.timeline({
+
+        // ==========================================
+        // 3. ПАРDynamic СЛАЙДЕР СКРОЛЛА (GSAP + 3D + СВЕТ)
+        // ==========================================
+        const mediaQuery = gsap.matchMedia();
+
+        mediaQuery.add("(min-width: 768px)", () => {
+            // Главный таймлайн, связывающий положение скролла с 3D миром
+            const scrollTimeline = gsap.timeline({
                 scrollTrigger: {
                     trigger: "main",
                     start: "top top",
                     end: "bottom bottom",
                     scrub: 1.2,
-                    invalidateOnRefresh: true
-                }
-            });
-
-            // Section 2 Transition: Offset position rightward & downscale specimen
-            masterTimeline.to(buildingMesh.position, { x: 2.2, y: -0.3, z: 0, ease: "power2.inOut" }, 0.1)
-                          .to(buildingMesh.scale, { x: 0.65, y: 0.65, z: 0.65, ease: "power2.inOut" }, 0.1);
-
-            // Section 3 Transition: Pin the view container and convert scroll inputs directly into 3D rotations
-            ScrollTrigger.create({
-                trigger: "#section-interactive",
-                start: "top top",
-                end: "+=120%",
-                pin: true,
-                scrub: true,
-                onUpdate: (self) => {
-                    if (!isZoomed) {
-                        buildingMesh.rotation.y = self.progress * Math.PI * 2;
+                    onUpdate: (self) => {
+                        // Обновляем верхний тонкий индикатор скролла
+                        document.getElementById('scroll-progress').style.width = `${self.progress * 100}%`;
                     }
                 }
             });
 
-            // Kinetic Typography Engine: Convert paragraph block text directly into sequential spans
-            const kineticText = document.getElementById('kinetic-text');
-            const characters = kineticText.textContent.trim().split("");
-            kineticText.textContent = "";
-            
-            characters.forEach(c => {
-                const span = document.createElement("span");
-                span.textContent = c;
-                span.className = "inline-block opacity-10 translate-y-2";
-                kineticText.appendChild(span);
+            // Трансформация 1: Сдвиг вправо, уменьшение и изменение угла света (симуляция движения солнца)
+            scrollTimeline.to(webglGroup.position, { x: 2.0, y: -0.2, z: 0, ease: "power2.inOut" }, 0.1)
+                          .to(webglGroup.scale, { x: 0.7, y: 0.7, z: 0.7, ease: "power2.inOut" }, 0.1)
+                          .to(sunLight.position, { x: -5, y: 3, z: 2, ease: "none" }, 0.0); // Тень плавно ползет
+
+            // Фиксация экрана на третьей секции для вращения на 360 градусов
+            ScrollTrigger.create({
+                trigger: "#section-interactive",
+                start: "top top",
+                end: "+=130%",
+                pin: true,
+                scrub: true,
+                onUpdate: (self) => {
+                    if (!isZoomed) {
+                        // Прямая связь прогресса скролла секции с вращением вокруг оси Y
+                        mainBuilding.rotation.y = self.progress * Math.PI * 2;
+                    }
+                }
             });
 
-            gsap.to(kineticText.children, {
+            // Кинетический посимвольный вывод текста во 2й секции
+            const txt = document.getElementById('kinetic-text');
+            const splitChars = txt.textContent.trim().split("");
+            txt.textContent = "";
+            splitChars.forEach(c => {
+                const node = document.createElement("span");
+                node.textContent = c;
+                node.className = "inline-block opacity-10 translate-x-1";
+                txt.appendChild(node);
+            });
+
+            gsap.to(txt.children, {
                 opacity: 1,
-                y: 0,
-                stagger: 0.015,
-                ease: "power3.out",
+                x: 0,
+                stagger: 0.01,
+                ease: "power2.out",
                 scrollTrigger: {
-                    trigger: kineticText,
-                    start: "top 75%",
+                    trigger: txt,
+                    start: "top 70%",
                     toggleActions: "play none none reverse"
                 }
             });
@@ -329,109 +371,92 @@
 
 
         // ==========================================
-        // 3. HOTSPOT & CAMERA RIG INTERACTIONS
+        // 4. КЛИК-ВЗАИМОДЕЙСТВИЯ И РЕЖИМЫ КАМЕРЫ
         // ==========================================
         const popover = document.getElementById('info-popover');
-        const xrayIndicator = document.getElementById('xray-indicator');
+        const xrayInd = document.getElementById('xray-indicator');
 
         document.getElementById('btn-zoom-penthouse').addEventListener('click', () => {
             isZoomed = true;
             popover.classList.remove('opacity-0', 'translate-x-12');
             
-            gsap.to(camera.position, { x: 1.3, y: 1.2, z: 2.0, duration: 1.8, ease: "power4.inOut" });
-            gsap.to(buildingMesh.position, { x: 0, y: -0.8, z: 0, duration: 1.8, ease: "power4.inOut" });
-            gsap.to(buildingMesh.rotation, { x: -0.1, y: 0.4, z: 0, duration: 1.8, ease: "power4.inOut" });
+            // Динамический налет камеры на верхнюю часть здания
+            gsap.to(camera.position, { x: 1.2, y: 1.0, z: 2.2, duration: 2, ease: "power4.inOut" });
+            gsap.to(webglGroup.position, { x: -0.2, y: -0.9, z: 0, duration: 2, ease: "power4.inOut" });
+            gsap.to(webglGroup.rotation, { x: -0.05, y: 0.5, z: 0, duration: 2, ease: "power4.inOut" });
         });
 
         document.getElementById('btn-reset-cam').addEventListener('click', () => {
             popover.classList.add('opacity-0', 'translate-x-12');
             
-            gsap.to(camera.position, { x: 0, y: 0, z: 5, duration: 1.4, ease: "power3.out", onComplete: () => { isZoomed = false; } });
-            gsap.to(buildingMesh.position, { x: 2.2, y: -0.3, z: 0, duration: 1.4, ease: "power3.out" });
+            gsap.to(camera.position, { x: 0, y: 0, z: 5.5, duration: 1.5, ease: "power3.out", onComplete: () => { isZoomed = false; } });
+            gsap.to(webglGroup.position, { x: 2.0, y: -0.2, z: 0, duration: 1.5, ease: "power3.out" });
         });
 
         document.getElementById('btn-toggle-xray').addEventListener('click', () => {
-            if (targetWireframe === 0) {
-                targetWireframe = 1.0;
-                xrayIndicator.classList.remove('bg-neutral-300');
-                xrayIndicator.classList.add('bg-red-500');
+            if (xrayTarget === 0) {
+                xrayTarget = 1.0;
+                xrayInd.className = "w-2 h-2 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.8)]";
             } else {
-                targetWireframe = 0.0;
-                xrayIndicator.classList.remove('bg-red-500');
-                xrayIndicator.classList.add('bg-neutral-300');
+                xrayTarget = 0.0;
+                xrayInd.className = "w-2 h-2 rounded-full bg-neutral-300";
             }
         });
 
 
         // ==========================================
-        // 4. GSAP FLIP PLUGIN LAYOUT FILTERS
+        // 5. ФИЛЬТРАЦИЯ СЕТКИ С GSAP FLIP
         // ==========================================
-        const filterButtons = document.querySelectorAll('.filter-btn');
-        const floorCards = document.querySelectorAll('.floor-card');
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        const cards = document.querySelectorAll('.floor-card');
 
-        filterButtons.forEach(btn => {
+        filterBtns.forEach(btn => {
             btn.addEventListener('click', () => {
-                // Adjust Active Styling State
-                filterButtons.forEach(b => b.classList.remove('text-white', 'font-bold'));
+                filterBtns.forEach(b => b.classList.remove('text-white', 'font-bold'));
                 btn.classList.add('text-white', 'font-bold');
 
-                const filterValue = btn.getAttribute('data-filter');
+                const mode = btn.getAttribute('data-filter');
+                const state = Flip.getState(cards);
 
-                // Capture initial cached bounding boxes
-                const state = Flip.getState(floorCards);
-
-                // Modify actual layout state variables
-                floorCards.forEach(card => {
-                    if (filterValue === 'ALL' || card.getAttribute('data-type') === filterValue) {
-                        card.style.display = 'block';
-                    } else {
-                        card.style.display = 'none';
-                    }
+                cards.forEach(card => {
+                    card.style.display = (mode === 'ALL' || card.getAttribute('data-type') === mode) ? 'block' : 'none';
                 });
 
-                // Let Flip execute the transitional geometry interpolations natively
                 Flip.from(state, {
-                    duration: 0.7,
+                    duration: 0.6,
                     ease: "power3.inOut",
                     absolute: true,
-                    onEnter: elements => gsap.fromTo(elements, { opacity: 0, scale: 0.9 }, { opacity: 1, scale: 1, duration: 0.4 }),
-                    onLeave: elements => gsap.to(elements, { opacity: 0, scale: 0.8, duration: 0.3 })
+                    onEnter: el => gsap.fromTo(el, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.4 }),
+                    onLeave: el => gsap.to(el, { opacity: 0, scale: 0.9, duration: 0.3 })
                 });
             });
         });
 
 
         // ==========================================
-        // 5. MAGNETIC UTILITY INTERACTION LOGIC
+        // 6. ПУЛЬСИРУЮЩАЯ МАГНИТНАЯ КНОПКА
         // ==========================================
-        const magneticBtn = document.getElementById('magnetic-btn');
+        const mBtn = document.getElementById('magnetic-btn');
 
-        magneticBtn.addEventListener('mousemove', (e) => {
-            const boundary = magneticBtn.getBoundingClientRect();
-            const localX = e.clientX - (boundary.left + boundary.width / 2);
-            const localY = e.clientY - (boundary.top + boundary.height / 2);
+        mBtn.addEventListener('mousemove', (e) => {
+            const bounds = mBtn.getBoundingClientRect();
+            const mouseX = e.clientX - (bounds.left + bounds.width / 2);
+            const mouseY = e.clientY - (bounds.top + bounds.height / 2);
 
-            gsap.to(magneticBtn, {
-                x: localX * 0.4,
-                y: localY * 0.4,
+            gsap.to(mBtn, {
+                x: mouseX * 0.4,
+                y: mouseY * 0.4,
                 duration: 0.3,
                 ease: "power2.out"
             });
         });
 
-        magneticBtn.addEventListener('mouseleave', () => {
-            gsap.to(magneticBtn, {
-                x: 0,
-                y: 0,
-                duration: 0.6,
-                ease: "elastic.out(1, 0.3)"
-            });
+        mBtn.addEventListener('mouseleave', () => {
+            gsap.to(mBtn, { x: 0, y: 0, duration: 0.6, ease: "elastic.out(1, 0.3)" });
         });
 
 
-        // ==========================================
-        // 6. GLOBAL WINDOW RE-SIZE STAGE HANDLING
-        // ==========================================
+        // Адаптивность окна браузера
         window.addEventListener('resize', () => {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
