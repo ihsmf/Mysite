@@ -38,7 +38,6 @@
             to { stroke-dashoffset: 0; }
         }
 
-        /* Центрирующий контейнер для ауры, чтобы GSAP не ломал координаты */
         #aura-wrapper {
             position: fixed;
             top: 50%; left: 50%;
@@ -52,7 +51,6 @@
             z-index: 5;
         }
 
-        /* Сама подсветка */
         #premium-aura {
             width: 50vw;
             height: 50vw;
@@ -74,16 +72,59 @@
             50% { filter: blur(80px) hue-rotate(180deg); border-radius: 40% 55% 45% 50%; transform: scale(1.05); }
             100% { filter: blur(50px) hue-rotate(360deg); border-radius: 50% 45% 55% 40%; transform: scale(0.95); }
         }
+
+        /* АНИМИРОВАННЫЕ БЕГАЮЩИЕ ПОЛОСКИ (СТРУКТУРНАЯ СЕТКА) */
+        .background-lines {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: 2; /* За 3D моделью и аурой */
+            pointer-events: none;
+            display: flex;
+            justify-content: space-evenly;
+        }
+        .background-lines .line {
+            width: 1px;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.03); /* Тусклая база линии */
+            position: relative;
+            overflow: hidden;
+        }
+        .background-lines .line::after {
+            content: '';
+            display: block;
+            position: absolute;
+            top: -50%; left: 0;
+            width: 100%; height: 25vh; /* Длина бегающего "отрывка" */
+            background: linear-gradient(to bottom, transparent, rgba(99, 102, 241, 0.8), transparent);
+            animation: runDown 5s infinite linear;
+        }
+        @keyframes runDown {
+            0% { top: -30%; }
+            100% { top: 120%; }
+        }
+        /* Разная скорость и задержка для каждой линии, чтобы выглядело органично */
+        .background-lines .line:nth-child(1)::after { animation-delay: 0s; animation-duration: 6s; }
+        .background-lines .line:nth-child(2)::after { animation-delay: 2s; animation-duration: 4s; }
+        .background-lines .line:nth-child(3)::after { animation-delay: 4s; animation-duration: 7s; }
+        .background-lines .line:nth-child(4)::after { animation-delay: 1s; animation-duration: 5s; }
+        .background-lines .line:nth-child(5)::after { animation-delay: 3s; animation-duration: 8s; }
     </style>
 </head>
 <body class="overflow-x-hidden selection:bg-indigo-600 selection:text-white">
 
     <div class="grain-overlay"></div>
     
+    <div class="background-lines">
+        <div class="line"></div>
+        <div class="line"></div>
+        <div class="line"></div>
+        <div class="line"></div>
+        <div class="line"></div>
+    </div>
+    
     <div id="custom-cursor" class="fixed w-2 h-2 bg-white rounded-full pointer-events-none z-50 -translate-x-1/2 -translate-y-1/2 hidden md:block"></div>
     <div id="custom-cursor-ring" class="fixed w-9 h-9 border border-white/20 rounded-full pointer-events-none z-50 -translate-x-1/2 -translate-y-1/2 transition-all duration-300 ease-out hidden md:block"></div>
 
-    <!-- ВЕРНО ЦЕНТРИРОВАННАЯ АУРА -->
     <div id="aura-wrapper">
         <div id="premium-aura"></div>
     </div>
@@ -103,7 +144,6 @@
 
     <main class="relative z-20 w-full">
 
-        <!-- СЕКЦИЯ 1: HERO -->
         <section class="scroller-section justify-center text-center px-4">
             <div class="max-w-4xl z-30 pointer-events-none select-none">
                 <span class="text-[10px] uppercase tracking-[0.8em] text-indigo-400 block mb-2 font-semibold">REDEFINE ULTRALUXURY // REVERSED NODES</span>
@@ -127,13 +167,12 @@
             </div>
         </section>
 
-        <!-- СЕКЦИЯ 2: АРХИТЕКТУРА И МЕТРИКИ -->
         <section id="philosophy" class="scroller-section justify-between px-8 md:px-24">
             <div class="w-full grid grid-cols-1 md:grid-cols-2 pointer-events-none z-30">
                 <div class="max-w-xs backdrop-blur-md bg-neutral-900/40 p-6 rounded-2xl border border-neutral-800 shadow-xl">
                     <span class="text-[10px] uppercase tracking-[0.5em] text-indigo-400 block mb-3 font-semibold">01 // МАСШТАБ ОБЪЕКТА</span>
                     <p class="text-xs text-neutral-300 leading-relaxed font-light">
-                        Вилла общей площадью 1,450 м² разворачивается по центральной оси. В этой точке скролла масштаб модели и интенсивность переливающейся ауры достигают 100%.
+                        Вилла общей площадью 1,450 м² разворачивается по центральной оси. Модель 3D идеально масштабируется для показа геометрии.
                     </p>
                 </div>
                 <div class="max-w-xs justify-self-end text-right backdrop-blur-md bg-neutral-900/40 p-6 rounded-2xl border border-neutral-800 shadow-xl mt-32 md:mt-0">
@@ -145,7 +184,6 @@
             </div>
         </section>
 
-        <!-- СЕКЦИЯ 3: КАТАЛОГ ДОСТУПНЫХ ЛОТОВ -->
         <section id="spaces" class="min-h-screen w-full bg-[#0c0c0e] py-36 px-8 md:px-24 relative z-30 border-t border-neutral-900">
             <div class="max-w-6xl mx-auto">
                 
@@ -279,7 +317,6 @@
             }, 0)
             .to("#premium-aura", {
                 scale: 1.8,
-                y: -40, 
                 opacity: 1,
                 ease: "power2.inOut"
             }, 0)
@@ -290,7 +327,6 @@
             })
             .to("#premium-aura", {
                 scale: 0.5,
-                y: 50,
                 opacity: 0.2,
                 ease: "power2.inOut"
             }, "-=" + masterScrollTimeline.duration() / 2);
