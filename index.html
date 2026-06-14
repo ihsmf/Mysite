@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MONOLITH // WHITE LUXURY EXHIBIT</title>
+    <title>VILLA MONOLITH // PRIVATE RESIDENCE EXHIBIT</title>
     
-    <!-- Стек топовых библиотек -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
@@ -13,176 +12,204 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
 
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500&family=Inter:wght@200;300;400;500;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Inter:wght@200;300;400;500;600&display=swap');
         
         body { 
             font-family: 'Inter', sans-serif; 
-            background-color: #fcfcf9; /* Идеальный теплый белый (галерейный гипс) */
-            color: #111111;
+            background-color: #08080a; /* Глубокий, люксовый околочёрный */
+            color: #ffffff;
             cursor: none;
         }
         .font-luxury { font-family: 'Cinzel', serif; }
         .scroller-section { height: 100vh; width: 100%; display: flex; align-items: center; position: relative; }
         
-        /* Аналоговое премиальное зерно */
+        /* Киношный шум */
         .grain-overlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
-            opacity: 0.025; pointer-events: none; z-index: 999; mix-blend-mode: multiply;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+            opacity: 0.02; pointer-events: none; z-index: 999; mix-blend-mode: screen;
         }
 
-        /* Эффект бегающего светового контура для SVG текста */
+        /* Лазерная обводка текста */
         .contour-text {
-            stroke-dasharray: 800;
-            stroke-dashoffset: 800;
-            animation: runStroke 7s linear infinite;
+            stroke-dasharray: 900;
+            stroke-dashoffset: 900;
+            animation: laserRun 6s linear infinite;
         }
-        @keyframes runStroke {
+        @keyframes laserRun {
             to { stroke-dashoffset: 0; }
+        }
+
+        /* МУЛЬТЯШНАЯ ПРЕМИУМ ПОДСВЕТКА (ПЕРЕЛИВАЮЩАЯСЯ АУРА) */
+        #premium-aura {
+            position: fixed;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%) scale(1);
+            width: 45vw;
+            height: 45vw;
+            max-width: 600px;
+            max-height: 600px;
+            background: radial-gradient(circle, 
+                rgba(99, 102, 241, 0.8) 0%, 
+                rgba(168, 85, 247, 0.5) 40%, 
+                rgba(236, 72, 153, 0.2) 70%, 
+                transparent 100%);
+            filter: blur(80px);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 5; /* Строго ПОД 3D моделью канваса */
+            mix-blend-mode: screen;
+            opacity: 0.75;
+            animation: auraMorph 10s infinite alternate ease-in-out;
+        }
+
+        @keyframes auraMorph {
+            0% { filter: blur(70px) hue-rotate(0deg); border-radius: 50% 45% 55% 40%; }
+            50% { filter: blur(95px) hue-rotate(180deg); border-radius: 40% 55% 45% 50%; }
+            100% { filter: blur(70px) hue-rotate(360deg); border-radius: 50% 45% 55% 40%; }
         }
     </style>
 </head>
-<body class="overflow-x-hidden selection:bg-neutral-900 selection:text-white">
+<body class="overflow-x-hidden selection:bg-indigo-600 selection:text-white">
 
-    <!-- КИНЕМАТОГРАФИЧЕСКИЕ ПРЕМЕНТЫ -->
     <div class="grain-overlay"></div>
-    <div id="custom-cursor" class="fixed w-2 h-2 bg-neutral-900 rounded-full pointer-events-none z-50 -translate-x-1/2 -translate-y-1/2 hidden md:block"></div>
-    <div id="custom-cursor-ring" class="fixed w-9 h-9 border border-neutral-900/30 rounded-full pointer-events-none z-50 -translate-x-1/2 -translate-y-1/2 transition-all duration-300 ease-out hidden md:block"></div>
+    
+    <div id="custom-cursor" class="fixed w-2 h-2 bg-white rounded-full pointer-events-none z-50 -translate-x-1/2 -translate-y-1/2 hidden md:block"></div>
+    <div id="custom-cursor-ring" class="fixed w-9 h-9 border border-white/20 rounded-full pointer-events-none z-50 -translate-x-1/2 -translate-y-1/2 transition-all duration-300 ease-out hidden md:block"></div>
 
-    <!-- ФИКСИРОВАННЫЙ ЦЕНТРАЛЬНЫЙ ТРЁХМЕРНЫЙ ХОСТ -->
+    <div id="premium-aura"></div>
+
     <canvas id="webgl-stage" class="fixed inset-0 w-full h-full pointer-events-none z-10"></canvas>
 
-    <!-- МИНИМАЛИСТИЧНЫЙ ХЕДЕР -->
-    <header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-8 py-8 md:px-16 bg-gradient-to-b from-[#fcfcf9]/90 to-transparent backdrop-blur-[2px]">
-        <div class="font-luxury text-xs tracking-[0.5em] font-semibold text-neutral-900">MONOLITH</div>
+    <header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-8 py-8 md:px-16 bg-gradient-to-b from-[#08080a]/90 to-transparent backdrop-blur-[2px]">
+        <div class="font-luxury text-sm tracking-[0.5em] font-semibold text-white">MONOLITH.ESTATE</div>
         <div class="hidden md:flex gap-16 text-[10px] uppercase tracking-[0.4em] font-medium text-neutral-400">
-            <a href="#philosophy" class="hover:text-black transition-colors">Concept</a>
-            <a href="#blueprint" class="hover:text-black transition-colors">3D Blueprint</a>
-            <a href="#spaces" class="hover:text-black transition-colors">Showcase</a>
+            <a href="#philosophy" class="hover:text-white transition-colors">Архитектура</a>
+            <a href="#blueprint" class="hover:text-white transition-colors">Спецификация</a>
+            <a href="#spaces" class="hover:text-white transition-colors">Каталог лотов</a>
         </div>
-        <div class="text-[10px] uppercase tracking-[0.3em] font-medium border-b border-black/20 pb-1 hover:border-black transition-colors cursor-pointer text-neutral-700">Inquire</div>
+        <div class="text-[10px] uppercase tracking-[0.3em] font-semibold border-b border-white/30 pb-1 hover:border-white transition-colors cursor-pointer text-indigo-400">Связаться с брокером</div>
     </header>
 
-    <!-- ЛИНИЯ ТРЕКИНГА СТРАНИЦЫ -->
-    <div class="fixed top-0 left-0 h-[2px] bg-neutral-900 z-50 w-0" id="progress-bar"></div>
+    <div class="fixed top-0 left-0 h-[2px] bg-gradient-to-r from-indigo-500 to-purple-500 z-50 w-0" id="progress-bar"></div>
 
-    <!-- ИНТЕРФЕЙСНЫЙ СЛОЙ -->
     <main class="relative z-20 w-full">
 
-        <!-- СЕКЦИЯ 1: HERO (С БЕГАЮЩИМ КОНТУРОМ) -->
         <section class="scroller-section justify-center text-center px-4">
             <div class="max-w-4xl z-30 pointer-events-none select-none">
-                <span class="text-[10px] uppercase tracking-[0.7em] text-neutral-400 block mb-2 font-medium">// ARCHITECTURAL EXHIBITION</span>
+                <span class="text-[10px] uppercase tracking-[0.8em] text-indigo-400 block mb-2 font-semibold">REDEFINE ULTRALUXURY // REVERSED NODES</span>
                 
-                <!-- SVG Контейнер с лазерным бегающим контуром текста -->
-                <svg viewBox="0 0 900 160" class="w-full max-w-3xl mx-auto mb-4">
-                    <text x="50%" y="75%" text-anchor="middle" class="contour-text font-luxury text-7xl md:text-8xl tracking-[0.1em] font-light fill-transparent stroke-neutral-900 stroke-[1px]">
+                <svg viewBox="0 0 950 160" class="w-full max-w-3xl mx-auto mb-4">
+                    <text x="50%" y="75%" text-anchor="middle" class="contour-text font-luxury text-7xl md:text-8xl tracking-[0.12em] font-light fill-transparent stroke-white stroke-[1.2px]">
                         MONOLITH
                     </text>
                 </svg>
 
-                <h2 class="font-luxury text-sm md:text-base tracking-[0.4em] text-neutral-500 font-light -mt-2">
-                    THE ART OF SILENT LUXURY
+                <h2 class="font-luxury text-xs md:text-sm tracking-[0.5em] text-neutral-400 font-light -mt-2">
+                    РЕЗИДЕНЦИИ НОВОГО ПОКОЛЕНИЯ С ИНТЕГРИРОВАННЫМ ИИ
                 </h2>
             </div>
             
-            <!-- Боковые технические плашки для веса -->
-            <div class="absolute bottom-12 left-12 hidden md:block text-[9px] font-mono tracking-widest text-neutral-400 uppercase">
-                SYS_NODE // CENTRALIZED_ORBIT
+            <div class="absolute bottom-12 left-12 hidden md:block text-[9px] font-mono tracking-widest text-neutral-500 uppercase">
+                LOC: CORAL RIDGE // PRIVATE APP
             </div>
-            <div class="absolute bottom-12 right-12 hidden md:block text-[9px] font-mono tracking-widest text-neutral-400 uppercase">
-                SCALE: DYNAMIC [1.0 -> 2.2 -> 0.5]
+            <div class="absolute bottom-12 right-12 hidden md:block text-[9px] font-mono tracking-widest text-neutral-500 uppercase">
+                STATUS: PRE-MARKET INVESTMENTS
             </div>
         </section>
 
-        <!-- СЕКЦИЯ 2: ФИЛОСОФИЯ (МОДЕЛЬ ТУТ НА МАКСИМУМЕ В ЦЕНТРЕ) -->
         <section id="philosophy" class="scroller-section justify-between px-8 md:px-24">
             <div class="w-full grid grid-cols-1 md:grid-cols-2 pointer-events-none z-30">
-                <div class="max-w-xs backdrop-blur-sm bg-white/10 p-6 rounded-xl border border-white/20 shadow-sm">
-                    <span class="text-[10px] uppercase tracking-[0.5em] text-neutral-400 block mb-3 font-semibold">01 // PROPORTIONS</span>
-                    <p class="text-xs text-neutral-600 leading-relaxed font-light">
-                        В этой точке скролла импортированная GLB модель достигает своего абсолютного пика масштабирования, заполняя центральную ось экрана.
+                <div class="max-w-xs backdrop-blur-md bg-neutral-900/40 p-6 rounded-2xl border border-neutral-800 shadow-xl">
+                    <span class="text-[10px] uppercase tracking-[0.5em] text-indigo-400 block mb-3 font-semibold">01 // МАСШТАБ ОБЪЕКТА</span>
+                    <p class="text-xs text-neutral-300 leading-relaxed font-light">
+                        Вилла общей площадью 1,450 м² разворачивается по центральной оси. В этой точке скролла масштаб модели и интенсивность переливающейся ауры достигают 100%.
                     </p>
                 </div>
-                <div class="max-w-xs justify-self-end text-right backdrop-blur-sm bg-white/10 p-6 rounded-xl border border-white/20 shadow-sm mt-32 md:mt-0">
-                    <span class="text-[10px] uppercase tracking-[0.5em] text-neutral-400 block mb-3 font-semibold">02 // LIGHT MATRIX</span>
-                    <p class="text-xs text-neutral-600 leading-relaxed font-light">
-                        Никаких смещений вбок. Вся сила композиции держится на центральной симметрии и безупречной игре теней на гранях вашей архитектуры.
+                <div class="max-w-xs justify-self-end text-right backdrop-blur-md bg-neutral-900/40 p-6 rounded-2xl border border-neutral-800 shadow-xl mt-32 md:mt-0">
+                    <span class="text-[10px] uppercase tracking-[0.5em] text-purple-400 block mb-3 font-semibold">02 // МАТЕРИАЛЫ КЛАССА ААА</span>
+                    <p class="text-xs text-neutral-300 leading-relaxed font-light">
+                        Архитектурный монолитный бетон, бескаркасное структурное остекление Sky-Frame (Швейцария) и панели из натурального обожженного кедра.
                     </p>
                 </div>
             </div>
         </section>
 
-        <!-- СЕКЦИЯ 3: ИНСПЕКТОР (ТУТ МОДЕЛЬ НАЧИНАЕТ УМЕНЬШАТЬСЯ) -->
         <section id="blueprint" class="scroller-section justify-center px-4">
-            <div class="max-w-md w-full bg-white/80 border border-neutral-200/50 p-8 rounded-2xl backdrop-blur-xl z-30 shadow-[0_40px_100px_rgba(0,0,0,0.02)] text-center">
-                <span class="text-[10px] uppercase tracking-[0.6em] text-neutral-400 block mb-2 font-medium">03 // ANALYTICAL VIEW</span>
+            <div class="max-w-md w-full bg-neutral-900/80 border border-neutral-800 p-8 rounded-3xl backdrop-blur-2xl z-30 shadow-[0_50px_120px_rgba(0,0,0,0.5)] text-center">
+                <span class="text-[10px] uppercase tracking-[0.6em] text-indigo-400 block mb-2 font-semibold">03 // ENGINEERING HUB</span>
                 
-                <!-- Дополнительный бегающий контур в панели управления -->
                 <svg viewBox="0 0 400 50" class="w-full max-w-[180px] mx-auto mb-4">
-                    <text x="50%" y="70%" text-anchor="middle" class="contour-text font-luxury text-xl tracking-[0.2em] fill-transparent stroke-neutral-800 stroke-[1px]">
-                        INSPECT
+                    <text x="50%" y="70%" text-anchor="middle" class="contour-text font-luxury text-xl tracking-[0.2em] fill-transparent stroke-indigo-400 stroke-[1px]">
+                        BLUEPRINT
                     </text>
                 </svg>
 
-                <p class="text-xs leading-relaxed text-neutral-500 mb-8 tracking-wide font-light">
-                    Используйте интерактивную матрицу для изучения структуры. Переключитесь в режим чистых линий Blueprint для рентгена внутренних объемов.
+                <p class="text-xs leading-relaxed text-neutral-400 mb-8 tracking-wide font-light">
+                    Изучите внутренние инженерные сети, скрытые коммуникации и планировку подземного уровня с паркингом на 8 автомобилей и винной галереей.
                 </p>
                 
                 <div class="flex flex-col gap-2 max-w-xs mx-auto">
-                    <button id="ui-zoom-house" class="magnetic-target px-5 py-4 text-[10px] uppercase tracking-[0.2em] border border-neutral-200 hover:border-neutral-900 hover:bg-neutral-900 hover:text-white rounded-xl transition-all flex justify-between items-center bg-white/50 group font-semibold">
-                        <span>Фокус камеры</span>
-                        <span class="w-1.5 h-1.5 rounded-full bg-neutral-300 group-hover:bg-white transition-colors"></span>
+                    <button id="ui-zoom-house" class="magnetic-target px-5 py-4 text-[10px] uppercase tracking-[0.2em] border border-neutral-800 hover:border-white hover:bg-white hover:text-black rounded-xl transition-all flex justify-between items-center bg-black/50 group font-semibold">
+                        <span>Макро-фокус планировки</span>
+                        <span class="w-1.5 h-1.5 rounded-full bg-neutral-700 group-hover:bg-black transition-colors"></span>
                     </button>
-                    <button id="ui-xray-house" class="magnetic-target px-5 py-4 text-[10px] uppercase tracking-[0.2em] border border-neutral-200 hover:border-neutral-900 hover:bg-neutral-900 hover:text-white rounded-xl transition-all flex justify-between items-center bg-white/50 group font-semibold">
-                        <span>Режим Blueprint</span>
-                        <span id="xray-dot" class="w-1.5 h-1.5 rounded-full bg-neutral-300 group-hover:bg-white transition-all"></span>
+                    <button id="ui-xray-house" class="magnetic-target px-5 py-4 text-[10px] uppercase tracking-[0.2em] border border-neutral-800 hover:border-white hover:bg-white hover:text-black rounded-xl transition-all flex justify-between items-center bg-black/50 group font-semibold">
+                        <span>Режим конструктора</span>
+                        <span id="xray-dot" class="w-1.5 h-1.5 rounded-full bg-neutral-700 group-hover:bg-black transition-all"></span>
                     </button>
-                    <button id="ui-reset-house" class="text-center text-[9px] uppercase tracking-[0.3em] text-neutral-400 hover:text-black mt-4 underline transition-colors font-medium">
+                    <button id="ui-reset-house" class="text-center text-[9px] uppercase tracking-[0.3em] text-neutral-500 hover:text-white mt-4 underline transition-colors font-medium">
                         Сбросить ракурс
                     </button>
                 </div>
             </div>
         </section>
 
-        <!-- СЕКЦИЯ 4: КЕЙСЫ С КРУТОЙ АНИМАЦИЕЙ СКРОЛЛА -->
-        <section id="spaces" class="min-h-screen w-full bg-[#f4f4f0] py-36 px-8 md:px-24 relative z-30 border-t border-neutral-200/40">
+        <section id="spaces" class="min-h-screen w-full bg-[#0c0c0e] py-36 px-8 md:px-24 relative z-30 border-t border-neutral-900">
             <div class="max-w-6xl mx-auto">
                 
-                <div class="flex flex-col md:flex-row justify-between items-start md:items-end border-b border-neutral-300 pb-8 mb-20 gap-6">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-end border-b border-neutral-800 pb-8 mb-20 gap-6">
                     <div>
-                        <span class="text-[10px] uppercase tracking-[0.6em] text-neutral-400 block mb-2 font-medium">04 // PORTFOLIO MATRIX</span>
-                        <h2 class="font-luxury text-3xl md:text-4xl font-light text-neutral-900">Доступные резиденции</h2>
+                        <span class="text-[10px] uppercase tracking-[0.6em] text-neutral-500 block mb-2 font-medium">04 // EXCLUSIVE PORTFOLIO</span>
+                        <h2 class="font-luxury text-3xl md:text-4xl font-light text-white">Доступные блоки резиденции</h2>
                     </div>
                     <div class="flex gap-8 text-[10px] uppercase tracking-[0.3em] text-neutral-400 font-semibold">
-                        <button data-filter="ALL" class="filter-btn text-black font-bold border-b border-black pb-1 transition-all">Все</button>
-                        <button data-filter="LIVING" class="filter-btn hover:text-black pb-1 transition-all">Жилые</button>
-                        <button data-filter="LOUNGE" class="filter-btn hover:text-black pb-1 transition-all">Открытые</button>
+                        <button data-filter="ALL" class="filter-btn text-white font-bold border-b border-white pb-1 transition-all">Все блоки</button>
+                        <button data-filter="LIVING" class="filter-btn hover:text-white pb-1 transition-all">Жилые</button>
+                        <button data-filter="LOUNGE" class="filter-btn hover:text-white pb-1 transition-all">Террасы и SPA</button>
                     </div>
                 </div>
 
-                <!-- Сетка кейсов, подхватываемая 3D-скролл триггером -->
                 <div id="lots-grid" class="grid grid-cols-1 md:grid-cols-3 gap-8 perspective-1000">
                     
-                    <div data-type="LIVING" class="lot-card opacity-0 bg-white border border-neutral-200/70 p-8 rounded-2xl overflow-hidden relative shadow-[0_4px_30px_rgba(0,0,0,0.01)] hover:shadow-[0_40px_90px_rgba(0,0,0,0.05)] transition-shadow duration-500 group">
-                        <span class="text-[10px] text-neutral-400 font-mono font-medium">LOT // 01</span>
-                        <h4 class="font-luxury text-2xl mt-4 mb-2 font-light text-neutral-900">Grand Atrium</h4>
-                        <p class="text-xs text-neutral-500 font-light mb-16 leading-relaxed">Двухуровневая галерейная гостиная со сплошным остеклением фасада и бесшовным полом.</p>
-                        <div class="text-[10px] uppercase tracking-widest font-semibold text-neutral-400 group-hover:text-black transition-colors">420 M² — Свободно</div>
+                    <div data-type="LIVING" class="lot-card opacity-0 bg-neutral-950 border border-neutral-900 p-8 rounded-2xl overflow-hidden relative shadow-2xl hover:border-indigo-500/50 transition-colors duration-500 group">
+                        <div class="flex justify-between items-center text-[10px] font-mono text-neutral-500 font-medium">
+                            <span>LOT // 01</span>
+                            <span class="text-emerald-400">AVAILABLE</span>
+                        </div>
+                        <h4 class="font-luxury text-2xl mt-4 mb-2 font-light text-white">Grand Atrium</h4>
+                        <p class="text-xs text-neutral-400 font-light mb-16 leading-relaxed">Двухуровневая парадная гостиная с высотой остекления 7.2 метра, открытым камином из сланца и выходом в зимний сад.</p>
+                        <div class="text-[10px] uppercase tracking-widest font-semibold text-neutral-400 group-hover:text-white transition-colors">420 M² — $4,250,000</div>
                     </div>
 
-                    <div data-type="LIVING" class="lot-card opacity-0 bg-white border border-neutral-200/70 p-8 rounded-2xl overflow-hidden relative shadow-[0_4px_30px_rgba(0,0,0,0.01)] hover:shadow-[0_40px_90px_rgba(0,0,0,0.05)] transition-shadow duration-500 group md:translate-y-12">
-                        <span class="text-[10px] text-neutral-400 font-mono font-medium">LOT // 02</span>
-                        <h4 class="font-luxury text-2xl mt-4 mb-2 font-light text-neutral-900">Master Suite</h4>
-                        <p class="text-xs text-neutral-500 font-light mb-16 leading-relaxed">Парящее приватное крыло с вылетом консоли 6 метров над уровнем зеркального бассейна.</p>
-                        <div class="text-[10px] uppercase tracking-widest font-semibold text-neutral-400 group-hover:text-black transition-colors">180 M² — Резерв</div>
+                    <div data-type="LIVING" class="lot-card opacity-0 bg-neutral-950 border border-neutral-900 p-8 rounded-2xl overflow-hidden relative shadow-2xl hover:border-indigo-500/50 transition-colors duration-500 group md:translate-y-12">
+                        <div class="flex justify-between items-center text-[10px] font-mono text-neutral-500 font-medium">
+                            <span>LOT // 02</span>
+                            <span class="text-amber-400">RESERVED</span>
+                        </div>
+                        <h4 class="font-luxury text-2xl mt-4 mb-2 font-light text-white">Master Floating Suite</h4>
+                        <p class="text-xs text-neutral-400 font-light mb-16 leading-relaxed">Консольный парящий жилой блок на втором уровне с персональной террасой, джакузи и панорамным обзором на 270°.</p>
+                        <div class="text-[10px] uppercase tracking-widest font-semibold text-neutral-400 group-hover:text-white transition-colors">280 M² — $3,100,000</div>
                     </div>
 
-                    <div data-type="LOUNGE" class="lot-card opacity-0 bg-white border border-neutral-200/70 p-8 rounded-2xl overflow-hidden relative shadow-[0_4px_30px_rgba(0,0,0,0.01)] hover:shadow-[0_40px_90px_rgba(0,0,0,0.05)] transition-shadow duration-500 group">
-                        <span class="text-[10px] text-neutral-400 font-mono font-medium">LOT // 03</span>
-                        <h4 class="font-luxury text-2xl mt-4 mb-2 font-light text-neutral-900">Sky Terrace</h4>
-                        <p class="text-xs text-neutral-500 font-light mb-16 leading-relaxed">Эксплуатируемая палубная кровля из благородного тика со скрытой летней кухней.</p>
-                        <div class="text-[10px] uppercase tracking-widest font-semibold text-neutral-400 group-hover:text-black transition-colors">250 M² — Свободно</div>
+                    <div data-type="LOUNGE" class="lot-card opacity-0 bg-neutral-950 border border-neutral-900 p-8 rounded-2xl overflow-hidden relative shadow-2xl hover:border-purple-500/50 transition-colors duration-500 group">
+                        <div class="flex justify-between items-center text-[10px] font-mono text-neutral-500 font-medium">
+                            <span>LOT // 03</span>
+                            <span class="text-emerald-400">AVAILABLE</span>
+                        </div>
+                        <h4 class="font-luxury text-2xl mt-4 mb-2 font-light text-white">Sky Wellness Deck</h4>
+                        <p class="text-xs text-neutral-400 font-light mb-16 leading-relaxed">Эксплуатируемая кровля из бирманского тика с инфинити-бассейном, финской сауной и зоной барбекю под навесом.</p>
+                        <div class="text-[10px] uppercase tracking-widest font-semibold text-neutral-400 group-hover:text-white transition-colors">350 M² — $5,800,000</div>
                     </div>
 
                 </div>
@@ -190,36 +217,35 @@
         </section>
     </main>
 
-    <!-- СЦЕНА THREE.JS И ЛОГИКА ОРБИТАЛЬНОГО СКРОЛЛА -->
     <script>
         gsap.registerPlugin(ScrollTrigger);
 
         // ==========================================
-        // 1. НАСТРОЙКА СЦЕНЫ И ГАЛЕРЕЙНОГО ТУМАНА
+        // 1. ИНИЦИАЛИЗАЦИЯ И ТЁМНЫЙ ТУМАН СЦЕНЫ
         // ==========================================
         const canvas = document.querySelector('#webgl-stage');
         const scene = new THREE.Scene();
-        scene.fog = new THREE.FogExp2('#fcfcf9', 0.15); // Мягкое растворение геометрии в дымке фона
+        scene.fog = new THREE.FogExp2('#08080a', 0.14); // Идеальный увод краев модели в темноту
 
         const camera = new THREE.PerspectiveCamera(38, window.innerWidth / window.innerHeight, 0.1, 100);
-        camera.position.set(0, 0.8, 8); // Камера строго по центру, чуть приподнята
+        camera.position.set(0, 0.6, 7.5); // Центрированный взгляд
 
         const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         renderer.outputEncoding = THREE.sRGBEncoding;
 
-        // Главный контейнер модели (зафиксирован в центре X=0)
+        // Мастер-группа, закрепленная строго по центру (X = 0)
         const houseGroup = new THREE.Group();
         scene.add(houseGroup);
 
         let originalMaterials = new Map();
         const blueprintMaterial = new THREE.MeshBasicMaterial({ 
-            color: '#111111', wireframe: true, transparent: true, opacity: 0.06 
+            color: '#6366f1', wireframe: true, transparent: true, opacity: 0.18 
         });
 
         // ==========================================
-        // 2. ЗАГРУЗКА, ЦЕНТРИРОВАНИЕ И БАЗОВЫЙ МАСШТАБ
+        // 2. ВЫРАВНИВАНИЕ ТВОЕЙ GLB МОДЕЛИ ПО ЦЕНТРУ И ГОРИЗОНТУ
         // ==========================================
         const loader = new THREE.GLTFLoader();
         let baseScale = 1;
@@ -229,20 +255,19 @@
             function (gltf) {
                 const loadedModel = gltf.scene;
                 
-                // Прецизионный расчет габаритов загруженного файла
                 const box = new THREE.Box3().setFromObject(loadedModel);
                 const center = box.getCenter(new THREE.Vector3());
                 const size = box.getSize(new THREE.Vector3());
                 
-                // Точечное выравнивание: геометрический центр по X и Z, подошва (низ) жестко на Y = 0
+                // Идеальное центрирование
                 loadedModel.position.x = -center.x;
-                loadedModel.position.y = -box.min.y; 
+                loadedModel.position.y = -box.min.y; // Фундамент строго на нулевой плоскости
                 loadedModel.position.z = -center.z;
                 
-                // Авто-подгон масштаба под пропорции видового экрана
+                // Рассчитываем идеальный базовый масштаб для экрана
                 const maxDim = Math.max(size.x, size.y, size.z);
                 if (maxDim > 0) {
-                    baseScale = 3.5 / maxDim;
+                    baseScale = 3.4 / maxDim;
                     houseGroup.scale.set(baseScale, baseScale, baseScale);
                 }
                 
@@ -256,56 +281,66 @@
 
                 houseGroup.add(loadedModel);
                 
-                // Элитная начальная изометрия фасада
-                houseGroup.rotation.set(0.15, -0.5, 0);
+                // Премиальная стартовая изометрия виллы
+                houseGroup.rotation.set(0.12, -0.4, 0);
 
-                // ЗАПУСК СИНХРОННОГО ТАЙМЛАЙНА СКРОЛЛА (УВЕЛИЧЕНИЕ -> УМЕНЬШЕНИЕ)
-                initScrollAnimations();
+                // ЗАПУСК СИНХРОНИЗИРОВАННОГО СКРОЛЛА (МОДЕЛЬ + АУРА ПОДСВЕТКИ)
+                initMasterScrollTimeline();
             }
         );
 
-        // ВЫСТАВОЧНЫЙ СТУДИЙНЫЙ СВЕТ
-        const hemiLight = new THREE.HemisphereLight('#ffffff', '#e2e2db', 1.3);
+        // КРИСТАЛЬНО ЧИСТОЕ СТУДИЙНОЕ ОСВЕЩЕНИЕ ДЛЯ ТЁМНОЙ ТЕМЫ
+        const hemiLight = new THREE.HemisphereLight('#ffffff', '#1e1e24', 1.5);
         scene.add(hemiLight);
 
-        const sunLight = new THREE.DirectionalLight('#fffdf0', 1.4);
-        sunLight.position.set(5, 12, 6);
+        const sunLight = new THREE.DirectionalLight('#ffffff', 2.2);
+        sunLight.position.set(4, 10, 5);
         scene.add(sunLight);
 
-        const fillLight = new THREE.DirectionalLight('#cbd5e1', 0.5);
-        fillLight.position.set(-5, -2, -4);
-        scene.add(fillLight);
+        // Фирменная неоновая контурная подсветка снизу
+        const neonPoint = new THREE.PointLight('#6366f1', 2, 8);
+        neonPoint.position.set(0, -1, 2);
+        scene.add(neonPoint);
+
 
         // ==========================================
-        // 3. СВЯЗКА МАСШТАБА МОДЕЛИ СО СКРОЛЛОМ (МИН -> МАКС -> МИН)
+        // 3. СИНХРОННЫЙ СТРУКТУРНЫЙ ТАЙМЛАЙН СКРОЛЛА
         // ==========================================
-        function initScrollAnimations() {
+        function initMasterScrollTimeline() {
             const masterScrollTimeline = gsap.timeline({
                 scrollTrigger: {
                     trigger: "main",
                     start: "top top",
                     end: "bottom bottom",
-                    scrub: 1 // Высокая плавность инерции при скролле
+                    scrub: 1.2
                 }
             });
 
-            // 1 ЭТАП: От верха до середины страницы — увеличиваем масштаб до максимума
+            // ЭТАП 1: ДО СЕРЕДИНЫ СТРАНИЦЫ (Увеличение виллы и раздувание неоновой ауры за ней)
             masterScrollTimeline.to(houseGroup.scale, {
-                x: baseScale * 2.2,
-                y: baseScale * 2.2,
-                z: baseScale * 2.2,
-                ease: "power1.inOut"
-            })
-            // 2 ЭТАП: От середины до конца страницы — уменьшаем модель в перспективу
+                x: baseScale * 2.2, y: baseScale * 2.2, z: baseScale * 2.2,
+                ease: "power2.inOut"
+            }, 0)
+            .to("#premium-aura", {
+                scale: 1.9,
+                y: -30, // Легкое вертикальное смещение ауры для динамики
+                ease: "power2.inOut"
+            }, 0)
+
+            // ЭТАП 2: ОТ СЕРЕДИНЫ ДО КОНЦА (Мягкое уменьшение в перспективу)
             .to(houseGroup.scale, {
-                x: baseScale * 0.5,
-                y: baseScale * 0.5,
-                z: baseScale * 0.5,
-                ease: "power1.inOut"
-            });
+                x: baseScale * 0.45, y: baseScale * 0.45, z: baseScale * 0.45,
+                ease: "power2.inOut"
+            })
+            .to("#premium-aura", {
+                scale: 0.5,
+                y: 40,
+                opacity: 0.3,
+                ease: "power2.inOut"
+            }, "-=" + masterScrollTimeline.duration() / 2); // Стыковка ровно по центру таймлайна
         }
 
-        // ПОСТОЯННЫЙ ТИК ИНЕРЦИОННОГО ПАРАЛЛАКСА МЫШИ
+        // РЕНДЕР-ЦИКЛ И МИКРОПAPAЛЛАКС КУРСОРА НА МОДЕЛИ
         const clock = new THREE.Clock();
         let isUserInspecting = false;
         let mouseX = 0, mouseY = 0, targetX = 0, targetY = 0;
@@ -315,70 +350,64 @@
             mouseY = (e.clientY / window.innerHeight) - 0.5;
         });
 
-        function animate() {
+        function renderFrame() {
             const time = clock.getElapsedTime();
 
             if (!isUserInspecting) {
-                // Плавное микро-дыхание по высоте
-                houseGroup.position.y = Math.sin(time * 0.7) * 0.03;
+                // Плавное парение
+                houseGroup.position.y = Math.sin(time * 0.6) * 0.025;
                 
-                // Накапливаем координаты мыши для мягкого вращения
+                // Инерционное вращение от мыши
                 targetX += (mouseX * 0.25 - targetX) * 0.05;
                 targetY += (mouseY * 0.15 - targetY) * 0.05;
                 
-                houseGroup.rotation.y += 0.002; // Легкий фоновый автоповорот
-                houseGroup.rotation.y += targetX * 0.1;
-                houseGroup.rotation.x = 0.15 + targetY;
+                houseGroup.rotation.y += 0.0015; // Микро-автоповорот фасада
+                houseGroup.rotation.y += targetX * 0.08;
+                houseGroup.rotation.x = 0.12 + targetY;
             }
 
             renderer.render(scene, camera);
-            requestAnimationFrame(animate);
+            requestAnimationFrame(renderFrame);
         }
-        requestAnimationFrame(animate);
+        requestAnimationFrame(renderFrame);
+
 
         // ==========================================
-        // 4. КРУТЫЕ АНИМАЦИИ КЕЙСОВ ПРИ СКРОЛЛИНГЕ
+        // 4. КИНЕМАТОГРАФИЧНЫЙ СКРОЛЛ КАРТОЧЕК НЕДВИЖИМОСТИ
         // ==========================================
         gsap.utils.toArray('.lot-card').forEach((card) => {
             gsap.fromTo(card, 
-                { 
-                    opacity: 0, 
-                    y: 120, 
-                    rotateX: 15, 
-                    skewY: 2 
-                },
+                { opacity: 0, y: 140, rotateX: 18, skewY: 1.5 },
                 {
-                    opacity: 1, 
-                    y: 0, 
-                    rotateX: 0, 
-                    skewY: 0,
-                    duration: 1.2,
+                    opacity: 1, y: 0, rotateX: 0, skewY: 0,
+                    duration: 1.4,
                     ease: "power4.out",
                     scrollTrigger: {
                         trigger: card,
-                        start: "top 90%", // Активация при подлете к нижнему краю экрана
+                        start: "top 88%",
                         toggleActions: "play none none reverse"
                     }
                 }
             );
         });
 
-        // ОБЩИЙ ПРОГРЕСС-БАР СВЕРХУ
+        // ТОНКИЙ ВЕРХНИЙ ИНДИКАТОР ПОЛОЖЕНИЯ
         gsap.to("#progress-bar", {
             width: "100%", ease: "none",
             scrollTrigger: { trigger: "main", start: "top top", end: "bottom bottom", scrub: true }
         });
 
+
         // ==========================================
-        // 5. ИНТЕРАКТИВНЫЕ РЕЖИМЫ КАМЕРЫ И ЧЕРТЕЖА
+        // 5. ИНТЕРАКТИВ СТРУКТУРНОГО ИНСПЕКТОРА
         // ==========================================
         let isBlueprint = false;
 
         document.getElementById('ui-zoom-house').addEventListener('click', () => {
             isUserInspecting = true;
-            gsap.to(camera.position, { x: 0, y: 0.5, z: 2.0, duration: 2, ease: "power4.inOut" });
-            gsap.to(houseGroup.rotation, { x: 0.1, y: -0.1, duration: 2, ease: "power4.inOut" });
-            gsap.to(houseGroup.position, { x: 0, y: -0.2, z: 0, duration: 2, ease: "power4.inOut" });
+            gsap.to(camera.position, { x: 0, y: 0.4, z: 1.8, duration: 2.2, ease: "power4.inOut" });
+            gsap.to(houseGroup.rotation, { x: 0.08, y: -0.15, duration: 2.2, ease: "power4.inOut" });
+            gsap.to(houseGroup.position, { x: 0, y: -0.1, z: 0, duration: 2.2, ease: "power4.inOut" });
         });
 
         document.getElementById('ui-xray-house').addEventListener('click', () => {
@@ -386,12 +415,12 @@
             isBlueprint = !isBlueprint;
 
             if(isBlueprint) {
-                dot.className = "w-1.5 h-1.5 rounded-full bg-neutral-900 shadow-[0_0_8px_rgba(0,0,0,0.4)]";
+                dot.className = "w-1.5 h-1.5 rounded-full bg-indigo-500 shadow-[0_0_10px_#6366f1]";
                 houseGroup.traverse((child) => {
                     if (child.isMesh) child.material = blueprintMaterial;
                 });
             } else {
-                dot.className = "w-1.5 h-1.5 rounded-full bg-neutral-300";
+                dot.className = "w-1.5 h-1.5 rounded-full bg-neutral-700";
                 houseGroup.traverse((child) => {
                     if (child.isMesh && originalMaterials.has(child)) {
                         child.material = originalMaterials.get(child).clone();
@@ -401,20 +430,21 @@
         });
 
         document.getElementById('ui-reset-house').addEventListener('click', () => {
-            gsap.to(camera.position, { x: 0, y: 0.8, z: 8, duration: 1.5, ease: "power3.out", onComplete: () => { isUserInspecting = false; } });
-            gsap.to(houseGroup.position, { x: 0, y: 0, z: 0, duration: 1.5, ease: "power3.out" });
+            gsap.to(camera.position, { x: 0, y: 0.6, z: 7.5, duration: 1.6, ease: "power3.out", onComplete: () => { isUserInspecting = false; } });
+            gsap.to(houseGroup.position, { x: 0, y: 0, z: 0, duration: 1.6, ease: "power3.out" });
         });
 
+
         // ==========================================
-        // 6. СОРТИРОВКА И ПРЕМЬЕРНЫЙ КУРСОР
+        // 6. ФИЛЬТРАЦИЯ ЛОТОВ И УПРАВЛЕНИЕ КУРСOРОМ
         // ==========================================
         const filterBtns = document.querySelectorAll('.filter-btn');
         const lotCards = document.querySelectorAll('.lot-card');
 
         filterBtns.forEach(btn => {
             btn.addEventListener('click', () => {
-                filterBtns.forEach(b => b.className = "filter-btn hover:text-black pb-1 transition-all");
-                btn.className = "filter-btn text-black font-bold border-b border-black pb-1 transition-all";
+                filterBtns.forEach(b => b.className = "filter-btn hover:text-white pb-1 transition-all");
+                btn.className = "filter-btn text-white font-bold border-b border-white pb-1 transition-all";
 
                 const filter = btn.getAttribute('data-filter');
                 lotCards.forEach(card => {
@@ -422,19 +452,20 @@
                     if (filter === 'ALL' || type === filter) {
                         gsap.to(card, { opacity: 1, scale: 1, y: 0, duration: 0.4, display: 'block' });
                     } else {
-                        gsap.to(card, { opacity: 0, scale: 0.95, y: 20, duration: 0.3, display: 'none' });
+                        gsap.to(card, { opacity: 0, scale: 0.95, y: 25, duration: 0.3, display: 'none' });
                     }
                 });
             });
         });
 
+        // Плавная люкс-динамика кастомного курсора
         const cDot = document.getElementById('custom-cursor');
         const cRing = document.getElementById('custom-cursor-ring');
         const magnets = document.querySelectorAll('.magnetic-target');
 
         window.addEventListener('mousemove', (e) => {
             gsap.to(cDot, { x: e.clientX, y: e.clientY, duration: 0.02 });
-            gsap.to(cRing, { x: e.clientX, y: e.clientY, duration: 0.18 });
+            gsap.to(cRing, { x: e.clientX, y: e.clientY, duration: 0.16 });
         });
 
         magnets.forEach(m => {
@@ -442,14 +473,14 @@
                 const rect = m.getBoundingClientRect();
                 const x = e.clientX - (rect.left + rect.width / 2);
                 const y = e.clientY - (rect.top + rect.height / 2);
-                gsap.to(m, { x: x * 0.2, y: y * 0.2, duration: 0.3 });
-                cRing.style.transform = 'translate(-50%, -50%) scale(1.3)';
-                cRing.style.borderColor = '#111111';
+                gsap.to(m, { x: x * 0.18, y: y * 0.18, duration: 0.3 });
+                cRing.style.transform = 'translate(-50%, -50%) scale(1.35)';
+                cRing.style.borderColor = '#6366f1';
             });
             m.addEventListener('mouseleave', () => {
                 gsap.to(m, { x: 0, y: 0, duration: 0.5, ease: "power2.out" });
                 cRing.style.transform = 'translate(-50%, -50%) scale(1)';
-                cRing.style.borderColor = 'rgba(0,0,0,0.3)';
+                cRing.style.borderColor = 'rgba(255,255,255,0.2)';
             });
         });
 
