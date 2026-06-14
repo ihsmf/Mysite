@@ -3,55 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LUXURY REAL ESTATE | Плавный Скролл</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;400;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <title>LUXURY ESTATE | ГОРНАЯ РЕЗИДЕНЦИЯ</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;500&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
+            --accent: #d4af37;
             --glass: rgba(255, 255, 255, 0.03);
-            --glass-border: rgba(255, 255, 255, 0.12);
-            --accent: #c5a059;
-            --text: #ffffff;
+            --border: rgba(255, 255, 255, 0.12);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            background: #000;
-            color: var(--text);
+            background-color: #000;
+            color: #fff;
             font-family: 'Montserrat', sans-serif;
+            /* Высота страницы — критически важный параметр для работы видео */
+            height: 800vh; 
             overflow-x: hidden;
-            /* Общая высота страницы (настройте под количество контента) */
-            height: 600vh; 
         }
 
-        /* Фиксированный контейнер для видео */
-        #video-viewport {
+        /* Фоновое видео */
+        .v-container {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100vh;
             z-index: -1;
-            overflow: hidden;
+            background: #000;
         }
 
-        #bg-video {
+        video {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            /* Смягчаем яркость для читаемости текста */
-            filter: brightness(0.6) contrast(1.1);
+            filter: brightness(0.7) contrast(1.1);
         }
 
-        /* Затемнение сверху и снизу */
         .overlay {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(to bottom, 
-                rgba(0,0,0,0.6) 0%, 
-                transparent 30%, 
-                transparent 70%, 
-                rgba(0,0,0,0.8) 100%);
+            background: radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.4) 100%);
             pointer-events: none;
         }
 
@@ -59,251 +52,230 @@
         nav {
             position: fixed;
             top: 0; width: 100%;
-            padding: 30px 60px;
+            padding: 30px 5%;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            z-index: 1000;
+            z-index: 100;
             backdrop-filter: blur(10px);
-            border-bottom: 1px solid var(--glass-border);
+            border-bottom: 1px solid var(--border);
         }
 
         .logo {
             font-family: 'Playfair Display', serif;
             font-size: 24px;
-            letter-spacing: 4px;
+            letter-spacing: 5px;
             text-transform: uppercase;
         }
 
-        /* Секции контента */
-        .content-section {
-            height: 150vh; /* Каждая секция занимает 1.5 экрана для плавности хода */
+        /* Секции */
+        .scene {
+            height: 200vh; /* Каждая сцена дает пространство для прокрутки видео */
             display: flex;
             align-items: center;
             padding: 0 10%;
             position: relative;
         }
 
-        /* Стеклянные карточки */
-        .premium-card {
+        .glass-panel {
             background: var(--glass);
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
-            border: 1px solid var(--glass-border);
-            border-radius: 2px; /* Более строгий премиальный стиль */
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
             padding: 60px;
-            max-width: 500px;
-            box-shadow: 0 30px 60px rgba(0,0,0,0.4);
+            max-width: 600px;
+            border-radius: 4px;
             opacity: 0;
-            transform: translateY(40px);
-            transition: all 1.2s cubic-bezier(0.2, 1, 0.3, 1);
+            transform: translateY(50px);
+            transition: all 1s ease;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
         }
 
-        .premium-card.active {
+        .glass-panel.active {
             opacity: 1;
             transform: translateY(0);
         }
 
-        .accent-label {
-            color: var(--accent);
-            text-transform: uppercase;
-            font-size: 11px;
-            letter-spacing: 5px;
-            margin-bottom: 20px;
-            display: block;
-        }
+        .scene:nth-child(even) { justify-content: flex-end; }
 
         h2 {
             font-family: 'Playfair Display', serif;
-            font-size: 3.2rem;
-            font-weight: 400;
+            font-size: 3.5rem;
+            margin-bottom: 20px;
             line-height: 1.1;
-            margin-bottom: 25px;
         }
 
         p {
-            font-weight: 200;
-            line-height: 1.8;
             font-size: 1.1rem;
+            line-height: 1.8;
+            margin-bottom: 30px;
+            font-weight: 300;
             color: rgba(255,255,255,0.7);
-            margin-bottom: 35px;
         }
 
-        /* Интерактивные кнопки */
-        .luxury-btn {
+        .feature-box {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            border-top: 1px solid var(--border);
+            padding-top: 30px;
+        }
+
+        .feature-item h3 { color: var(--accent); font-size: 1.5rem; }
+        .feature-item span { font-size: 0.7rem; letter-spacing: 2px; opacity: 0.5; }
+
+        /* Кнопка */
+        .btn-premium {
             display: inline-block;
-            padding: 18px 45px;
+            padding: 15px 40px;
             border: 1px solid var(--accent);
-            background: transparent;
-            color: white;
+            color: #fff;
             text-decoration: none;
             text-transform: uppercase;
-            font-size: 10px;
             letter-spacing: 3px;
-            transition: 0.5s;
-            cursor: pointer;
+            font-size: 0.8rem;
+            transition: 0.4s;
+            position: relative;
+            overflow: hidden;
         }
 
-        .luxury-btn:hover {
+        .btn-premium:hover {
             background: var(--accent);
-            color: black;
-            box-shadow: 0 0 40px rgba(197, 160, 89, 0.3);
+            color: #000;
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.4);
         }
 
-        /* Индикатор скролла */
-        .scroll-down {
+        /* Индикатор */
+        .scroll-status {
             position: fixed;
             bottom: 40px;
             left: 50%;
             transform: translateX(-50%);
-            text-align: center;
-            opacity: 0.5;
-            font-size: 9px;
-            letter-spacing: 4px;
+            font-size: 10px;
+            letter-spacing: 5px;
             text-transform: uppercase;
+            opacity: 0.5;
+            z-index: 10;
         }
-
-        /* Сетка характеристик */
-        .spec-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
-            margin-bottom: 30px;
-        }
-
-        .spec-item h4 { color: var(--accent); font-size: 1.5rem; font-weight: 400; }
-        .spec-item span { font-size: 10px; opacity: 0.5; text-transform: uppercase; }
-
-        /* Разные позиции карточек */
-        #section-2 { justify-content: flex-end; }
-        #section-3 { justify-content: center; }
 
     </style>
 </head>
 <body>
 
     <nav>
-        <div class="logo">Estate<b>01</b></div>
-        <div style="font-size: 11px; letter-spacing: 2px;">
-            <span style="margin-right: 30px; cursor: pointer;">LOCATIONS</span>
-            <span style="cursor: pointer;">CONTACTS</span>
-        </div>
+        <div class="logo">LUXE<b>RESIDENCE</b></div>
+        <div style="font-size: 11px; letter-spacing: 2px;">COLLECTION 2024</div>
     </nav>
 
-    <div id="video-viewport">
-        <video id="bg-video" muted playsinline preload="auto">
+    <div class="v-container">
+        <video id="v-scroll" muted playsinline preload="auto">
             <source src="hf_20260614_200452_20cc649d-0b8e-407c-9c85-bdfac9c29ac2.mp4" type="video/mp4">
         </video>
         <div class="overlay"></div>
     </div>
 
-    <!-- Секция 1: 0-2 сек -->
-    <section class="content-section" id="section-1">
-        <div class="premium-card active">
-            <span class="accent-label">The Residence</span>
-            <h2>Архитектура <br>будущего</h2>
-            <p>Премиальное пространство, вписанное в ландшафт горных хребтов. Место, где время замедляет свой бег.</p>
-            <a href="#" class="luxury-btn">Узнать больше</a>
+    <div class="scroll-status">Scroll Down</div>
+
+    <!-- Секция 1 -->
+    <section class="scene">
+        <div class="glass-panel" id="p1">
+            <span style="color: var(--accent); letter-spacing: 5px; font-size: 12px;">LOCATION</span>
+            <h2>Единство со <br>скалами</h2>
+            <p>Уникальный проект, где архитектура дополняет природный ландшафт, создавая безупречное пространство для жизни.</p>
+            <a href="#" class="btn-premium">Узнать цену</a>
         </div>
     </section>
 
-    <!-- Секция 2: 2-4 сек -->
-    <section class="content-section" id="section-2">
-        <div class="premium-card">
-            <span class="accent-label">Specifications</span>
-            <h2>Масштаб и <br>величие</h2>
-            <div class="spec-grid">
-                <div class="spec-item">
-                    <h4>1200 м²</h4>
-                    <span>Площадь виллы</span>
+    <!-- Секция 2 -->
+    <section class="scene">
+        <div class="glass-panel" id="p2">
+            <h2>Технологии <br>комфорта</h2>
+            <div class="feature-box">
+                <div class="feature-item">
+                    <h3>1200 м²</h3>
+                    <span>ПЛОЩАДЬ</span>
                 </div>
-                <div class="spec-item">
-                    <h4>Infinity</h4>
-                    <span>Бассейн</span>
+                <div class="feature-item">
+                    <h3>Smart</h3>
+                    <span>ИНТЕЛЛЕКТ</span>
                 </div>
-                <div class="spec-item">
-                    <h4>Smart</h4>
-                    <span>Экосистема</span>
+                <div class="feature-item">
+                    <h3>Eco</h3>
+                    <span>МАТЕРИАЛЫ</span>
                 </div>
-                <div class="spec-item">
-                    <h4>A+++</h4>
-                    <span>Энергоэффект.</span>
+                <div class="feature-item">
+                    <h3>Infinity</h3>
+                    <span>БАССЕЙН</span>
                 </div>
             </div>
-            <p>Каждая деталь продумана для обеспечения бескомпромиссного комфорта.</p>
         </div>
     </section>
 
-    <!-- Секция 3: 4-6 сек -->
-    <section class="content-section" id="section-3">
-        <div class="premium-card" style="text-align: center;">
-            <span class="accent-label">Interior</span>
-            <h2>Эстетика <br>внутри</h2>
-            <p>Использование редких пород камня и дерева создает неповторимую атмосферу уюта и роскоши в каждой спальне.</p>
-            <a href="#" class="luxury-btn">Связаться с брокером</a>
+    <!-- Секция 3 -->
+    <section class="scene">
+        <div class="glass-panel" id="p3">
+            <h2>Ваш новый <br>горизонт</h2>
+            <p>Запишитесь на персональный тур по резиденции и откройте для себя новый уровень эстетики и приватности.</p>
+            <a href="#" class="btn-premium">Записаться</a>
         </div>
     </section>
-
-    <div class="scroll-down">Scroll to explore</div>
 
     <script>
-        const video = document.getElementById('bg-video');
-        const sections = document.querySelectorAll('.premium-card');
+        const video = document.getElementById('v-scroll');
+        const panels = document.querySelectorAll('.glass-panel');
         
-        let targetTime = 0; // Время видео, к которому стремимся
-        let currentTime = 0; // Текущее плавное время видео
-        const easing = 0.05; // Коэффициент плавности (чем меньше, тем медленнее и плавнее)
+        let targetTime = 0;
+        let currentTime = 0;
+        const lerpAmount = 0.08; // Скорость "догона" видео (чем меньше, тем плавнее)
 
-        // Массив временных меток для секций (в секундах)
-        const timings = [0, 2, 4, 6];
-
+        // 1. Привязываем скролл к целевому времени видео
         window.addEventListener('scroll', () => {
-            const scrollY = window.scrollY;
+            const scrollPos = window.pageYOffset;
             const maxScroll = document.body.scrollHeight - window.innerHeight;
-            const scrollFraction = scrollY / maxScroll;
+            const scrollFraction = scrollPos / maxScroll;
             
-            // Определяем целевое время видео на основе общего скролла
-            // (Берем либо длительность видео, либо наш предел в 6-7 секунд)
-            const duration = Math.min(video.duration || 7, 7); 
-            targetTime = scrollFraction * duration;
+            // Если видео загрузилось, считаем время
+            if (video.duration) {
+                targetTime = scrollFraction * video.duration;
+            }
 
-            // Логика активации текста при достижении секций
-            const triggerBottom = window.innerHeight * 0.8;
-            document.querySelectorAll('.content-section').forEach((sec, idx) => {
-                const top = sec.getBoundingClientRect().top;
-                if(top < triggerBottom) {
-                    sections[idx].classList.add('active');
+            // Логика появления текстовых блоков
+            panels.forEach(panel => {
+                const rect = panel.getBoundingClientRect();
+                if (rect.top < window.innerHeight * 0.75 && rect.bottom > 0) {
+                    panel.classList.add('active');
                 } else {
-                    sections[idx].classList.remove('active');
+                    panel.classList.remove('active');
                 }
             });
         });
 
-        // Функция плавного обновления видео
-        function smoothVideoScroll() {
-            // Линейная интерполяция (Lerp): плавно приближаем currentTime к targetTime
-            currentTime += (targetTime - currentTime) * easing;
+        // 2. Функция сглаживания (Loop)
+        function render() {
+            // Линейная интерполяция: текущее время плавно движется к целевому
+            currentTime += (targetTime - currentTime) * lerpAmount;
             
-            if (video.duration) {
+            // Применяем время к видео
+            if (Math.abs(currentTime - targetTime) > 0.001) {
                 video.currentTime = currentTime;
             }
-            
-            requestAnimationFrame(smoothVideoScroll);
+
+            requestAnimationFrame(render);
         }
 
-        // Запускаем цикл анимации
-        requestAnimationFrame(smoothVideoScroll);
+        // Запускаем цикл отрисовки
+        requestAnimationFrame(render);
 
-        // Обработка видео: предотвращаем остановку и обеспечиваем загрузку
+        // 3. Обработка загрузки видео
         video.addEventListener('loadedmetadata', () => {
-            console.log("Video metadata loaded");
+            console.log("Видео готово, длительность:", video.duration);
         });
-        
-        // Маленький хак для Safari и мобилок:
-        // Видео должно быть "проиграно" один раз, чтобы скролл работал
-        document.body.addEventListener('touchstart', () => {
-            video.play().then(() => { video.pause(); });
-        }, {once: true});
+
+        // Исправление для мобильных и Chrome (автовоспроизведение)
+        window.addEventListener('touchstart', () => {
+            video.play().then(() => video.pause());
+        }, { once: true });
+
     </script>
 </body>
 </html>
