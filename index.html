@@ -3,361 +3,317 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LUXURY ESTATE | Горная Резиденция</title>
+    <title>LUXURY ESTATE | Scrollytelling Edition</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
     <style>
         :root {
-            --glass: rgba(255, 255, 255, 0.05);
-            --glass-border: rgba(255, 255, 255, 0.15);
-            --accent: #d4af37; /* Gold */
+            --glass: rgba(0, 0, 0, 0.3);
+            --glass-border: rgba(255, 255, 255, 0.18);
+            --accent: #e2c275;
             --text: #ffffff;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             background: #000;
             color: var(--text);
             font-family: 'Montserrat', sans-serif;
             overflow-x: hidden;
-            height: 500vh; /* Управляет "длиной" скролла видео */
+            /* Высота зависит от количества секций */
         }
 
-        /* Видео бэкграунд */
-        #video-container {
+        /* Видео-фон */
+        #video-wrapper {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100vh;
             z-index: -1;
+            background: #000;
         }
 
         #bg-video {
             width: 100%;
             height: 100%;
             object-fit: cover;
+            filter: brightness(0.7);
         }
 
-        .overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.7));
-            z-index: 0;
+        .vignette {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle, transparent 20%, rgba(0,0,0,0.8) 100%);
+            pointer-events: none;
         }
 
         /* Навигация */
         nav {
             position: fixed;
-            top: 0;
-            width: 100%;
-            padding: 30px 50px;
+            top: 0; width: 100%;
+            padding: 25px 50px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            z-index: 100;
-            backdrop-filter: blur(10px);
+            z-index: 1000;
+            backdrop-filter: blur(5px);
             border-bottom: 1px solid var(--glass-border);
         }
 
         .logo {
             font-family: 'Playfair Display', serif;
-            font-size: 24px;
-            letter-spacing: 2px;
-            text-transform: uppercase;
+            font-size: 22px;
+            letter-spacing: 3px;
         }
 
-        /* Секции контента */
-        section {
+        /* Контейнер для секций */
+        .content-container {
             position: relative;
-            height: 100vh;
+            z-index: 2;
+        }
+
+        section {
+            height: 200vh; /* Увеличиваем высоту секции для длинного скролла */
             display: flex;
             align-items: center;
-            justify-content: center;
             padding: 0 10%;
-            opacity: 0;
-            transform: translateY(50px);
-            transition: all 0.8s ease-out;
+            position: relative;
         }
 
-        section.active {
+        /* Последняя секция короче */
+        section:last-child { height: 100vh; }
+
+        .glass-box {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 50px;
+            max-width: 550px;
+            transform: translateY(30px);
+            opacity: 0;
+            transition: all 1s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+
+        section.visible .glass-box {
             opacity: 1;
             transform: translateY(0);
         }
 
-        /* Стеклянные карточки */
-        .glass-card {
-            background: var(--glass);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            border: 1px solid var(--glass-border);
-            border-radius: 20px;
-            padding: 40px;
-            max-width: 600px;
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .glass-card::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(212,175,55,0.1) 0%, transparent 70%);
-            z-index: -1;
-        }
-
-        h1, h2 {
-            font-family: 'Playfair Display', serif;
+        /* Элементы декора */
+        .accent-line {
+            width: 40px;
+            height: 2px;
+            background: var(--accent);
             margin-bottom: 20px;
-            font-size: 3rem;
+        }
+
+        h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5rem;
+            line-height: 1.1;
+            margin-bottom: 20px;
         }
 
         p {
-            line-height: 1.6;
-            font-weight: 300;
             font-size: 1.1rem;
-            margin-bottom: 25px;
+            line-height: 1.8;
+            color: rgba(255,255,255,0.8);
+            margin-bottom: 30px;
         }
 
-        .accent-text {
-            color: var(--accent);
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            font-size: 0.8rem;
-            margin-bottom: 10px;
-            display: block;
-        }
-
-        /* Сетка характеристик */
-        .features-grid {
+        /* Интерактивные карточки */
+        .card-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 20px;
-            margin-top: 30px;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
         }
 
-        .feature-item {
-            padding: 15px;
-            border: 1px solid var(--glass-border);
-            border-radius: 12px;
+        .stat-card {
             background: rgba(255,255,255,0.03);
-            transition: 0.3s;
-            cursor: pointer;
+            border: 1px solid var(--glass-border);
+            padding: 20px;
+            border-radius: 15px;
+            transition: 0.4s;
         }
 
-        .feature-item:hover {
-            background: rgba(212,175,55,0.1);
+        .stat-card:hover {
+            background: rgba(226, 194, 117, 0.1);
             border-color: var(--accent);
-            transform: scale(1.05);
+            transform: translateY(-5px);
         }
 
-        /* Кнопка */
-        .btn {
-            display: inline-block;
-            padding: 15px 40px;
+        .btn-luxury {
+            padding: 18px 35px;
+            background: transparent;
             border: 1px solid var(--accent);
-            color: #fff;
-            text-decoration: none;
+            color: white;
             text-transform: uppercase;
             letter-spacing: 2px;
-            font-size: 0.9rem;
-            transition: 0.4s;
-            background: transparent;
+            cursor: pointer;
+            transition: 0.5s;
             position: relative;
             overflow: hidden;
         }
 
-        .btn:hover {
+        .btn-luxury:hover {
             background: var(--accent);
             color: #000;
-            box-shadow: 0 0 20px var(--accent);
+            box-shadow: 0 0 30px rgba(226, 194, 117, 0.4);
         }
 
-        /* Индикатор скролла */
-        .scroll-indicator {
+        /* Скролл индикатор */
+        .scroll-hint {
             position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 10;
-            opacity: 0.6;
-            text-align: center;
+            bottom: 40px;
+            right: 50px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            opacity: 0.5;
         }
 
-        .mouse {
-            width: 25px;
-            height: 40px;
-            border: 2px solid white;
-            border-radius: 20px;
-            margin: 0 auto 10px;
-            position: relative;
-        }
+        .line { width: 50px; height: 1px; background: white; }
 
-        .mouse::after {
-            content: '';
-            width: 4px;
-            height: 8px;
-            background: white;
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-            top: 8px;
-            border-radius: 2px;
-            animation: scroll 1.5s infinite;
-        }
+        /* Позиционирование коробок */
+        #sec-2 { justify-content: flex-end; }
+        #sec-3 { justify-content: center; }
 
-        @keyframes scroll {
-            0% { opacity: 1; top: 8px; }
-            100% { opacity: 0; top: 20px; }
-        }
-
-        /* Адаптивность */
-        @media (max-width: 768px) {
-            h1 { font-size: 2rem; }
-            .glass-card { margin: 20px; padding: 25px; }
-            nav { padding: 20px; }
-        }
     </style>
 </head>
 <body>
 
     <nav>
-        <div class="logo">Estate.Royal</div>
-        <a href="#" class="btn" style="padding: 10px 25px; font-size: 0.7rem;">Забронировать просмотр</a>
+        <div class="logo">ESTATE.<b>VALLEY</b></div>
+        <div style="display: flex; gap: 40px; align-items: center;">
+            <span style="font-size: 0.8rem; cursor: pointer;">О ПРОЕКТЕ</span>
+            <span style="font-size: 0.8rem; cursor: pointer;">ЛОКАЦИЯ</span>
+            <button class="btn-luxury" style="padding: 10px 20px; font-size: 0.7rem;">Связаться</button>
+        </div>
     </nav>
 
-    <div id="video-container">
+    <div id="video-wrapper">
         <video id="bg-video" muted playsinline preload="auto">
-            <!-- ЗАМЕНИТЕ НА ВАШ ФАЙЛ -->
             <source src="hf_20260614_200452_20cc649d-0b8e-407c-9c85-bdfac9c29ac2.mp4" type="video/mp4">
-            Ваш браузер не поддерживает видео.
         </video>
-        <div class="overlay"></div>
+        <div class="vignette"></div>
     </div>
 
-    <!-- Индикатор -->
-    <div class="scroll-indicator">
-        <div class="mouse"></div>
-        <span>Листайте вниз</span>
-    </div>
-
-    <!-- Секция 1: Приветствие -->
-    <section id="hero">
-        <div class="glass-card">
-            <span class="accent-text">Exclusive Location</span>
-            <h1>Гармония в скалах</h1>
-            <p>Добро пожаловать в резиденцию, где современная архитектура встречается с величием нетронутой природы. Панорамные виды, которые меняют сознание.</p>
-            <a href="#about" class="btn">Исследовать</a>
-        </div>
-    </section>
-
-    <!-- Секция 2: Характеристики -->
-    <section id="specs">
-        <div class="glass-card">
-            <span class="accent-text">Architecture & Space</span>
-            <h2>Превосходство в деталях</h2>
-            <div class="features-grid">
-                <div class="feature-item">
-                    <h4 style="color: var(--accent);">1,200 м²</h4>
-                    <p style="font-size: 0.8rem; margin: 0;">Общая площадь</p>
-                </div>
-                <div class="feature-item">
-                    <h4 style="color: var(--accent);">Infinity</h4>
-                    <p style="font-size: 0.8rem; margin: 0;">Бассейн с подогревом</p>
-                </div>
-                <div class="feature-item">
-                    <h4 style="color: var(--accent);">5 Спален</h4>
-                    <p style="font-size: 0.8rem; margin: 0;">С террасами</p>
-                </div>
-                <div class="feature-item">
-                    <h4 style="color: var(--accent);">Smart</h4>
-                    <p style="font-size: 0.8rem; margin: 0;">Система управления</p>
+    <div class="content-container">
+        <!-- Секция 1: 0 - 2 сек видео -->
+        <section id="sec-1">
+            <div class="glass-box">
+                <div class="accent-line"></div>
+                <h2>Вершина <br>комфорта</h2>
+                <p>Уникальная резиденция в сердце Альп, объединяющая брутализм бетона и теплоту натурального дерева.</p>
+                <div class="card-grid">
+                    <div class="stat-card">
+                        <div style="color: var(--accent); font-size: 1.2rem;">850 м²</div>
+                        <div style="font-size: 0.7rem; opacity: 0.6;">ЖИЛАЯ ПЛОЩАДЬ</div>
+                    </div>
+                    <div class="stat-card">
+                        <div style="color: var(--accent); font-size: 1.2rem;">360°</div>
+                        <div style="font-size: 0.7rem; opacity: 0.6;">ОБЗОР ГОР</div>
+                    </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- Секция 3: Интерьер -->
-    <section id="interior">
-        <div class="glass-card" style="margin-left: auto;">
-            <span class="accent-text">Interior Design</span>
-            <h2>Эстетика минимализма</h2>
-            <p>Использование натурального камня, дерева редких пород и премиального стекла создает атмосферу абсолютного спокойствия и уединения.</p>
-            <ul style="list-style: none; font-size: 0.9rem; font-weight: 300;">
-                <li style="margin-bottom: 10px;">— Потолки высотой 4.5 метра</li>
-                <li style="margin-bottom: 10px;">— Кухня от итальянского бюро</li>
-                <li>— Винотека на 500 бутылок</li>
-            </ul>
-        </div>
-    </section>
+        <!-- Секция 2: 2 - 4 сек видео -->
+        <section id="sec-2">
+            <div class="glass-box">
+                <div class="accent-line"></div>
+                <h2>Магия <br>заката</h2>
+                <p>Панорамное остекление позволяет природе стать частью вашего интерьера. Каждый вечер — новое произведение искусства за окном.</p>
+                <button class="btn-luxury">Посмотреть интерьер</button>
+            </div>
+        </section>
 
-    <!-- Секция 4: Финал/Контакты -->
-    <section id="contact">
-        <div class="glass-card" style="text-align: center; max-width: 800px;">
-            <span class="accent-text">Contact Us</span>
-            <h2>Начните новую историю</h2>
-            <p>Оставьте заявку на частную презентацию виллы и получите подробный инвестиционный план.</p>
-            <form style="display: flex; flex-direction: column; gap: 15px; margin-top: 20px;">
-                <input type="text" placeholder="Ваше имя" style="background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); padding: 15px; border-radius: 10px; color: white;">
-                <input type="email" placeholder="E-mail или Телефон" style="background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); padding: 15px; border-radius: 10px; color: white;">
-                <button class="btn">Отправить запрос</button>
-            </form>
-        </div>
-    </section>
+        <!-- Секция 3: 4 - 6 сек видео -->
+        <section id="sec-3">
+            <div class="glass-box" style="max-width: 800px; text-align: center;">
+                <div class="accent-line" style="margin: 0 auto 20px;"></div>
+                <h2>Ваша история <br>начинается здесь</h2>
+                <p>Оставьте свои контакты, чтобы получить индивидуальное предложение и виртуальный тур по вилле.</p>
+                <div style="display: flex; gap: 10px; justify-content: center;">
+                    <input type="text" placeholder="Телефон" style="padding: 15px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 5px; color: white; width: 250px;">
+                    <button class="btn-luxury">Жду звонка</button>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <div class="scroll-hint">
+        <span>Scroll to explore</span>
+        <div class="line"></div>
+    </div>
 
     <script>
         const video = document.getElementById('bg-video');
         const sections = document.querySelectorAll('section');
         
-        // 1. Управление видео при скролле
-        // Регулируйте множитель, чтобы замедлить или ускорить видео
-        window.addEventListener('scroll', () => {
-            const scrollPos = window.scrollY;
-            const maxScroll = document.body.scrollHeight - window.innerHeight;
-            const scrollFraction = scrollPos / maxScroll;
-            
-            if (video.duration) {
-                // Плавная перемотка видео
-                video.currentTime = video.duration * scrollFraction;
-            }
+        // Настройки таймингов (в секундах) для каждой секции
+        const timings = [
+            { start: 0, end: 2 },   // Для 1-й секции (переход ко 2-й)
+            { start: 2, end: 4 },   // Для 2-й секции (переход к 3-й)
+            { start: 4, end: 6.5 }  // Для 3-й секции (до конца видео)
+        ];
 
-            // 2. Активация секций (появление)
-            sections.forEach(section => {
-                const sectionTop = section.getBoundingClientRect().top;
-                const windowHeight = window.innerHeight;
-                if (sectionTop < windowHeight * 0.7) {
-                    section.classList.add('active');
+        function updateVideo() {
+            const scrollY = window.scrollY;
+            const windowHeight = window.innerHeight;
+
+            sections.forEach((section, index) => {
+                const rect = section.getBoundingClientRect();
+                const sectionHeight = section.offsetHeight;
+
+                // Проверяем, находится ли секция в поле зрения
+                if (rect.top < windowHeight && rect.bottom > 0) {
+                    section.classList.add('visible');
+
+                    // Вычисляем прогресс прокрутки внутри текущей секции (от 0 до 1)
+                    let progress = (windowHeight - rect.top) / sectionHeight;
+                    progress = Math.max(0, Math.min(1, progress));
+
+                    // Определяем отрезок видео для этой секции
+                    const start = timings[index].start;
+                    const end = timings[index].end;
+                    const duration = end - start;
+
+                    // Вычисляем нужное время видео
+                    const targetTime = start + (duration * progress);
+                    
+                    // Плавное обновление времени видео
+                    // Используем небольшое условие, чтобы избежать дерганья
+                    if (Math.abs(video.currentTime - targetTime) > 0.01) {
+                        video.currentTime = targetTime;
+                    }
                 } else {
-                    section.classList.remove('active');
+                    section.classList.remove('visible');
                 }
             });
+        }
+
+        // Слушатель скролла
+        window.addEventListener('scroll', () => {
+            requestAnimationFrame(updateVideo);
         });
 
-        // Предзагрузка видео для плавности
+        // Инициализация после загрузки метаданных видео
         video.addEventListener('loadedmetadata', () => {
-            console.log("Видео загружено, длительность:", video.duration);
+            // Если видео короче, чем наши тайминги, подправим последний тайминг
+            if (video.duration < timings[2].end) {
+                timings[2].end = video.duration;
+            }
+            updateVideo();
         });
 
-        // Обработка кликов по кнопкам (плавный скролл)
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                document.querySelector(this.getAttribute('href')).scrollIntoView({
-                    behavior: 'smooth'
-                });
-            });
-        });
     </script>
 </body>
 </html>
