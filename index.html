@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Monolith Engine | Next-Gen UI</title>
+    <title>THE MONOLITH // ARCHITECTURAL MANIFESTO</title>
     
+    <!-- Core Engine Injection -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
@@ -12,451 +13,505 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/Flip.min.js"></script>
 
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=Plus+Jakarta+Sans:wght@300;400;500&display=swap');
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #F5F5F0; color: #1A1A1A; }
-        .font-serif { font-family: 'Playfair Display', serif; }
-        .reveal-hidden { clip-path: polygon(0 0, 100% 0, 100% 0, 0 0); }
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500&family=Inter:wght@200;300;400;600&display=swap');
+        
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: #F2F2EC; 
+            color: #121212;
+            cursor: none; /* Прячем дефолтный курсор для кастомного экспириенса */
+        }
+        .font-luxury { font-family: 'Cinzel', serif; }
+        .clip-reveal { clip-path: polygon(0 100%, 100% 100%, 100% 100%, 0 100%); }
+        
+        /* Процедурный пленочный шум на весь экран */
+        .grain-overlay {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+            opacity: 0.04; pointer-events: none; z-index: 999; mix-blend-mode: multiply;
+        }
     </style>
 </head>
-<body class="overflow-x-hidden selection:bg-[#1A1A1A] selection:text-[#F5F5F0]">
+<body class="overflow-x-hidden selection:bg-[#121212] selection:text-[#F2F2EC]">
 
-    <canvas id="webgl-canvas" class="fixed inset-0 w-full h-full pointer-events-none z-10 hidden md:block"></canvas>
+    <div class="grain-overlay"></div>
 
-    <nav id="site-nav" class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-6 py-6 md:px-12 opacity-0 -translate-y-4">
-        <div class="font-serif text-xl tracking-widest font-medium">M O N O L I T H</div>
-        <div class="hidden md:flex gap-12 text-xs uppercase tracking-widest text-[#1A1A1A]/70">
-            <a href="#section-philosophy" class="hover:text-black transition-colors">Философия</a>
-            <a href="#section-interactive" class="hover:text-black transition-colors">Спецификация</a>
-            <a href="#section-selector" class="hover:text-black transition-colors">Планировки</a>
+    <!-- ИНЕРЦИОННЫЙ КУРСОР -->
+    <div id="custom-cursor" class="fixed w-3 h-3 bg-[#121212] rounded-full pointer-events-none z-50 mix-blend-difference transition-transform duration-100 ease-out -translate-x-1/2 -translate-y-1/2 hidden md:block"></div>
+    <div id="custom-cursor-ring" class="fixed w-8 h-8 border border-[#121212] rounded-full pointer-events-none z-50 mix-blend-difference transition-all duration-300 ease-out -translate-x-1/2 -translate-y-1/2 hidden md:block"></div>
+
+    <!-- WEBGL CANVAS STAGE -->
+    <canvas id="webgl-stage" class="fixed inset-0 w-full h-full pointer-events-none z-10 hidden md:block"></canvas>
+
+    <!-- СВЕРХМИНИМАЛИСТИЧНЫЙ ХЕДЕР -->
+    <header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-8 py-8 md:px-16 mix-blend-difference text-[#F2F2EC]">
+        <div class="font-luxury text-lg tracking-[0.3em] font-medium">MONOLITH.06</div>
+        <div class="hidden md:flex gap-16 text-[10px] uppercase tracking-[0.4em] font-light">
+            <a href="#concept" class="nav-item hover:opacity-50 transition-opacity">Concept</a>
+            <a href="#geometry" class="nav-item hover:opacity-50 transition-opacity">Geometry</a>
+            <a href="#layouts" class="nav-item hover:opacity-50 transition-opacity">Spaces</a>
         </div>
-        <button class="border border-[#1A1A1A] px-5 py-2 text-xs uppercase tracking-widest hover:bg-[#1A1A1A] hover:text-[#F5F5F0] transition-all duration-500">
-            Вход в Клуб
-        </button>
-    </nav>
+        <div class="text-[10px] uppercase tracking-[0.3em] border-b border-white/30 pb-1 hover:border-white transition-colors cursor-pointer">Request Entry</div>
+    </header>
 
-    <div class="fixed top-0 left-0 h-[2px] bg-[#1A1A1A] z-50 w-0" id="scroll-progress"></div>
+    <!-- ИНДИКАТОР ПРОГРЕССА С КИНЕТИКОЙ -->
+    <div class="fixed top-0 left-0 h-[3px] bg-[#121212] z-50 w-0 transition-all duration-300" id="progress-bar"></div>
 
+    <!-- ОСНОВНОЙ СЦЕНАРИЙ ИНТЕРФЕЙСА -->
     <main class="relative z-20 w-full">
 
-        <section class="h-screen w-full flex flex-col justify-between px-6 py-24 md:px-24 md:py-32">
+        <!-- СЕКЦИЯ 1: ЧИСТАЯ АТМОСФЕРА (HERO) -->
+        <section class="h-screen w-full flex flex-col justify-between px-8 py-24 md:px-24 md:py-32 relative">
             <div></div>
-            <div class="max-w-3xl">
-                <h1 id="hero-title" class="reveal-hidden font-serif text-5xl md:text-8xl font-light tracking-tight leading-[1.05] mb-8">
-                    Эстетика <br><span class="italic text-neutral-600">вычитания.</span>
+            <div class="max-w-4xl">
+                <span class="text-xs uppercase tracking-[0.5em] text-neutral-400 block mb-4 animate-pulse">01 // Architectural Core</span>
+                <h1 id="main-title" class="clip-reveal font-luxury text-6xl md:text-9xl font-light tracking-tight leading-[0.95] mb-12 text-[#121212]">
+                    The Art of <br><span class="italic font-normal text-neutral-500">Absence.</span>
                 </h1>
-                <p id="hero-sub" class="opacity-0 translate-y-4 text-sm md:text-base text-[#1A1A1A]/60 max-w-sm font-light leading-relaxed">
-                    Радикальный отказ от лишнего декора в пользу чистого света, пропорций и тектоники.
+                <p id="main-desc" class="opacity-0 translate-y-8 text-xs md:text-sm text-neutral-500 max-w-md font-light tracking-wide leading-relaxed">
+                    Пространство, созданное путем бескомпромиссного удаления плотности. Манифест тишины, застывший в бетоне, стекле и полуденном свете.
                 </p>
             </div>
-            <div class="text-xs uppercase tracking-widest text-[#1A1A1A]/40 flex justify-between items-center">
-                <span>Листайте, чтобы погрузиться</span>
-                <span class="hidden md:block">Engine: Three.js + GSAP 2026</span>
-            </div>
-        </section>
-
-        <section id="section-philosophy" class="h-screen w-full flex items-center px-6 md:px-24 relative">
-            <div class="max-w-2xl">
-                <p id="kinetic-text" class="font-serif text-3xl md:text-5xl font-light leading-snug text-[#1A1A1A]">
-                    Мы убирали элементы до тех пор, пока не осталось лишь чистое пространство, прорезанное полуденным солнцем.
-                </p>
+            <div class="flex justify-between items-center text-[10px] uppercase tracking-[0.3em] text-neutral-400">
+                <span>[ Descend to explore ]</span>
+                <span class="hidden md:block">Active Matrix // 2026</span>
             </div>
         </section>
 
-        <section id="section-interactive" class="h-screen w-full flex flex-col md:flex-row items-center justify-between px-6 md:px-24 relative">
-            <div class="max-w-xs z-30 pointer-events-auto bg-[#F5F5F0]/90 md:bg-transparent p-6 md:p-0 border border-neutral-200 md:border-none">
-                <h3 class="font-serif text-2xl md:text-3xl mb-4 font-light">Объемный анализ</h3>
-                <p class="text-xs md:text-sm leading-relaxed text-[#1A1A1A]/70 mb-6">
-                    Используйте интерактивные триггеры для переключения режимов отображения всей структуры.
+        <!-- СЕКЦИЯ 2: КИНЕТИЧЕСКИЙ МАНИФЕСТ -->
+        <section id="concept" class="h-screen w-full flex items-center px-8 md:px-24 bg-transparent">
+            <div class="max-w-4xl">
+                <span class="text-xs uppercase tracking-[0.5em] text-neutral-400 block mb-6">// Philosophy</span>
+                <p id="stagger-text" class="font-luxury text-4xl md:text-6xl font-light leading-tight text-[#121212]">
+                    Мы убирали материю до тех пор, пока не обнажилась чистая гравитация, прорезанная слепыми световыми лучами.
                 </p>
-                <div class="flex flex-col gap-3">
-                    <button id="btn-zoom-penthouse" class="border border-neutral-300 text-left px-4 py-3 text-xs uppercase tracking-widest hover:border-black transition-all bg-white flex justify-between items-center">
-                        <span>Фокус: Пентхаусы</span>
-                        <span class="w-2 h-2 rounded-full bg-neutral-400 animate-pulse"></span>
+            </div>
+        </section>
+
+        <!-- СЕКЦИЯ 3: ИНСПЕКЦИЯ АРХИТЕКТУРЫ (SCROLL LOCK PIN) -->
+        <section id="geometry" class="h-screen w-full flex flex-col md:flex-row items-center justify-between px-8 md:px-24 relative">
+            <div class="max-w-sm z-30 pointer-events-auto bg-[#F2F2EC]/90 md:bg-transparent p-8 md:p-0 border border-neutral-300 md:border-none shadow-2xl md:shadow-none">
+                <span class="text-xs uppercase tracking-[0.5em] text-neutral-400 block mb-2">03 // Interactive Specimen</span>
+                <h3 class="font-luxury text-3xl mb-4 font-light">Световая тектоника</h3>
+                <p class="text-xs leading-relaxed text-neutral-600 mb-8 tracking-wide">
+                    Вращайте монолит скроллом. Активируйте внутренние слои геометрии для анализа распределения инсоляции и внутренних объемов.
+                </p>
+                <div class="flex flex-col gap-4">
+                    <button id="ui-zoom-trigger" class="magnetic-target group border border-neutral-300 text-left px-5 py-4 text-[10px] uppercase tracking-[0.3em] hover:border-black hover:bg-black hover:text-white transition-all duration-500 flex justify-between items-center bg-white">
+                        <span>Сфокусировать ядро</span>
+                        <span class="w-1.5 h-1.5 rounded-full bg-neutral-400 group-hover:bg-white transition-colors"></span>
                     </button>
-                    <button id="btn-toggle-xray" class="border border-neutral-300 text-left px-4 py-3 text-xs uppercase tracking-widest hover:border-black transition-all bg-white flex justify-between items-center">
-                        <span>Рентген-структура</span>
-                        <span id="xray-indicator" class="w-2 h-2 rounded-full bg-neutral-300"></span>
+                    <button id="ui-shader-trigger" class="magnetic-target group border border-neutral-300 text-left px-5 py-4 text-[10px] uppercase tracking-[0.3em] hover:border-black hover:bg-black hover:text-white transition-all duration-500 flex justify-between items-center bg-white">
+                        <span>Активировать рентген</span>
+                        <span id="shader-status-dot" class="w-1.5 h-1.5 rounded-full bg-neutral-300 group-hover:bg-red-500 transition-all"></span>
                     </button>
                 </div>
             </div>
 
-            <div id="info-popover" class="opacity-0 translate-x-12 fixed top-1/3 right-12 md:right-24 w-80 backdrop-blur-xl bg-white/80 border border-white/50 p-8 shadow-2xl z-40 transition-all duration-500 hidden md:block">
-                <h4 class="font-serif text-xl mb-2 tracking-wide">Skyline Villa</h4>
-                <p class="text-xs text-[#1A1A1A]/80 leading-relaxed mb-6">
-                    Панорамное остекление по периметру 360°. Потолки 4.2 метра. Приватный доступ к вертолетной площадке.
+            <!-- Минималистичный Glassmorphic Поповер -->
+            <div id="luxury-card" class="opacity-0 translate-x-16 fixed top-1/4 right-8 md:right-24 w-80 backdrop-blur-2xl bg-white/70 border border-white/40 p-8 shadow-2xl z-40 transition-all duration-700 hidden md:block">
+                <span class="text-[9px] uppercase tracking-[0.4em] text-neutral-400 block mb-1">Phenomenon</span>
+                <h4 class="font-luxury text-2xl mb-3 font-light">Travertine Skyway</h4>
+                <p class="text-[11px] text-neutral-600 leading-relaxed mb-8 tracking-wide">
+                    Двухуровневые консоли из римского необработанного травертина. Интегрированные световые колодцы, собирающие зенитное солнце.
                 </p>
-                <button id="btn-reset-cam" class="text-xs font-semibold uppercase tracking-widest underline hover:text-neutral-500">
-                    Сбросить камеру
+                <button id="ui-reset-trigger" class="magnetic-target text-[10px] font-bold uppercase tracking-[0.3em] underline hover:text-neutral-500 transition-colors">
+                    Reset Overview
                 </button>
             </div>
         </section>
 
-        <section id="section-selector" class="min-h-screen w-full bg-[#1A1A1A] text-[#F5F5F0] py-32 px-6 md:px-24">
-            <div class="w-full max-w-5xl mx-auto">
-                <div class="flex flex-col md:flex-row justify-between items-start md:items-end border-b border-white/10 pb-6 mb-12 gap-6">
+        <!-- СЕКЦИЯ 4: СПЕЦИФИКАЦИЯ ПРОСТРАНСТВ (GSAP FLIP) -->
+        <section id="layouts" class="min-h-screen w-full bg-[#121212] text-[#F2F2EC] py-32 px-8 md:px-24 relative z-30">
+            <div class="w-full max-w-6xl mx-auto">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-end border-b border-white/10 pb-8 mb-16 gap-6">
                     <div>
-                        <span class="text-xs uppercase tracking-widest opacity-40 block mb-2">Каталог</span>
-                        <h2 class="font-serif text-3xl md:text-5xl font-light">Пространственные решения</h2>
+                        <span class="text-xs uppercase tracking-[0.5em] opacity-40 block mb-2">04 // Spatial Matrix</span>
+                        <h2 class="font-luxury text-4xl md:text-6xl font-light">Доступные объемы</h2>
                     </div>
-                    <div class="flex gap-8 text-xs tracking-widest uppercase text-white/40">
-                        <button data-filter="ALL" class="filter-btn text-white font-bold transition-colors">Все</button>
-                        <button data-filter="Penthouse" class="filter-btn hover:text-white transition-colors">Пентхаусы</button>
-                        <button data-filter="Studio" class="filter-btn hover:text-white transition-colors">Студии</button>
+                    <div class="flex gap-12 text-[10px] uppercase tracking-[0.3em] text-white/40">
+                        <button data-filter="ALL" class="filter-node text-white font-bold transition-colors cursor-pointer">Все лоты</button>
+                        <button data-filter="Duplex" class="filter-node hover:text-white transition-colors cursor-pointer">Дуплексы</button>
+                        <button data-filter="Gallery" class="filter-node hover:text-white transition-colors cursor-pointer">Галереи</button>
                     </div>
                 </div>
 
-                <div id="flip-container" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div data-type="Penthouse" class="floor-card group bg-neutral-900/50 border border-white/5 p-8 relative overflow-hidden transition-all duration-300 hover:border-white/20">
-                        <div class="flex justify-between items-start mb-16">
-                            <div><span class="text-xs uppercase opacity-40 tracking-wider block mb-1">Level 14</span><h4 class="font-serif text-2xl">340 м²</h4></div>
-                            <span class="text-xs opacity-30">№ 01A</span>
+                <!-- FLIP CONTAINER -->
+                <div id="flip-grid" class="grid grid-cols-1 md:grid-cols-3 gap-8 min-h-[500px]">
+                    <div data-type="Duplex" class="floor-block group bg-neutral-900/40 border border-white/5 p-8 relative overflow-hidden transition-all duration-500 hover:border-white/20">
+                        <div class="flex justify-between items-start mb-24">
+                            <div><span class="text-[10px] uppercase opacity-40 block mb-1">Level 12-14</span><h4 class="font-luxury text-2xl">340 M²</h4></div>
+                            <span class="text-[10px] opacity-20">M-01</span>
                         </div>
-                        <div class="absolute inset-0 bg-neutral-800 opacity-0 group-hover:opacity-20 pointer-events-none transition-opacity duration-500 bg-[url('https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=600&q=80')] bg-cover bg-center"></div>
+                        <p class="text-[11px] tracking-widest opacity-50 group-hover:opacity-100 transition-opacity">Zenithal Light Horizon</p>
+                        <div class="absolute inset-0 bg-neutral-800 opacity-0 group-hover:opacity-20 pointer-events-none transition-opacity duration-700 bg-[url('https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80')] bg-cover bg-center"></div>
                     </div>
-                    <div data-type="Penthouse" class="floor-card group bg-neutral-900/50 border border-white/5 p-8 relative overflow-hidden transition-all duration-300 hover:border-white/20">
-                        <div class="flex justify-between items-start mb-16">
-                            <div><span class="text-xs uppercase opacity-40 tracking-wider block mb-1">Level 15</span><h4 class="font-serif text-2xl">410 м²</h4></div>
-                            <span class="text-xs opacity-30">№ 01B</span>
+                    
+                    <div data-type="Duplex" class="floor-block group bg-neutral-900/40 border border-white/5 p-8 relative overflow-hidden transition-all duration-500 hover:border-white/20">
+                        <div class="flex justify-between items-start mb-24">
+                            <div><span class="text-[10px] uppercase opacity-40 block mb-1">Level 15</span><h4 class="font-luxury text-2xl">410 M²</h4></div>
+                            <span class="text-[10px] opacity-20">M-02</span>
                         </div>
-                        <div class="absolute inset-0 bg-neutral-800 opacity-0 group-hover:opacity-20 pointer-events-none transition-opacity duration-500 bg-[url('https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=600&q=80')] bg-cover bg-center"></div>
+                        <p class="text-[11px] tracking-widest opacity-50 group-hover:opacity-100 transition-opacity">Meridian View Deck</p>
+                        <div class="absolute inset-0 bg-neutral-800 opacity-0 group-hover:opacity-20 pointer-events-none transition-opacity duration-700 bg-[url('https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80')] bg-cover bg-center"></div>
                     </div>
-                    <div data-type="Studio" class="floor-card group bg-neutral-900/50 border border-white/5 p-8 relative overflow-hidden transition-all duration-300 hover:border-white/20">
-                        <div class="flex justify-between items-start mb-16">
-                            <div><span class="text-xs uppercase opacity-40 tracking-wider block mb-1">Level 02</span><h4 class="font-serif text-2xl">110 м²</h4></div>
-                            <span class="text-xs opacity-30">№ 04C</span>
+
+                    <div data-type="Gallery" class="floor-block group bg-neutral-900/40 border border-white/5 p-8 relative overflow-hidden transition-all duration-500 hover:border-white/20">
+                        <div class="flex justify-between items-start mb-24">
+                            <div><span class="text-[10px] uppercase opacity-40 block mb-1">Level 02</span><h4 class="font-luxury text-2xl">185 M²</h4></div>
+                            <span class="text-[10px] opacity-20">M-09</span>
                         </div>
-                        <div class="absolute inset-0 bg-neutral-800 opacity-0 group-hover:opacity-20 pointer-events-none transition-opacity duration-500 bg-[url('https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=600&q=80')] bg-cover bg-center"></div>
+                        <p class="text-[11px] tracking-widest opacity-50 group-hover:opacity-100 transition-opacity">Private Atrium Sculpture</p>
+                        <div class="absolute inset-0 bg-neutral-800 opacity-0 group-hover:opacity-20 pointer-events-none transition-opacity duration-700 bg-[url('https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=800&q=80')] bg-cover bg-center"></div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <section class="h-screen w-full flex flex-col justify-center items-center bg-[#F5F5F0] px-6">
-            <div class="text-center max-w-xl">
-                <h2 class="font-serif text-4xl md:text-6xl font-light tracking-tight mb-8">Получить ключ доступа</h2>
-                <form class="flex flex-col md:flex-row gap-6 w-full justify-center items-center" onsubmit="event.preventDefault();">
-                    <input type="email" placeholder="SECURE EMAIL NODE" class="bg-transparent border-b border-[#1A1A1A]/30 py-3 px-2 text-xs w-72 focus:outline-none focus:border-[#1A1A1A] tracking-widest text-center uppercase transition-colors">
-                    <button id="magnetic-btn" class="bg-[#1A1A1A] text-[#F5F5F0] text-xs uppercase tracking-widest px-10 py-4 font-semibold hover:shadow-2xl transition-shadow duration-300">
-                        Отправить запрос
+        <!-- СЕКЦИЯ 5: ЗАКРЫТЫЙ МАНИФЕСТ И ВХОД -->
+        <section class="h-screen w-full flex flex-col justify-center items-center bg-[#F2F2EC] px-8 relative">
+            <div class="text-center max-w-2xl relative z-30">
+                <span class="text-xs uppercase tracking-[0.6em] text-neutral-400 block mb-6">Access Sequence</span>
+                <h2 class="font-luxury text-5xl md:text-7xl font-light tracking-tight mb-12">Запросить Ключ</h2>
+                <form class="flex flex-col md:flex-row gap-8 w-full justify-center items-center" onsubmit="event.preventDefault();">
+                    <input type="email" placeholder="ENTER SECURE EMAIL NODE" class="bg-transparent border-b border-[#121212]/30 py-4 px-4 text-xs w-80 focus:outline-none focus:border-[#121212] tracking-[0.2em] text-center uppercase transition-colors">
+                    <button id="ultimate-magnetic" class="magnetic-target bg-[#121212] text-[#F2F2EC] text-[10px] uppercase tracking-[0.3em] px-12 py-5 font-semibold shadow-2xl hover:bg-neutral-800 transition-colors">
+                        Инициировать верификацию
                     </button>
                 </form>
             </div>
         </section>
     </main>
 
+    <!-- ИНТЕЛЛЕКТУАЛЬНЫЙ СКРИПТ УПРАВЛЕНИЯ -->
     <script>
         gsap.registerPlugin(ScrollTrigger, Flip);
 
         // ==========================================
-        // 1. ИНИЦИАЛИЗАЦИЯ СЦЕНЫ И ДОПОЛНИТЕЛЬНЫХ ОБЪЕКТОВ
+        // 1. СЛОЖНАЯ АРХИТЕКТУРНАЯ 3D-СЦЕНА
         // ==========================================
-        const canvas = document.querySelector('#webgl-canvas');
+        const canvas = document.querySelector('#webgl-stage');
         const scene = new THREE.Scene();
         
-        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
-        camera.position.set(0, 0, 5.5);
+        const camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.1, 100);
+        camera.position.set(0, 0, 6.5);
 
         const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-        // Основной кастомный материал для эффекта рентгена
-        const customMaterial = new THREE.ShaderMaterial({
+        // Custom Шейдер с эффектом Френеля (Glow) и бегущей линией сканирования (X-Ray)
+        const advancedShaderMaterial = new THREE.ShaderMaterial({
             uniforms: {
-                uWireframeProgress: { value: 0.0 },
-                uColorPlaster: { value: new THREE.Color('#E6E6DE') },
-                uColorGrid: { value: new THREE.Color('#2A2A2A') }
+                uWireframe: { value: 0.0 },
+                uTime: { value: 0.0 },
+                uPlasterColor: { value: new THREE.Color('#E3E3D9') },
+                uGridColor: { value: new THREE.Color('#121212') }
             },
             vertexShader: `
                 varying vec2 vUv;
                 varying vec3 vNormal;
+                varying vec3 vViewPosition;
                 void main() {
                     vUv = uv;
                     vNormal = normalize(normalMatrix * normal);
-                    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+                    vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+                    vViewPosition = -mvPosition.xyz;
+                    gl_Position = projectionMatrix * mvPosition;
                 }
             `,
             fragmentShader: `
-                uniform float uWireframeProgress;
-                uniform vec3 uColorPlaster;
-                uniform vec3 uColorGrid;
+                uniform float uWireframe;
+                uniform float uTime;
+                uniform vec3 uPlasterColor;
+                uniform vec3 uGridColor;
                 varying vec2 vUv;
                 varying vec3 vNormal;
+                varying vec3 vViewPosition;
                 void main() {
-                    float edgeX = step(0.015, mod(vUv.x * 10.0, 1.0));
-                    float edgeY = step(0.015, mod(vUv.y * 15.0, 1.0));
-                    float gridPattern = 1.0 - (edgeX * edgeY);
-                    
-                    vec3 plaster = uColorPlaster * max(0.4, dot(vNormal, vec3(0.5, 1.0, 0.6)));
-                    vec3 wireframe = uColorGrid + vec3(gridPattern * 0.6);
-                    
-                    vec3 finalColor = mix(plaster, wireframe, uWireframeProgress);
+                    // Эффект сетки (Blueprint Grid)
+                    float gx = step(0.015, mod(vUv.x * 12.0, 1.0));
+                    float gy = step(0.015, mod(vUv.y * 24.0, 1.0));
+                    float grid = 1.0 - (gx * gy);
+
+                    // Расчет Френеля (Свечение по краям)
+                    vec3 normal = normalize(vNormal);
+                    vec3 viewDir = normalize(vViewPosition);
+                    float fresnel = pow(1.0 - max(dot(normal, viewDir), 0.0), 3.0);
+
+                    // Бегущая световая полоса сканирования
+                    float scanLine = sin(vUv.y * 20.0 - uTime * 4.0) * 0.5 + 0.5;
+                    scanLine = step(0.95, scanLine) * uWireframe;
+
+                    // Блендинг состояний
+                    vec3 baseRender = uPlasterColor * max(0.4, dot(normal, vec3(0.5, 1.0, 0.6)));
+                    vec3 wireframeRender = uGridColor + vec3(grid * 0.4) + vec3(fresnel * 0.7);
+                    wireframeRender += vec3(scanLine * 0.5, scanLine * 0.2, scanLine * 0.2);
+
+                    vec3 finalColor = mix(baseRender, wireframeRender, uWireframe);
                     gl_FragColor = vec4(finalColor, 1.0);
                 }
             `
         });
 
-        // Главный объект (Монолит)
-        const geometry = new THREE.BoxGeometry(1.4, 2.8, 1.4);
-        const mainBuilding = new THREE.Mesh(geometry, customMaterial);
-        const webglGroup = new THREE.Group();
-        webglGroup.add(mainBuilding);
-        scene.add(webglGroup);
+        // Сборка многокомпонентного 3D-здания (Композиция брутализма)
+        const buildingGroup = new THREE.Group();
 
-        // ДОПОЛНИТЕЛЬНЫЕ ОБЪЕКТЫ: Абстрактные парящие плиты для создания параллакса глубины
-        const floatingObjects = [];
-        const slabGeo = new THREE.BoxGeometry(0.8, 0.05, 0.8);
-        const slabMat = new THREE.MeshStandardMaterial({ color: '#D4D4CC', roughness: 0.6 });
+        // 1. Бетонное внутреннее ядро
+        const coreGeo = new THREE.BoxGeometry(0.6, 3.4, 0.6);
+        const coreMesh = new THREE.Mesh(coreGeo, advancedShaderMaterial);
+        buildingGroup.add(coreMesh);
 
-        for(let i = 0; i < 5; i++) {
-            const slab = new THREE.Mesh(slabGeo, slabMat);
-            slab.position.set(
-                (Math.random() - 0.5) * 4,
-                (Math.random() - 0.5) * 4,
-                (Math.random() - 0.5) * 2 - 1
-            );
-            slab.rotation.set(Math.random(), Math.random(), 0);
-            webglGroup.add(slab);
-            floatingObjects.push(slab);
+        // 2. Горизонтальные консольные плиты (этажи)
+        const plateGeo = new THREE.BoxGeometry(1.6, 0.04, 1.6);
+        for(let i = 0; i < 7; i++) {
+            const plate = new THREE.Mesh(plateGeo, advancedShaderMaterial);
+            plate.position.y = -1.5 + (i * 0.5);
+            buildingGroup.add(plate);
         }
 
-        // 3D-ТЕКСТ / МЕТКИ (Генерация через динамический Canvas 2D)
-        function create3DTextTexture(text) {
-            const textCanvas = document.createElement('canvas');
-            textCanvas.width = 512;
-            textCanvas.height = 128;
-            const ctx = textCanvas.getContext('2d');
-            ctx.fillStyle = 'rgba(0,0,0,0)';
-            ctx.fillRect(0,0,512,128);
-            ctx.font = 'Light 32px serif';
-            ctx.fillStyle = '#1A1A1A';
-            ctx.textAlign = 'center';
-            ctx.fillText(text, 256, 64);
-            
-            const texture = new THREE.CanvasTexture(textCanvas);
-            const mat = new THREE.MeshBasicMaterial({ map: texture, transparent: true, side: THREE.DoubleSide });
-            const geo = new THREE.PlaneGeometry(2, 0.5);
-            return new THREE.Mesh(geo, mat);
+        // 3. Вертикальный стеклянный пилон-экран
+        const pylonGeo = new THREE.BoxGeometry(0.1, 3.0, 1.2);
+        const pylon = new THREE.Mesh(pylonGeo, advancedShaderMaterial);
+        pylon.position.set(0.75, 0, 0);
+        buildingGroup.add(pylon);
+
+        scene.add(buildingGroup);
+
+        // АТМОСФЕРНЫЙ СЛОЙ ЧАСТИЦ (Эмбиент-пыль в лучах света)
+        const particleCount = 250;
+        const particleGeo = new THREE.BufferGeometry();
+        const positions = new Float32Array(particleCount * 3);
+
+        for(let i = 0; i < particleCount * 3; i+=3) {
+            positions[i] = (Math.random() - 0.5) * 8;
+            positions[i+1] = (Math.random() - 0.5) * 8;
+            positions[i+2] = (Math.random() - 0.5) * 4;
         }
 
-        const label3D = create3DTextTexture("LATITUDE 55.75°");
-        label3D.position.set(0, 1.8, 0);
-        webglGroup.add(label3D);
+        particleGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        const particleMat = new THREE.PointsMaterial({ color: '#121212', size: 0.015, transparent: true, opacity: 0.3 });
+        const particleSystem = new THREE.Points(particleGeo, particleMat);
+        scene.add(particleSystem);
 
-        // Свет
+        // Освещение сцены
         const ambientLight = new THREE.AmbientLight('#ffffff', 0.9);
         scene.add(ambientLight);
 
-        const sunLight = new THREE.DirectionalLight('#ffffff', 1.8);
-        sunLight.position.set(5, 5, 4);
-        scene.add(sunLight);
+        const directionalLight = new THREE.DirectionalLight('#ffffff', 1.5);
+        directionalLight.position.set(6, 8, 4);
+        scene.add(directionalLight);
 
-        // Интерактивные переменные трекинга мыши
-        let mouse = { x: 0, y: 0, targetX: 0, targetY: 0 };
-        let isZoomed = false;
-        let xrayTarget = 0;
+        // Вспомогательные переменные слежения
+        let scrollVelocity = 0;
+        let lastScrollTop = 0;
+        let mouseX = 0, mouseY = 0, tX = 0, tY = 0;
+        let cameraZoomMode = false;
+        let shaderXrayTarget = 0;
 
         window.addEventListener('mousemove', (e) => {
-            mouse.x = (e.clientX / window.innerWidth) - 0.5;
-            mouse.y = (e.clientY / window.innerHeight) - 0.5;
+            mouseX = (e.clientX / window.innerWidth) - 0.5;
+            mouseY = (e.clientY / window.innerHeight) - 0.5;
         });
 
-        // ГЛАВНЫЙ НАБЛЮДАТЕЛЬНЫЙ ЦИКЛ РЕНДЕРА (АНИМАЦИЯ КАЖДОГО КАДРА)
-        function animateLoop(time) {
-            // Мягкий непрерывный автономный дрейф (даже без движений мыши)
-            const elapsedTime = time * 0.001;
-            
-            if (!isZoomed) {
-                // Инерционное сглаживание для мыши
-                mouse.targetX += (mouse.x * 0.3 - mouse.targetX) * 0.05;
-                mouse.targetY += (mouse.y * 0.2 - mouse.targetY) * 0.05;
+        // ВЫСОКОЧАСТОТНЫЙ ЦИКЛ РЕНДЕРА (РАБОТА С КАЖДЫМ КАДРОМ)
+        const clock = new THREE.Clock();
+        
+        function r3fRenderLoop() {
+            const time = clock.getElapsedTime();
+            advancedShaderMaterial.uniforms.uTime.value = time;
+
+            // Динамический расчет скорости скролла для влияния на физику частиц
+            const st = window.pageYOffset || document.documentElement.scrollTop;
+            scrollVelocity = Math.abs(st - lastScrollTop) * 0.02;
+            lastScrollTop = st <= 0 ? 0 : st;
+
+            if (!cameraZoomMode) {
+                // Инерционный параллакс мыши + легкий волновой дрейф математической матрицы
+                tX += (mouseX * 0.35 - tX) * 0.05;
+                tY += (mouseY * 0.25 - tY) * 0.05;
                 
-                webglGroup.rotation.y = mouse.targetX + Math.sin(elapsedTime * 0.2) * 0.05;
-                webglGroup.rotation.x = mouse.targetY + Math.cos(elapsedTime * 0.2) * 0.03;
+                buildingGroup.rotation.y = tX + Math.sin(time * 0.15) * 0.03;
+                buildingGroup.rotation.x = tY + Math.cos(time * 0.1) * 0.02;
             }
 
-            // Плавный волнообразный дрейф парящих плит декора
-            floatingObjects.forEach((slab, index) => {
-                slab.position.y += Math.sin(elapsedTime + index) * 0.002;
-                slab.rotation.y += 0.002;
-            });
+            // Кинетическое поведение облака частиц (реагируют ускорением на скролл)
+            const pts = particleSystem.geometry.attributes.position.array;
+            for(let i = 1; i < pts.length; i+=3) {
+                pts[i] -= 0.002 + (scrollVelocity * 0.01); // Падение вниз усиливается скроллом
+                if(pts[i] < -4) pts[i] = 4; // Зацикливание по высоте координат
+            }
+            particleSystem.geometry.attributes.position.needsUpdate = true;
 
-            // 3D-Текст всегда разворачивается «лицом» к камере (Эффект Биллборда)
-            label3D.lookAt(camera.position);
-
-            // Интерполяция изменения состояния шейдера (Рентген)
-            customMaterial.uniforms.uWireframeProgress.value += (xrayTarget - customMaterial.uniforms.uWireframeProgress.value) * 0.1;
+            // Плавный морфинг текстуры шейдера
+            advancedShaderMaterial.uniforms.uWireframe.value += (shaderXrayTarget - advancedShaderMaterial.uniforms.uWireframe.value) * 0.08;
 
             renderer.render(scene, camera);
-            requestAnimationFrame(animateLoop);
+            requestAnimationFrame(r3fRenderLoop);
         }
-        requestAnimationFrame(animateLoop);
+        requestAnimationFrame(r3fRenderLoop);
 
 
         // ==========================================
-        // 2. СТАРТОВЫЕ АНИМАЦИИ ПРИ ЗАГРУЗКЕ СТРАНИЦЫ
+        // 2. ЭЛИТНАЯ РЕЖИССУРА ПОЯВЛЕНИЯ ИНТЕРФЕЙСА (REVEAL)
         // ==========================================
         window.addEventListener('DOMContentLoaded', () => {
-            const tl = gsap.timeline({ defaults: { ease: "power4.out", duration: 1.4 }});
+            const entryTimeline = gsap.timeline({ defaults: { ease: "power4.out", duration: 1.6 }});
             
-            tl.to("#site-nav", { opacity: 1, y: 0 }, 0.2)
-              .to("#hero-title", { clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 100%)" }, 0.4)
-              .to("#hero-sub", { opacity: 1, y: 0 }, 0.6);
+            entryTimeline.to("#main-title", { clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 100%)" })
+                         .to("#main-desc", { opacity: 1, y: 0 }, "-=1.1")
+                         .to("header", { opacity: 1, y: 0 }, "-=1.4");
         });
 
 
         // ==========================================
-        // 3. ПАРDynamic СЛАЙДЕР СКРОЛЛА (GSAP + 3D + СВЕТ)
+        // 3. СВЯЗКА СКРОЛЛА С 3D-ПРОСТРАНСТВОМ (SCROLLTRIGGER)
         // ==========================================
-        const mediaQuery = gsap.matchMedia();
+        const responsiveMedia = gsap.matchMedia();
 
-        mediaQuery.add("(min-width: 768px)", () => {
-            // Главный таймлайн, связывающий положение скролла с 3D миром
-            const scrollTimeline = gsap.timeline({
+        responsiveMedia.add("(min-width: 768px)", () => {
+            // Прогрессбар и базовая траектория полета архитектурной группы
+            gsap.timeline({
                 scrollTrigger: {
-                    trigger: "main",
-                    start: "top top",
-                    end: "bottom bottom",
-                    scrub: 1.2,
+                    trigger: "main", start: "top top", end: "bottom bottom", scrub: 1,
                     onUpdate: (self) => {
-                        // Обновляем верхний тонкий индикатор скролла
-                        document.getElementById('scroll-progress').style.width = `${self.progress * 100}%`;
+                        document.getElementById('progress-bar').style.width = `${self.progress * 100}%`;
                     }
                 }
-            });
+            })
+            .to(buildingGroup.position, { x: 2.1, y: -0.1, z: -0.5, ease: "power1.inOut" }, 0)
+            .to(buildingGroup.scale, { x: 0.65, y: 0.65, z: 0.65, ease: "power1.inOut" }, 0);
 
-            // Трансформация 1: Сдвиг вправо, уменьшение и изменение угла света (симуляция движения солнца)
-            scrollTimeline.to(webglGroup.position, { x: 2.0, y: -0.2, z: 0, ease: "power2.inOut" }, 0.1)
-                          .to(webglGroup.scale, { x: 0.7, y: 0.7, z: 0.7, ease: "power2.inOut" }, 0.1)
-                          .to(sunLight.position, { x: -5, y: 3, z: 2, ease: "none" }, 0.0); // Тень плавно ползет
-
-            // Фиксация экрана на третьей секции для вращения на 360 градусов
+            // Фиксация (Pin) 3-й интерактивной секции и вращение на 360°
             ScrollTrigger.create({
-                trigger: "#section-interactive",
-                start: "top top",
-                end: "+=130%",
-                pin: true,
-                scrub: true,
+                trigger: "#geometry", start: "top top", end: "+=120%", pin: true, scrub: true,
                 onUpdate: (self) => {
-                    if (!isZoomed) {
-                        // Прямая связь прогресса скролла секции с вращением вокруг оси Y
-                        mainBuilding.rotation.y = self.progress * Math.PI * 2;
+                    if (!cameraZoomMode) {
+                        buildingGroup.rotation.y = self.progress * Math.PI * 2;
                     }
                 }
             });
 
-            // Кинетический посимвольный вывод текста во 2й секции
-            const txt = document.getElementById('kinetic-text');
-            const splitChars = txt.textContent.trim().split("");
-            txt.textContent = "";
-            splitChars.forEach(c => {
-                const node = document.createElement("span");
-                node.textContent = c;
-                node.className = "inline-block opacity-10 translate-x-1";
-                txt.appendChild(node);
+            // Посимвольный кинетический взрыв манифеста (Section 2)
+            const txtBlock = document.getElementById('stagger-text');
+            const characters = txtBlock.textContent.trim().split("");
+            txtBlock.textContent = "";
+            
+            characters.forEach(char => {
+                const letterSpan = document.createElement("span");
+                letterSpan.textContent = char;
+                letterSpan.className = "inline-block opacity-5 translate-y-3 filter blur-[2px]";
+                txtBlock.appendChild(letterSpan);
             });
 
-            gsap.to(txt.children, {
-                opacity: 1,
-                x: 0,
-                stagger: 0.01,
-                ease: "power2.out",
+            gsap.to(txtBlock.children, {
+                opacity: 1, y: 0, filter: "blur(0px)",
+                stagger: 0.012, ease: "power3.out",
                 scrollTrigger: {
-                    trigger: txt,
-                    start: "top 70%",
-                    toggleActions: "play none none reverse"
+                    trigger: txtBlock, start: "top 75%", toggleActions: "play none none reverse"
                 }
             });
         });
 
 
         // ==========================================
-        // 4. КЛИК-ВЗАИМОДЕЙСТВИЯ И РЕЖИМЫ КАМЕРЫ
+        // 4. СЛОЖНЫЕ СЦЕНАРИИ КАМЕРЫ И ИНТЕРАКТИВА
         // ==========================================
-        const popover = document.getElementById('info-popover');
-        const xrayInd = document.getElementById('xray-indicator');
+        const popoverCard = document.getElementById('luxury-card');
+        const statusDot = document.getElementById('shader-status-dot');
 
-        document.getElementById('btn-zoom-penthouse').addEventListener('click', () => {
-            isZoomed = true;
-            popover.classList.remove('opacity-0', 'translate-x-12');
+        document.getElementById('ui-zoom-trigger').addEventListener('click', () => {
+            cameraZoomMode = true;
+            popoverCard.classList.remove('opacity-0', 'translate-x-16');
             
-            // Динамический налет камеры на верхнюю часть здания
-            gsap.to(camera.position, { x: 1.2, y: 1.0, z: 2.2, duration: 2, ease: "power4.inOut" });
-            gsap.to(webglGroup.position, { x: -0.2, y: -0.9, z: 0, duration: 2, ease: "power4.inOut" });
-            gsap.to(webglGroup.rotation, { x: -0.05, y: 0.5, z: 0, duration: 2, ease: "power4.inOut" });
+            // Кинематографичный налет объектива во внутреннюю структуру
+            gsap.to(camera.position, { x: 1.1, y: 0.7, z: 2.2, duration: 2.2, ease: "power4.inOut" });
+            gsap.to(buildingGroup.position, { x: -0.1, y: -0.7, z: 0, duration: 2.2, ease: "power4.inOut" });
+            gsap.to(buildingGroup.rotation, { x: -0.1, y: 0.6, z: 0, duration: 2.2, ease: "power4.inOut" });
         });
 
-        document.getElementById('btn-reset-cam').addEventListener('click', () => {
-            popover.classList.add('opacity-0', 'translate-x-12');
+        document.getElementById('ui-reset-trigger').addEventListener('click', () => {
+            popoverCard.classList.add('opacity-0', 'translate-x-16');
             
-            gsap.to(camera.position, { x: 0, y: 0, z: 5.5, duration: 1.5, ease: "power3.out", onComplete: () => { isZoomed = false; } });
-            gsap.to(webglGroup.position, { x: 2.0, y: -0.2, z: 0, duration: 1.5, ease: "power3.out" });
+            gsap.to(camera.position, { x: 0, y: 0, z: 6.5, duration: 1.6, ease: "power3.out", onComplete: () => { cameraZoomMode = false; } });
+            gsap.to(buildingGroup.position, { x: 2.1, y: -0.1, z: -0.5, duration: 1.6, ease: "power3.out" });
         });
 
-        document.getElementById('btn-toggle-xray').addEventListener('click', () => {
-            if (xrayTarget === 0) {
-                xrayTarget = 1.0;
-                xrayInd.className = "w-2 h-2 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.8)]";
+        document.getElementById('ui-shader-trigger').addEventListener('click', () => {
+            if (shaderXrayTarget === 0) {
+                shaderXrayTarget = 1.0;
+                statusDot.className = "w-1.5 h-1.5 rounded-full bg-red-500 shadow-[0_0_10px_#ef4444]";
             } else {
-                xrayTarget = 0.0;
-                xrayInd.className = "w-2 h-2 rounded-full bg-neutral-300";
+                shaderXrayTarget = 0.0;
+                statusDot.className = "w-1.5 h-1.5 rounded-full bg-neutral-300";
             }
         });
 
 
         // ==========================================
-        // 5. ФИЛЬТРАЦИЯ СЕТКИ С GSAP FLIP
+        // 5. ИНТЕЛЛЕКТУАЛЬНЫЙ СОРТИРОВЩИК (GSAP FLIP)
         // ==========================================
-        const filterBtns = document.querySelectorAll('.filter-btn');
-        const cards = document.querySelectorAll('.floor-card');
+        const nodes = document.querySelectorAll('.filter-node');
+        const blocks = document.querySelectorAll('.floor-block');
 
-        filterBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                filterBtns.forEach(b => b.classList.remove('text-white', 'font-bold'));
-                btn.classList.add('text-white', 'font-bold');
+        nodes.forEach(node => {
+            node.addEventListener('click', () => {
+                nodes.forEach(n => n.classList.remove('text-white', 'font-bold'));
+                node.classList.add('text-white', 'font-bold');
 
-                const mode = btn.getAttribute('data-filter');
-                const state = Flip.getState(cards);
+                const filterTarget = node.getAttribute('data-filter');
+                const flipState = Flip.getState(blocks);
 
-                cards.forEach(card => {
-                    card.style.display = (mode === 'ALL' || card.getAttribute('data-type') === mode) ? 'block' : 'none';
+                blocks.forEach(block => {
+                    block.style.display = (filterTarget === 'ALL' || block.getAttribute('data-type') === filterTarget) ? 'block' : 'none';
                 });
 
-                Flip.from(state, {
-                    duration: 0.6,
-                    ease: "power3.inOut",
-                    absolute: true,
-                    onEnter: el => gsap.fromTo(el, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.4 }),
-                    onLeave: el => gsap.to(el, { opacity: 0, scale: 0.9, duration: 0.3 })
+                Flip.from(flipState, {
+                    duration: 0.8, ease: "power4.inOut", absolute: true,
+                    onEnter: elements => gsap.fromTo(elements, { opacity: 0, scale: 0.9, y: 30 }, { opacity: 1, scale: 1, y: 0, duration: 0.5, stagger: 0.05 }),
+                    onLeave: elements => gsap.to(elements, { opacity: 0, scale: 0.8, duration: 0.4 })
                 });
             });
         });
 
 
         // ==========================================
-        // 6. ПУЛЬСИРУЮЩАЯ МАГНИТНАЯ КНОПКА
+        // 6. ПРЕМИАЛЬНЫЙ КУРСОР И МАГНИТНЫЕ ТРИГГЕРЫ
         // ==========================================
-        const mBtn = document.getElementById('magnetic-btn');
+        const cursorDot = document.getElementById('custom-cursor');
+        const cursorRing = document.getElementById('custom-cursor-ring');
+        const magneticTargets = document.querySelectorAll('.magnetic-target');
 
-        mBtn.addEventListener('mousemove', (e) => {
-            const bounds = mBtn.getBoundingClientRect();
-            const mouseX = e.clientX - (bounds.left + bounds.width / 2);
-            const mouseY = e.clientY - (bounds.top + bounds.height / 2);
+        window.addEventListener('mousemove', (e) => {
+            // Плавное следование за координатами
+            gsap.to(cursorDot, { x: e.clientX, y: e.clientY, duration: 0.05 });
+            gsap.to(cursorRing, { x: e.clientX, y: e.clientY, duration: 0.25 });
+        });
 
-            gsap.to(mBtn, {
-                x: mouseX * 0.4,
-                y: mouseY * 0.4,
-                duration: 0.3,
-                ease: "power2.out"
+        magneticTargets.forEach(target => {
+            target.addEventListener('mousemove', (e) => {
+                const box = target.getBoundingClientRect();
+                const mX = e.clientX - (box.left + box.width / 2);
+                const mY = e.clientY - (box.top + box.height / 2);
+
+                // Притяжение самого элемента к курсору
+                gsap.to(target, { x: mX * 0.35, y: mY * 0.35, duration: 0.3, ease: "power2.out" });
+                
+                // Изменение кастомного курсора при наведении (Увеличение триггера)
+                cursorRing.style.transform = 'translate(-50%, -50%) scale(1.8)';
+                cursorRing.style.borderColor = '#121212';
+            });
+
+            target.addEventListener('mouseleave', () => {
+                // Возврат элемента на место с упругим затуханием
+                gsap.to(target, { x: 0, y: 0, duration: 0.8, ease: "elastic.out(1, 0.3)" });
+                
+                cursorRing.style.transform = 'translate(-50%, -50%) scale(1)';
+                cursorRing.style.borderColor = '#121212';
             });
         });
 
-        mBtn.addEventListener('mouseleave', () => {
-            gsap.to(mBtn, { x: 0, y: 0, duration: 0.6, ease: "elastic.out(1, 0.3)" });
-        });
-
-
-        // Адаптивность окна браузера
+        // Коррекция пропорций при ресайзе
         window.addEventListener('resize', () => {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
